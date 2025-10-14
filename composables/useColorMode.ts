@@ -2,7 +2,7 @@ import { ref, watch, onMounted } from 'vue'
 
 const STORAGE_KEY = 'nuxt:color-mode'
 
-export type AppColorMode = 'light' | 'dark' | 'system'
+export type ColorMode = 'light' | 'dark' | 'system'
 
 export function useAppColorMode() {
   const preference = ref<ColorMode>('dark')
@@ -76,6 +76,3 @@ export function useAppColorMode() {
     toggle
   }
 }
-
-// Backwards-compatible export name for manual imports
-export { useAppColorMode as useColorMode }

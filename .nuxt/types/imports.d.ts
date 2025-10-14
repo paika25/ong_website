@@ -440,7 +440,7 @@ declare global {
   export type { Component, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
-  export type { AppColorMode } from '../../composables/useColorMode'
+  export type { ColorMode } from '../../composables/useColorMode'
   import('../../composables/useColorMode')
 }
 // for vue template auto import
