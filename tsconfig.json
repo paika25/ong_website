@@ -4,7 +4,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./*"],
+      "~/*": ["./*"],
+      "#/components/*": ["./components/*"],
+      "#/data/*": ["./data/*"]
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,

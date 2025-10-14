@@ -1,0 +1,131 @@
+export const mockData = {
+  personalInfo: {
+    name: 'RAZAFITSALAMA MARIUS',
+    phone: '+261 34 09 486 84',
+    github: 'github.com/OMarius10-portfolio',
+    portfolio: 'portfolio.netlify.app',
+    linkedin: 'https://www.linkedin.com/in/razafitsalama-marius-08517b227/',
+    location: 'Antananarivo, Mcar',
+    nif: '5018377557',
+    stat: '72009 11 2023 0 0425',
+  },
+  summary: 'Ayant travaillé plus de 3 ans dans le monde du développement web, j\'ai développé des compétences solides dans divers langages de programmation. Je suis passionné par les modèles de conception et d\'architectures logicielles visant l\'équilibre entre la productivité et la qualité des produits livrables. Je suis toujours à la recherche de nouveaux défis techniques et n\'hésite pas à repousser les limites.',
+  experiences: [
+    {
+      title: 'FullStack Developer (Laravel - VueJs)',
+      company: 'Mahafaka',
+      location: 'Antananarivo, Madagascar',
+      startDate: '02/2025',
+      endDate: 'Present',
+      responsibilities: [
+        'Administration et configuration complete de serveur (Secure, automatisation des déploiements via GitHub Actions (CI/CD)',
+        'Conception d\'architectures backend orientées services (SOA), avec une API RESTful',
+        'Conception BF def aux clients mobiles (Flutter) et web (Vue 3)',
+        'Conception et optimisation des bases de données relationnelles',
+        'Implementation flexible des règles métiers pour un adaptateur rapide aux besoins clients',
+      ],
+    },
+    {
+      title: 'FullStack Developer (Laravel - ReactJs)',
+      company: 'Jleil Vivraison',
+      location: 'Mamoutzou, Mayotte',
+      startDate: '01/2023',
+      endDate: 'Present',
+      responsibilities: [
+        'Développement d\'une plateforme de commande et de livraison en ligne',
+        'Intégration de paiements en ligne (PayPal) avec gestion des transactions',
+        'Mise en place d\'un systeme de notes et commentaires modifiables pour les clients',
+        'Fonctionnalité permettant au client de remplacer les commandes impayées dans le panier pour finaliser le paiement',
+        'Ajout de la possibilité de remplacer une commande deja effective',
+        'Impression automatique des tickets de commande sous Windows pour les commerçants',
+        'Creation d\'une fonctionnalité HideZone : definition de zones geographiques ou la livraison n\'est pas possible',
+      ],
+    },
+    {
+      title: 'FullStack Developer (Laravel - VueJs)',
+      company: 'The Zcreative',
+      location: 'Antananarivo, Mcar',
+      startDate: '07/2022',
+      endDate: '02/2023',
+      responsibilities: [
+        'Developer des outils permettant au Hussier de Prestalaires de services de partenariat des fichiers papieresses et de pouvoir valider ou signer les documents numériques',
+        'Integration de signature electronique pour les fichiers pour avoir un archive',
+        'Closure contra pour les clients prestataires',
+      ],
+    },
+    {
+      title: 'Backend Developer (PHP libcms)',
+      company: 'Vivre en residence',
+      location: 'Quebec, Canada',
+      startDate: '09/2022',
+      endDate: '07/2023',
+      responsibilities: [
+        'Aider une demade de service pour les residents',
+        'Ajout d\'une famille de trouver une residence mieu conforme a leurs',
+        'Integration des interfaces utilisateurs pour la validation des services',
+        'Mise en place d\'une base de donner annexe, et permite une migration de certaine partie de l\'infrastructure',
+      ],
+    },
+  ],
+  projects: [
+    {
+      name: 'Pizzeria Backoffice',
+      technologies: ['Laravel', 'VueJs', 'Inertia - SSR'],
+      description: 'Back-office pour une pizzeria. Gère les actions, produits et clienteles avec tableaux statistiques pour suivre l\'evolution des entreprises.',
+    },
+    {
+      name: 'To Do App',
+      description: 'Application de gestion de tâches permettant de créer, catégoriser (priorités, dates) et assigner des tâches à un ou plusieurs utilisateurs.',
+    },
+  ],
+  keyAchievements: [
+    {
+      title: 'Top Three de l\'Hackathon Za@Geek',
+      description: 'Mener notre équipe à la victoire du hackathon en développant une plateforme pour la LogiCiel',
+    },
+    {
+      title: 'Formation Architecture Logiciel',
+      description: 'Appris les differents architectures logicielles (FSD, Hexagonal,)',
+    },
+    {
+      title: 'Setup un instance de EC2 AWS',
+      description: 'Configurer un serveur AWS avec AMI, groupes de sécurité et volumes EBS.',
+    },
+    {
+      title: 'Formateur de developpement PHP',
+      description: 'J\'ai formé dans un organisme pour la formation dans un organisme pour la MGA. J\'ai formateur dans un organisme pour la MGA One sur discourse ensemble et pratiquer, sur un paradigme de programmation tel que le POO, les bonnes pratiques.',
+    },
+  ],
+  education: [
+    {
+      degree: 'Licence en Informatiques (MISA)',
+      institution: 'Universite d\'Antananarivo',
+      startDate: '03/2018',
+      endDate: '08/2022',
+      location: 'Antananarivo, Madagascar',
+    },
+    {
+      degree: 'Bachelor (serie c)',
+      institution: 'Lycee Notre Dame',
+      startDate: '09/2014',
+      endDate: '07/2017',
+      location: 'Mahajanga, Madagascar',
+    },
+  ],
+  skills: [
+    'Linux',
+    'Nginx',
+    'Apache',
+    'SQL server',
+    'PHP/Laravel',
+    'CSS/Tailwind',
+    'VueJs',
+    'JavaScript',
+    'Docker',
+    'Github actions',
+  ],
+  languages: [
+    'Francais',
+    'Anglais',
+  ],
+};
