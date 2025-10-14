@@ -14,9 +14,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAppColorMode } from '~/composables/useColorMode'
 
-const colorMode = useAppColorMode()
+const colorMode = useColorMode()
 
 const isDark = computed(() => colorMode.value === 'dark')
 
