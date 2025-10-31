@@ -1,42 +1,36 @@
 <template>
-  <div class="min-h-screen">
+  <div class="min-h-screen flex flex-col">
     <Header />
-    <main>
-      <div id="home">
-        <Hero />
+    <main class="flex-grow container mx-auto px-4 py-8">
+      <div class="mb-8">
+        <h1 class="text-4xl font-bold mb-2">Liste des ONGs</h1>
+        <p class="text-muted-foreground">Découvrez et rejoignez les organisations à but non lucratif</p>
       </div>
-      <About />
-      <Experience />
-      <Projects />
-      <Skills />
-      <Achievements />
-      <Education />
-      <Contact />
+      <ClientOnly>
+        <OngList />
+        <template #fallback>
+          <div class="text-center py-12">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p class="mt-4 text-muted-foreground">Chargement des ONGs...</p>
+          </div>
+        </template>
+      </ClientOnly>
     </main>
     <Footer />
   </div>
 </template>
 
 <script setup lang="ts">
-import Header from '~/components/Header.vue'
-import Footer from '~/components/Footer.vue'
-import Hero from '~/components/sections/Hero.vue'
-import About from '~/components/sections/About.vue'
-import Experience from '~/components/sections/Experience.vue'
-import Projects from '~/components/sections/Projects.vue'
-import Skills from '~/components/sections/Skills.vue'
-import Achievements from '~/components/sections/Achievements.vue'
-import Education from '~/components/sections/Education.vue'
-import Contact from '~/components/sections/Contact.vue' 
+import OngList  from "../features/ong/components/OngList.vue"
+import Header from "../components/Header.vue"
+import Footer from "../components/Footer.vue"
+
 // Meta tags pour SEO
-// useHead est auto-importé par Nuxt
-// Aucun import manuel nécessaire ici
-// (corriger une faute qui brisait le parsing)
 useHead({
-  title: 'Portfolio - Marius',
+  title: 'ONGs - Portfolio Marius',
   meta: [
-    { name: 'description', content: 'Portfolio personnel de Marius - Développeur passionné' },
-    { name: 'keywords', content: 'portfolio, développeur, web, Vue.js, Nuxt.js' }
+    { name: 'description', content: 'Découvrez les organisations à but non lucratif et rejoignez leurs projets' },
+    { name: 'keywords', content: 'ONG, bénévolat, associations, projets sociaux' }
   ]
 })
 </script>

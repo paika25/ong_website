@@ -1,3 +1,7 @@
+import { skills as allSkills,mongodb, linux, nginx, apache, sqlServer,inertiajs, laravel, php, tailwindCss, vuejs, javascript, docker, githubActions } from './skills'
+import type { Skill } from './skills'
+
+
 export const mockData = {
   personalInfo: {
     name: 'RAZAFITSALAMA MARIUS',
@@ -24,6 +28,7 @@ export const mockData = {
         'Conception et optimisation des bases de données relationnelles',
         'Implementation flexible des règles métiers pour un adaptateur rapide aux besoins clients',
       ],
+      tags: ['laravel','vue','rest-api','soa','ci/cd','github-actions','devops','docker','database']
     },
     {
       title: 'FullStack Developer (Laravel - ReactJs)',
@@ -40,6 +45,7 @@ export const mockData = {
         'Impression automatique des tickets de commande sous Windows pour les commerçants',
         'Creation d\'une fonctionnalité HideZone : definition de zones geographiques ou la livraison n\'est pas possible',
       ],
+      tags: ['laravel','react','ecommerce','payments','paypal','geolocation','printing','orders','sql']
     },
     {
       title: 'FullStack Developer (Laravel - VueJs)',
@@ -52,6 +58,7 @@ export const mockData = {
         'Integration de signature electronique pour les fichiers pour avoir un archive',
         'Closure contra pour les clients prestataires',
       ],
+      tags: ['laravel','vue','esignature','pdf','integration','security','archive']
     },
     {
       title: 'Backend Developer (PHP libcms)',
@@ -65,16 +72,18 @@ export const mockData = {
         'Integration des interfaces utilisateurs pour la validation des services',
         'Mise en place d\'une base de donner annexe, et permite une migration de certaine partie de l\'infrastructure',
       ],
+      tags: ['php','libcms','backend','database-migration','integration','performance','qa']
     },
   ],
   projects: [
     {
       name: 'Pizzeria Backoffice',
-      technologies: ['Laravel', 'VueJs', 'Inertia - SSR'],
+      technologies: [laravel, vuejs, inertiajs] as (Skill | string)[],
       description: 'Back-office pour une pizzeria. Gère les actions, produits et clienteles avec tableaux statistiques pour suivre l\'evolution des entreprises.',
     },
     {
       name: 'To Do App',
+      technologies: [javascript, tailwindCss] as (Skill | string)[],
       description: 'Application de gestion de tâches permettant de créer, catégoriser (priorités, dates) et assigner des tâches à un ou plusieurs utilisateurs.',
     },
   ],
@@ -112,18 +121,22 @@ export const mockData = {
       location: 'Mahajanga, Madagascar',
     },
   ],
+
   skills: [
-    'Linux',
-    'Nginx',
-    'Apache',
-    'SQL server',
-    'PHP/Laravel',
-    'CSS/Tailwind',
-    'VueJs',
-    'JavaScript',
-    'Docker',
-    'Github actions',
-  ],
+    linux,
+    nginx,
+    apache,
+    sqlServer,
+    mongodb,
+    laravel,
+    php,
+    tailwindCss,
+    inertiajs,
+    vuejs,
+    javascript,
+    docker,
+    githubActions
+  ] as Skill[],
   languages: [
     'Francais',
     'Anglais',

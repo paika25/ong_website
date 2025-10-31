@@ -7,7 +7,13 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@vueuse/nuxt'
   ],
-  css: ['~/assets/css/main.css'],
+  css: [
+    '~/assets/css/main.css',
+    '@fortawesome/fontawesome-svg-core/styles.css'
+  ],
+  build: {
+    transpile: ['@fortawesome/vue-fontawesome']
+  },
   colorMode: {
     preference: 'dark'
   },

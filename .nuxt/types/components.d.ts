@@ -17,14 +17,6 @@ interface _GlobalComponents {
   'Footer': typeof import("../../components/Footer.vue")['default']
   'Header': typeof import("../../components/Header.vue")['default']
   'ThemeToggle': typeof import("../../components/ThemeToggle.vue")['default']
-  'SectionsAbout': typeof import("../../components/sections/About.vue")['default']
-  'SectionsAchievements': typeof import("../../components/sections/Achievements.vue")['default']
-  'SectionsContact': typeof import("../../components/sections/Contact.vue")['default']
-  'SectionsEducation': typeof import("../../components/sections/Education.vue")['default']
-  'SectionsExperience': typeof import("../../components/sections/Experience.vue")['default']
-  'SectionsHero': typeof import("../../components/sections/Hero.vue")['default']
-  'SectionsProjects': typeof import("../../components/sections/Projects.vue")['default']
-  'SectionsSkills': typeof import("../../components/sections/Skills.vue")['default']
   'UAccordion': typeof import("../../node_modules/@nuxt/ui/dist/runtime/components/elements/Accordion.vue")['default']
   'UAlert': typeof import("../../node_modules/@nuxt/ui/dist/runtime/components/elements/Alert.vue")['default']
   'UAvatar': typeof import("../../node_modules/@nuxt/ui/dist/runtime/components/elements/Avatar.vue")['default']
@@ -102,14 +94,6 @@ interface _GlobalComponents {
   'LazyFooter': LazyComponent<typeof import("../../components/Footer.vue")['default']>
   'LazyHeader': LazyComponent<typeof import("../../components/Header.vue")['default']>
   'LazyThemeToggle': LazyComponent<typeof import("../../components/ThemeToggle.vue")['default']>
-  'LazySectionsAbout': LazyComponent<typeof import("../../components/sections/About.vue")['default']>
-  'LazySectionsAchievements': LazyComponent<typeof import("../../components/sections/Achievements.vue")['default']>
-  'LazySectionsContact': LazyComponent<typeof import("../../components/sections/Contact.vue")['default']>
-  'LazySectionsEducation': LazyComponent<typeof import("../../components/sections/Education.vue")['default']>
-  'LazySectionsExperience': LazyComponent<typeof import("../../components/sections/Experience.vue")['default']>
-  'LazySectionsHero': LazyComponent<typeof import("../../components/sections/Hero.vue")['default']>
-  'LazySectionsProjects': LazyComponent<typeof import("../../components/sections/Projects.vue")['default']>
-  'LazySectionsSkills': LazyComponent<typeof import("../../components/sections/Skills.vue")['default']>
   'LazyUAccordion': LazyComponent<typeof import("../../node_modules/@nuxt/ui/dist/runtime/components/elements/Accordion.vue")['default']>
   'LazyUAlert': LazyComponent<typeof import("../../node_modules/@nuxt/ui/dist/runtime/components/elements/Alert.vue")['default']>
   'LazyUAvatar': LazyComponent<typeof import("../../node_modules/@nuxt/ui/dist/runtime/components/elements/Avatar.vue")['default']>
