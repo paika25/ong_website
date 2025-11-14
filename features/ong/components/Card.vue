@@ -54,7 +54,7 @@
           <div class="text-xs text-muted-foreground">Bénévoles</div>
         </div>
         <div class="text-center">
-          <div class="font-semibold text-primary">{{ formatNumber(ong.projects) }}</div>
+          <div class="font-semibold text-primary">{{ formatNumber(getProjectCount(ong)) }}</div>
           <div class="text-xs text-muted-foreground">Projets</div>
         </div>
       </div>
@@ -69,7 +69,7 @@
         >
           Voir plus
         </UButton>
-        <UButton
+        <!-- <UButton
           color="primary"
           size="sm"
           block
@@ -77,7 +77,7 @@
           :disabled="ong.status !== 'active'"
         >
           Rejoindre
-        </UButton>
+        </UButton> -->
       </div>
 
       <!-- Contact rapide -->
@@ -119,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ONG } from '../services/ongService'
+import type { ONG } from '../type'
 
 interface Props {
   ong: ONG
@@ -146,6 +146,11 @@ const formatNumber = (num: number) => {
     return (num / 1000).toFixed(1) + 'k'
   }
   return num.toString()
+}
+
+const getProjectCount = (ong: ONG) => {
+  const p: any = (ong as any).projects
+  return Array.isArray(p) ? p.length : Number(p) || 0
 }
 </script>
 

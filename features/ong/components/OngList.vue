@@ -1,71 +1,7 @@
 <template>
   <div class="space-y-6">
     <!-- Filtres et recherche -->
-    <div class="bg-card p-6 rounded-xl border border-border">
-      <div class="grid md:grid-rows-2 md:grid-cols-2 gap-4">
-        <!-- Recherche -->
-        <div class="md:col-span-2">
-          <UInput
-            v-model="filters.search"
-            placeholder="Rechercher une ONG..."
-            icon="i-heroicons-magnifying-glass"
-          />
-        </div>
-
-        <!-- Filtre par catégorie -->
-        <USelect
-          v-model="filters.category"
-          :options="categoryOptions"
-          placeholder="Toutes catégories"
-        />
-
-        <!-- Filtre par statut -->
-        <USelect
-          v-model="filters.status"
-          :options="statusOptions"
-          placeholder="Tous statuts"
-        />
-      </div>
-
-      <!-- Filtres avancés (collapsible) -->
-      <div class="mt-4">
-        <UButton
-          variant="ghost"
-          size="sm"
-          @click="showAdvancedFilters = !showAdvancedFilters"
-        >
-          Filtres avancés
-          <Icon 
-            :name="showAdvancedFilters ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'" 
-            class="w-4 h-4 ml-1" 
-          />
-        </UButton>
-
-        <div v-if="showAdvancedFilters" class="grid md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-border">
-          <!-- Filtre par localisation -->
-          <UInput
-            v-model="filters.location"
-            placeholder="Localisation..."
-            icon="i-heroicons-map-pin"
-          />
-
-          <!-- Tri -->
-          <USelect
-            v-model="filters.sortBy"
-            :options="sortOptions"
-            placeholder="Trier par..."
-          />
-
-          <!-- Nombre de bénévoles minimum -->
-          <UInput
-            v-model.number="filters.minVolunteers"
-            type="number"
-            placeholder="Min. bénévoles"
-            min="0"
-          />
-        </div>
-      </div>
-    </div>
+    <OngListFilter :filter="filters" @filterChange="handleFilterChange" />
 
     <!-- Statistiques -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -120,7 +56,7 @@
         v-for="ong in paginatedOngs"
         :key="ong.id"
         :ong="ong"
-        @view-details="handleViewDetails"
+        @view-details="window.location.href=`/ongs/${ong.id}`"
         @join="handleJoin"
       />
     </div>
@@ -140,17 +76,15 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
-import { navigateTo } from '#app'
-import { useOngService } from '../services/ongService'
+// navigateTo est auto-importé dans Nuxt
+import { getOngs, getOngStats } from '../services/ongService'
 import type { ONG } from '../services/ongService'
 import Card from './Card.vue'
-
-const { getOngs, getOngStats } = useOngService()
+import OngListFilter from './OngListFilter.vue'
 
 // État
 const isLoading = ref(true)
 const ongsData = ref<ONG[]>([])
-const showAdvancedFilters = ref(false)
 const currentPage = ref(1)
 const itemsPerPage = 9
 
@@ -163,30 +97,6 @@ const filters = ref({
   sortBy: 'name',
   minVolunteers: null as number | null
 })
-
-// Options pour les selects
-const categoryOptions = [
-  { label: 'Toutes catégories', value: '' },
-  { label: 'Éducation', value: 'education' },
-  { label: 'Santé', value: 'health' },
-  { label: 'Environnement', value: 'environment' },
-  { label: 'Social', value: 'social' },
-  { label: 'Culture', value: 'culture' }
-]
-
-const statusOptions = [
-  { label: 'Tous statuts', value: '' },
-  { label: 'Actif', value: 'active' },
-  { label: 'En attente', value: 'pending' },
-  { label: 'Inactif', value: 'inactive' }
-]
-
-const sortOptions = [
-  { label: 'Nom A-Z', value: 'name' },
-  { label: 'Plus de bénévoles', value: 'volunteers' },
-  { label: 'Plus de projets', value: 'projects' },
-  { label: 'Plus récents', value: 'createdAt' }
-]
 
 // Computed
 const filteredOngs = computed(() => {
@@ -230,7 +140,9 @@ const filteredOngs = computed(() => {
       case 'volunteers':
         return b.volunteers - a.volunteers
       case 'projects':
-        return b.projects - a.projects
+        const aCount = Array.isArray((a as any).projects) ? (a as any).projects.length : Number((a as any).projects) || 0
+        const bCount = Array.isArray((b as any).projects) ? (b as any).projects.length : Number((b as any).projects) || 0
+        return bCount - aCount
       case 'createdAt':
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       default:
@@ -279,9 +191,17 @@ const resetFilters = () => {
   currentPage.value = 1
 }
 
+// Receives filter updates from OngListFilter child
+const handleFilterChange = (newFilters: Partial<typeof filters.value>) => {
+  filters.value = { ...filters.value, ...newFilters }
+  currentPage.value = 1
+}
+
 const handleViewDetails = (ong: ONG) => {
   // Navigation vers la page de détail
-  navigateTo(`/ongs/${ong.id}`)
+  if (typeof window !== 'undefined') {
+    window.location.href = `/ongs/${ong.id}`
+  }
 }
 
 const handleJoin = (ong: ONG) => {

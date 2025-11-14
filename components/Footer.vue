@@ -16,7 +16,7 @@
         
         <div class="text-center text-sm text-muted-foreground">
           <p class="mb-2">
-            © {{ currentYear }} Marius Razafitsalama. Tous droits réservés.
+            © {{ currentYear }} Paika project. Tous droits réservés.
           </p>
           <p>
             Développé avec Vue.js, Nuxt.js & Tailwind CSS

@@ -1263,7 +1263,7 @@ const _iylwX2t40RnDnY30go3hbgjWGslU7D_4syLXj2q5gs = (function(nitro) {
 
 const rootDir = "/home/marius/Documents/Project/nuxt-folio";
 
-const appHead = {"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"hid":"description","name":"description","content":"Portfolio personnel de Marius"}],"link":[{"rel":"icon","type":"image/x-icon","href":"/favicon.ico"}],"style":[],"script":[],"noscript":[],"title":"Portfolio - Marius"};
+const appHead = {"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"hid":"description","name":"description","content":"Portfolio personnel de Marius"}],"link":[{"rel":"icon","type":"image/x-icon","href":"/favicon.ico"}],"style":[],"script":[],"noscript":[],"title":"Soutenez nos ONG"};
 
 const appRootTag = "div";
 

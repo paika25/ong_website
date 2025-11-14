@@ -18,12 +18,12 @@
       </div>
 
       <!-- Informations principales -->
-      <div class="p-6 relative">
+      <div class="p-6 relative" v-if="user">
         <!-- Avatar -->
         <div class="absolute -top-16 left-6">
           <div class="relative">
             <UAvatar
-              :src="user.avatar"
+              :src="user.avatar || ''"
               :alt="user.fullName"
               size="xl"
               class="ring-4 ring-background"
@@ -223,7 +223,7 @@
               v-for="ong in userOngs"
               :key="ong.id"
               class="bg-card rounded-lg border border-border p-4 hover:shadow-md transition-shadow cursor-pointer"
-              @click="navigateTo(`/ongs/${ong.id}`)"
+              @click="handleOngClick(ong.id)"
             >
               <div class="flex items-start gap-3">
                 <UAvatar :src="ong.logo" :alt="ong.name" size="sm" />
@@ -233,7 +233,7 @@
                   <div class="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
                     <span>{{ ong.volunteers }} bénévoles</span>
                     <span>•</span>
-                    <span>{{ ong.projects }} projets</span>
+                    <span>{{ Array.isArray(ong.projects) ? ong.projects.length : ong.projects }} projets</span>
                   </div>
                 </div>
               </div>
@@ -301,7 +301,8 @@
 <script setup lang="ts">
 import { useUserService } from '../services/userService'
 import type { User } from '../services/userService'
-import {ref , reactive,computed} from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
+// ✅ navigateTo est auto-importé dans Nuxt - ne pas l'importer manuellement
 
 interface Props {
   userId?: string
@@ -330,7 +331,6 @@ const form = reactive({
 
 // Computed
 const isOwnProfile = computed(() => {
-  // Logique pour déterminer si c'est le profil de l'utilisateur connecté
   return !props.userId || props.userId === 'current'
 })
 
@@ -360,17 +360,13 @@ const userOngs = ref([
     projects: 8
   }
 ])
-import { onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
 
 const userProjects = ref([
   {
     id: 'p1',
     name: 'Accès à l\'eau potable',
     ong: 'Solidarité Locale',
-    description: 'Installation de puits et systèmes de collecte d’eau dans plusieurs villages.',
+    description: 'Installation de puits et systèmes de collecte d\'eau dans plusieurs villages.',
     status: 'En cours',
     startDate: '2024-03-15T00:00:00Z',
     participants: 32
@@ -444,7 +440,6 @@ async function saveProfile() {
     user.value = { ...payload } as User
     editMode.value = false
   } catch (err) {
-    // gérer l'erreur selon vos besoins
     console.error(err)
   } finally {
     isSaving.value = false
@@ -471,7 +466,6 @@ function uploadAvatar() {
     const file = input.files && input.files[0]
     if (!file || !user.value) return
     user.value.avatar = URL.createObjectURL(file)
-    // Ici vous pourriez appeler une API pour uploader l'image réelle
   }
   input.click()
 }
@@ -484,7 +478,6 @@ function uploadCover() {
     const file = input.files && input.files[0]
     if (!file || !user.value) return
     ;(user.value as any).cover = URL.createObjectURL(file)
-    // Uploader la couverture côté serveur si nécessaire
   }
   input.click()
 }
@@ -492,13 +485,9 @@ function uploadCover() {
 function getProjectStatusColor(status: string) {
   switch (status.toLowerCase()) {
     case 'en cours':
-    case 'en cours':
       return 'yellow'
     case 'terminé':
-    case 'terminés':
-    case 'terminé':
       return 'green'
-    case 'planifié':
     case 'planifié':
       return 'blue'
     default:
@@ -506,13 +495,22 @@ function getProjectStatusColor(status: string) {
   }
 }
 
-function navigateTo(path: string) {
-  router.push(path)
+// ✅ Fonction helper pour la navigation
+function handleOngClick(ongId: string) {
+  if (typeof window !== 'undefined') {
+    window.location.href = `/ongs/${ongId}`
+  }
+}
+
+function handleNavigate(path: string) {
+  if (typeof window !== 'undefined') {
+    window.location.href = path
+  }
 }
 
 onMounted(async () => {
   try {
-    const u = await getCurrentUser(props.userId)
+    const u = await getCurrentUser()
     if (u) {
       user.value = u
       form.firstName = (u.firstName as string) || ''
@@ -526,3 +524,4 @@ onMounted(async () => {
     console.error('Erreur lors du chargement de l\'utilisateur', e)
   }
 })
+</script>

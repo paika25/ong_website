@@ -86,6 +86,8 @@
 
 <script setup lang="ts">
 import { useAuthValidation } from '../composables/useAuthValidation'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
+// navigateTo est auto-importé dans Nuxt
 
 const emit = defineEmits(['switch-to-signup', 'forgot-password', 'login-success'])
 
@@ -127,7 +129,7 @@ const handleLogin = async () => {
     emit('login-success', { user: { email: form.email } })
     
     // Redirection ou notification de succès
-    await navigateTo('/dashboard')
+    await navigateTo('/')
   } catch (error) {
     console.error('Erreur de connexion:', error)
     // Afficher une notification d'erreur
