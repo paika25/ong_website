@@ -56,7 +56,7 @@
         v-for="ong in paginatedOngs"
         :key="ong.id"
         :ong="ong"
-        @view-details="() => handleViewDetails(ong)"
+        @view-details="(ong) => handleViewDetails(ong)"
         @join="handleJoin"
       />
     </div>
@@ -198,7 +198,7 @@ const handleFilterChange = (newFilters: Partial<typeof filters.value>) => {
 }
 
 const handleViewDetails = (ong: ONG) => {
-  console.log('Voir les détails de l\'ONG:', ong.name)
+  console.log('Voir les détails de l\'ONG:', ong.name,ong)
   // Navigation vers la page de détail (utilise navigateTo auto-importé par Nuxt)
   navigateTo(`/ongs/${ong.id}`)
 }
