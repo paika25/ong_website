@@ -192,6 +192,222 @@
           </div>
         </div>
 
+        <!-- Onglet Finances -->
+        <div v-else-if="item.key === 'financials'" class="space-y-6">
+          <div v-if="ong.financials" class="space-y-6">
+            <!-- Budget -->
+            <div class="bg-card rounded-xl border border-border p-6">
+              <h2 class="text-2xl font-semibold mb-4">Budget 2023</h2>
+              <div class="text-4xl font-bold text-primary mb-6">
+                {{ formatCurrency(ong.financials.totalBudget2023) }}
+              </div>
+              
+              <!-- Sources de financement -->
+              <h3 class="text-lg font-semibold mb-3">Sources de financement</h3>
+              <div class="space-y-3">
+                <div v-for="source in ong.financials.fundingSources" :key="source.source" class="space-y-2">
+                  <div class="flex justify-between text-sm">
+                    <span>{{ source.source }}</span>
+                    <span class="font-semibold">{{ source.percentage }}% ({{ formatCurrency(source.amount) }})</span>
+                  </div>
+                  <div class="w-full bg-muted rounded-full h-2">
+                    <div 
+                      class="bg-primary h-2 rounded-full transition-all" 
+                      :style="{ width: `${source.percentage}%` }"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Allocation des ressources -->
+            <div class="bg-card rounded-xl border border-border p-6">
+              <h3 class="text-lg font-semibold mb-4">Allocation des ressources</h3>
+              <div class="grid grid-cols-3 gap-4">
+                <div class="text-center p-4 bg-muted/50 rounded-lg">
+                  <div class="text-3xl font-bold text-green-600">{{ ong.financials.allocation.programs }}%</div>
+                  <div class="text-sm text-muted-foreground mt-1">Programmes</div>
+                </div>
+                <div class="text-center p-4 bg-muted/50 rounded-lg">
+                  <div class="text-3xl font-bold text-blue-600">{{ ong.financials.allocation.administration }}%</div>
+                  <div class="text-sm text-muted-foreground mt-1">Administration</div>
+                </div>
+                <div class="text-center p-4 bg-muted/50 rounded-lg">
+                  <div class="text-3xl font-bold text-purple-600">{{ ong.financials.allocation.fundraising }}%</div>
+                  <div class="text-sm text-muted-foreground mt-1">Collecte</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rapports financiers -->
+            <div v-if="ong.financials.financialReports && ong.financials.financialReports.length > 0" class="bg-card rounded-xl border border-border p-6">
+              <h3 class="text-lg font-semibold mb-4">Rapports financiers</h3>
+              <div class="space-y-2">
+                <a 
+                  v-for="report in ong.financials.financialReports" 
+                  :key="report.year"
+                  :href="report.url"
+                  target="_blank"
+                  class="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
+                >
+                  <div class="flex items-center gap-3">
+                    <Icon name="i-heroicons-document-text" class="w-5 h-5 text-primary" />
+                    <span class="font-medium">Rapport {{ report.year }}</span>
+                    <UBadge v-if="report.audited" color="green" variant="soft">Audité</UBadge>
+                  </div>
+                  <Icon name="i-heroicons-arrow-down-tray" class="w-5 h-5 text-muted-foreground" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Onglet Impact -->
+        <div v-else-if="item.key === 'impact'" class="space-y-6">
+          <div v-if="ong.impact">
+            <!-- Statistiques d'impact -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+              <div class="bg-card rounded-xl border border-border p-6 text-center">
+                <div class="text-4xl font-bold text-primary mb-2">{{ formatNumber(ong.impact.totalBeneficiaries) }}</div>
+                <div class="text-sm text-muted-foreground">Bénéficiaires</div>
+              </div>
+              <div v-if="ong.impact.schoolsBuilt" class="bg-card rounded-xl border border-border p-6 text-center">
+                <div class="text-4xl font-bold text-green-600 mb-2">{{ ong.impact.schoolsBuilt }}</div>
+                <div class="text-sm text-muted-foreground">Écoles construites</div>
+              </div>
+              <div v-if="ong.impact.teachersTrained" class="bg-card rounded-xl border border-border p-6 text-center">
+                <div class="text-4xl font-bold text-blue-600 mb-2">{{ ong.impact.teachersTrained }}</div>
+                <div class="text-sm text-muted-foreground">Enseignants formés</div>
+              </div>
+              <div v-if="ong.impact.healthcareProvided" class="bg-card rounded-xl border border-border p-6 text-center">
+                <div class="text-4xl font-bold text-red-600 mb-2">{{ formatNumber(ong.impact.healthcareProvided) }}</div>
+                <div class="text-sm text-muted-foreground">Soins fournis</div>
+              </div>
+              <div v-if="ong.impact.treesPlanted" class="bg-card rounded-xl border border-border p-6 text-center">
+                <div class="text-4xl font-bold text-green-600 mb-2">{{ formatNumber(ong.impact.treesPlanted) }}</div>
+                <div class="text-sm text-muted-foreground">Arbres plantés</div>
+              </div>
+              <div v-if="ong.impact.wasteCollected" class="bg-card rounded-xl border border-border p-6 text-center">
+                <div class="text-4xl font-bold text-yellow-600 mb-2">{{ ong.impact.wasteCollected }} T</div>
+                <div class="text-sm text-muted-foreground">Déchets collectés</div>
+              </div>
+            </div>
+
+            <!-- KPIs -->
+            <div v-if="ong.impact.kpis && ong.impact.kpis.length > 0" class="bg-card rounded-xl border border-border p-6">
+              <h2 class="text-2xl font-semibold mb-4">Indicateurs de performance</h2>
+              <div class="space-y-4">
+                <div v-for="kpi in ong.impact.kpis" :key="kpi.metric" class="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
+                  <Icon name="i-heroicons-chart-bar" class="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                  <div class="flex-1">
+                    <div class="font-semibold mb-1">{{ kpi.metric }}</div>
+                    <div class="text-muted-foreground">{{ kpi.value }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Onglet Investissement -->
+        <div v-else-if="item.key === 'investment'" class="space-y-4">
+          <div v-if="ong.investmentOpportunities && ong.investmentOpportunities.length > 0">
+            <div class="bg-primary/10 rounded-xl border border-primary/20 p-6 mb-6">
+              <h2 class="text-2xl font-semibold mb-2">Opportunités d'investissement</h2>
+              <p class="text-muted-foreground">Soutenez nos projets et contribuez à notre impact social.</p>
+            </div>
+            
+            <div 
+              v-for="opportunity in ong.investmentOpportunities" 
+              :key="opportunity.type"
+              class="bg-card rounded-xl border border-border p-6 hover:shadow-lg transition-shadow"
+            >
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <h3 class="text-xl font-semibold mb-2">{{ opportunity.type }}</h3>
+                  <p class="text-muted-foreground mb-3">{{ opportunity.description }}</p>
+                </div>
+                <UBadge color="green" variant="soft" size="lg">
+                  {{ formatCurrency(opportunity.minInvestment) }} min
+                </UBadge>
+              </div>
+              
+              <div class="bg-muted/50 rounded-lg p-4 mb-4">
+                <div class="text-sm font-semibold text-muted-foreground mb-1">Conditions</div>
+                <div class="text-sm">{{ opportunity.terms }}</div>
+              </div>
+              
+              <UButton color="primary" block @click="handleInvest(opportunity)">
+                <Icon name="i-heroicons-currency-euro" class="w-5 h-5 mr-2" />
+                Investir maintenant
+              </UButton>
+            </div>
+          </div>
+        </div>
+
+        <!-- Onglet Transparence -->
+        <div v-else-if="item.key === 'transparency'" class="space-y-6">
+          <!-- Informations légales -->
+          <div v-if="ong.legal" class="bg-card rounded-xl border border-border p-6">
+            <h2 class="text-2xl font-semibold mb-4">Informations légales</h2>
+            <div class="space-y-3">
+              <div v-if="ong.legal.siret" class="flex items-center gap-3">
+                <Icon name="i-heroicons-identification" class="w-5 h-5 text-primary" />
+                <div>
+                  <div class="text-sm text-muted-foreground">SIRET</div>
+                  <div class="font-medium">{{ ong.legal.siret }}</div>
+                </div>
+              </div>
+              <div v-if="ong.legal.registrationDate" class="flex items-center gap-3">
+                <Icon name="i-heroicons-calendar" class="w-5 h-5 text-primary" />
+                <div>
+                  <div class="text-sm text-muted-foreground">Date d'enregistrement</div>
+                  <div class="font-medium">{{ formatDate(ong.legal.registrationDate) }}</div>
+                </div>
+              </div>
+              <div v-if="ong.legal.compliance">
+                <div class="text-sm text-muted-foreground mb-2">Conformité</div>
+                <div v-if="ong.legal.compliance.dataProtection" class="flex items-start gap-2 mb-2">
+                  <Icon name="i-heroicons-shield-check" class="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span class="text-sm">{{ ong.legal.compliance.dataProtection }}</span>
+                </div>
+                <div v-if="ong.legal.compliance.financialTransparency" class="flex items-start gap-2">
+                  <Icon name="i-heroicons-shield-check" class="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span class="text-sm">{{ ong.legal.compliance.financialTransparency }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Monitoring et évaluation -->
+          <div v-if="ong.monitoring" class="bg-card rounded-xl border border-border p-6">
+            <h2 class="text-2xl font-semibold mb-4">Suivi et évaluation</h2>
+            <div class="space-y-4">
+              <div class="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
+                <Icon name="i-heroicons-document-chart-bar" class="w-6 h-6 text-primary flex-shrink-0" />
+                <div>
+                  <div class="font-semibold mb-1">Rapports</div>
+                  <div class="text-sm text-muted-foreground">{{ ong.monitoring.reportsFrequency }}</div>
+                </div>
+              </div>
+              <div class="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
+                <Icon name="i-heroicons-clipboard-document-check" class="w-6 h-6 text-primary flex-shrink-0" />
+                <div>
+                  <div class="font-semibold mb-1">Évaluation</div>
+                  <div class="text-sm text-muted-foreground">{{ ong.monitoring.evaluation }}</div>
+                </div>
+              </div>
+              <div class="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
+                <Icon name="i-heroicons-shield-check" class="w-6 h-6 text-primary flex-shrink-0" />
+                <div>
+                  <div class="font-semibold mb-1">Audits</div>
+                  <div class="text-sm text-muted-foreground">{{ ong.monitoring.audits }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Onglet Bénévoles -->
         <div v-else-if="item.key === 'volunteers'" class="bg-card rounded-xl border border-border p-12 text-center">
           <Icon name="i-heroicons-users" class="w-16 h-16 text-muted-foreground mx-auto mb-4" />
@@ -228,11 +444,30 @@ const props = defineProps<Props>()
 const activeTab = ref(0)
 
 // Onglets
-const tabs = [
-  { label: 'À propos', key: 'about' },
-  { label: 'Projets', key: 'projects' },
-  { label: 'Bénévoles', key: 'volunteers' }
-]
+const tabs = computed(() => {
+  const baseTabs = [
+    { label: 'À propos', key: 'about' },
+    { label: 'Projets', key: 'projects' }
+  ]
+  
+  // Ajouter les onglets conditionnels selon les données disponibles
+  if (props.ong.financials) {
+    baseTabs.push({ label: 'Finances', key: 'financials' })
+  }
+  if (props.ong.impact) {
+    baseTabs.push({ label: 'Impact', key: 'impact' })
+  }
+  if (props.ong.investmentOpportunities && props.ong.investmentOpportunities.length > 0) {
+    baseTabs.push({ label: 'Investissement', key: 'investment' })
+  }
+  if (props.ong.legal || props.ong.monitoring) {
+    baseTabs.push({ label: 'Transparence', key: 'transparency' })
+  }
+  
+  baseTabs.push({ label: 'Bénévoles', key: 'volunteers' })
+  
+  return baseTabs
+})
 
 // Helpers
 const getStatusLabel = (status: string) => {
@@ -307,6 +542,20 @@ const getProjectStatusLabel = (status: string) => {
   return labels[status as keyof typeof labels] || status
 }
 
+// Formatage
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount)
+}
+
+const formatNumber = (num: number) => {
+  return new Intl.NumberFormat('fr-FR').format(num)
+}
+
 // Actions
 const handleJoin = () => {
   console.log('Rejoindre ONG:', props.ong.name)
@@ -326,6 +575,12 @@ const handleShare = () => {
     navigator.clipboard.writeText(window.location.href)
     console.log('Lien copié dans le presse-papier')
   }
+}
+
+const handleInvest = (opportunity: any) => {
+  console.log('Investir dans:', opportunity.type, props.ong.name)
+  // TODO: Implémenter la logique d'investissement
+  // Exemple: navigateTo(`/ongs/${props.ong.id}/invest/${opportunity.type}`)
 }
 </script>
 

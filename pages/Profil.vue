@@ -13,4 +13,13 @@
 import Profil from '@/features/user/components/Profil.vue'
 import Header from "../components/Header.vue"
 import Footer from "../components/Footer.vue"
+import useAuthStore from '../features/auth/stores/auth'
+import { onMounted } from 'vue'
+
+
+// Redirect non-logged users to the login page (client-side only)
+onMounted(() => {
+ const authStore = useAuthStore()
+ authStore.middleware()
+})
 </script>

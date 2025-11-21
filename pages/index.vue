@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import OngList  from "../features/ong/components/OngList.vue"
 import Header from "../components/Header.vue"
 import Footer from "../components/Footer.vue"
@@ -32,5 +33,12 @@ useHead({
     { name: 'description', content: 'Découvrez les organisations à but non lucratif et rejoignez leurs projets' },
     { name: 'keywords', content: 'ONG, bénévolat, associations, projets sociaux' }
   ]
+})
+
+// Client-only auth redirect with dynamic import (prevents SSR/Pinia initialization errors)
+onMounted(async () => {
+  const { default: useAuthStore } = await import('../features/auth/stores/auth')
+  const authStore = useAuthStore()
+  authStore.middleware()
 })
 </script>
