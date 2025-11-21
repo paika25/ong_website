@@ -198,10 +198,8 @@ const handleFilterChange = (newFilters: Partial<typeof filters.value>) => {
 }
 
 const handleViewDetails = (ong: ONG) => {
-  // Navigation vers la page de détail
-  if (typeof window !== 'undefined') {
-    window.location.href = `/ongs/${ong.id}`
-  }
+  // Navigation vers la page de détail (utilise navigateTo auto-importé par Nuxt)
+  navigateTo(`/ongs/${ong.id}`)
 }
 
 const handleJoin = (ong: ONG) => {
