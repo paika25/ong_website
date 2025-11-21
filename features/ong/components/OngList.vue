@@ -56,7 +56,7 @@
         v-for="ong in paginatedOngs"
         :key="ong.id"
         :ong="ong"
-        @view-details="window.location.href=`/ongs/${ong.id}`"
+        @view-details="() => handleViewDetails(ong)"
         @join="handleJoin"
       />
     </div>
