@@ -498,6 +498,7 @@ function getProjectStatusColor(status: string) {
 // ✅ Fonction helper pour la navigation
 function handleOngClick(ongId: string) {
   if (typeof window !== 'undefined') {
+    console.log("ong click",window)
     window.location.href = `/ongs/${ongId}`
   }
 }
