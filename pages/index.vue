@@ -20,6 +20,8 @@
   </div>
 </template>
 
+
+
 <script setup lang="ts" client:only>
 import { onMounted } from 'vue'
 import OngList  from "../features/ong/components/OngList.vue"
