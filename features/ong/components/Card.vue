@@ -118,7 +118,7 @@
   </div>
 </template>
 
-<script setup lang="ts" client:only>
+<script setup lang="ts" >
 import type { ONG } from '../type'
 import { useRouter } from 'vue-router'
 const router = useRouter()
@@ -134,12 +134,12 @@ defineEmits<{
 }>()
 
 const onViewDetails = () => {
-  router.push(`/ongs/${ong.id}`)
-
-  console.log("HERE")
-  // if (process.client || import.meta.client) {
-  //   emit('view-details', ong)
-  // }
+   if (import.meta.client) {
+    router.push(`/ongs/${props.ong.id}`)
+  }
+  
+  // Optionnel : émettre l'événement si tu veux garder les deux comportements
+  emit('view-details', props.ong)
 }
 
 const getStatusLabel = (status: string) => {

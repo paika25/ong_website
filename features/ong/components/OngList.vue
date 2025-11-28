@@ -206,6 +206,7 @@ const handleViewDetails = (ong: ONG) => {
   // if (import.meta.client) {
     // navigateTo(`/ongs/${ong.id}`)
     router.push(`/ongs/${ong.id}`)
+
   // }
 }
 
