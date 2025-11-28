@@ -118,28 +118,23 @@
   </div>
 </template>
 
-<script setup lang="ts" >
+<script setup lang="ts">
 import type { ONG } from '../type'
-import { useRouter } from 'vue-router'
-const router = useRouter()
+
 interface Props {
   ong: ONG
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
-defineEmits<{
+const emit = defineEmits<{
   'view-details': [ong: ONG]
   'join': [ong: ONG]
 }>()
 
 const onViewDetails = () => {
-   if (import.meta.client) {
-    router.push(`/ongs/${props.ong.id}`)
-  }
-  
-  // Optionnel : émettre l'événement si tu veux garder les deux comportements
-  // emit('view-details', props.ong)
+  // Émettre l'événement vers le parent (OngList.vue)
+  emit('view-details', props.ong)
 }
 
 const getStatusLabel = (status: string) => {
