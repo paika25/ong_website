@@ -74,7 +74,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" client:only>
 import { ref, computed, watch, onMounted } from 'vue'
 // navigateTo est auto-importé dans Nuxt
 import { getOngs, getOngStats } from '../services/ongService'
@@ -199,8 +199,9 @@ const handleFilterChange = (newFilters: Partial<typeof filters.value>) => {
 
 const handleViewDetails = (ong: ONG) => {
   console.log('Voir les détails de l\'ONG:', ong.name,ong)
-  // Navigation vers la page de détail (utilise navigateTo auto-importé par Nuxt)
-  navigateTo(`/ongs/${ong.id}`)
+  if (import.meta.client) {
+    navigateTo(`/ongs/${ong.id}`)
+  }
 }
 
 const handleJoin = (ong: ONG) => {
