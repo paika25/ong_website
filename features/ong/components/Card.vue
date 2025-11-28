@@ -139,7 +139,7 @@ const onViewDetails = () => {
   }
   
   // Optionnel : émettre l'événement si tu veux garder les deux comportements
-  emit('view-details', props.ong)
+  // emit('view-details', props.ong)
 }
 
 const getStatusLabel = (status: string) => {
