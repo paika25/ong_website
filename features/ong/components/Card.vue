@@ -133,6 +133,7 @@ defineEmits<{
 }>()
 
 const onViewDetails = () => {
+  console.log("HERE")
   if (process.client || import.meta.client) {
     emit('view-details', ong)
   }
