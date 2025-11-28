@@ -52,6 +52,8 @@
       v-else
       class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
     >
+      <ClientOnly>
+
       <Card
         v-for="ong in paginatedOngs"
         :key="ong.id"
@@ -59,6 +61,8 @@
         @view-details="(ong) => handleViewDetails(ong)"
         @join="handleJoin"
       />
+      </ClientOnly>
+
     </div>
 
     <!-- Pagination -->

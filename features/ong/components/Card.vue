@@ -133,10 +133,12 @@ defineEmits<{
 }>()
 
 const onViewDetails = () => {
+  router.push(`/ongs/${ong.id}`)
+
   console.log("HERE")
-  if (process.client || import.meta.client) {
-    emit('view-details', ong)
-  }
+  // if (process.client || import.meta.client) {
+  //   emit('view-details', ong)
+  // }
 }
 
 const getStatusLabel = (status: string) => {
