@@ -65,7 +65,7 @@
           variant="outline"
           size="sm"
           block
-          @click="$emit('view-details', ong)"
+          @click="import.meta.client && $emit('view-details', ong)"
         >
           Voir plus
         </UButton>
