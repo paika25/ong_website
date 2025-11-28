@@ -9,6 +9,7 @@
   # Variables d'environnement de build
   [build.environment]
     NODE_VERSION = "22"
+    NITRO_PRESET = "netlify"    # CETTE LIGNE EST OBLIGATOIRE !
     NPM_FLAGS = "--legacy-peer-deps"
 
 # Configuration des fonctions (pour les routes /api)
