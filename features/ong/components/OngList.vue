@@ -199,9 +199,9 @@ const handleFilterChange = (newFilters: Partial<typeof filters.value>) => {
 
 const handleViewDetails = (ong: ONG) => {
   console.log('Voir les détails de l\'ONG:', ong.name,ong)
-  if (import.meta.client) {
-    navigateTo(`/ongs/${ong.id}`)
-  }
+  // if (import.meta.client) {
+  //   navigateTo(`/ongs/${ong.id}`)
+  // }
 }
 
 const handleJoin = (ong: ONG) => {
