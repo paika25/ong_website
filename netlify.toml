@@ -23,7 +23,7 @@
   from = "/*"
   to = "/.netlify/functions/server"
   status = 200
-  force = true
+  force = false
   
 # Headers de sécurité
 [[headers]]
