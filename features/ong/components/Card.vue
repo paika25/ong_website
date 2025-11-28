@@ -120,7 +120,8 @@
 
 <script setup lang="ts" client:only>
 import type { ONG } from '../type'
-
+import { useRouter } from 'vue-router'
+const router = useRouter()
 interface Props {
   ong: ONG
 }
