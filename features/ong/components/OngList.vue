@@ -52,17 +52,13 @@
       v-else
       class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
     >
-      <ClientOnly>
-
       <Card
         v-for="ong in paginatedOngs"
         :key="ong.id"
         :ong="ong"
-        @view-details="(ong) => handleViewDetails(ong)"
+        @view-details="handleViewDetails"
         @join="handleJoin"
       />
-      </ClientOnly>
-
     </div>
 
     <!-- Pagination -->
@@ -78,7 +74,7 @@
   </div>
 </template>
 
-<script setup lang="ts" client:only>
+<script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 // navigateTo est auto-importé dans Nuxt
 import { getOngs, getOngStats } from '../services/ongService'
@@ -91,7 +87,7 @@ const isLoading = ref(true)
 const ongsData = ref<ONG[]>([])
 const currentPage = ref(1)
 const itemsPerPage = 9
-const router = useRouter()
+
 // Filtres - utiliser ref avec un objet simple au lieu de reactive
 const filters = ref({
   search: '',
@@ -202,12 +198,9 @@ const handleFilterChange = (newFilters: Partial<typeof filters.value>) => {
 }
 
 const handleViewDetails = (ong: ONG) => {
-  console.log('Voir les détails de l\'ONG:', ong.name,ong)
-  // if (import.meta.client) {
-    // navigateTo(`/ongs/${ong.id}`)
-    router.push(`/ongs/${ong.id}`)
-
-  // }
+  console.log('Voir les détails de l\'ONG:', ong.name, ong)
+  // Utilise navigateTo qui est SSR-safe et auto-importé par Nuxt
+  navigateTo(`/ongs/${ong.id}`)
 }
 
 const handleJoin = (ong: ONG) => {
