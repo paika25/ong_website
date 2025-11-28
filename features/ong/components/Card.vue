@@ -118,7 +118,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" client:only>
 import type { ONG } from '../type'
 
 interface Props {
