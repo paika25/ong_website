@@ -65,7 +65,7 @@
           variant="outline"
           size="sm"
           block
-          @click="import.meta.client && $emit('view-details', ong)"
+          @click="onViewDetails"
         >
           Voir plus
         </UButton>
@@ -131,6 +131,12 @@ defineEmits<{
   'view-details': [ong: ONG]
   'join': [ong: ONG]
 }>()
+
+const onViewDetails = () => {
+  if (process.client || import.meta.client) {
+    emit('view-details', ong)
+  }
+}
 
 const getStatusLabel = (status: string) => {
   const labels = {
