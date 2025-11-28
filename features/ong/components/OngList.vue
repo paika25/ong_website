@@ -87,7 +87,7 @@ const isLoading = ref(true)
 const ongsData = ref<ONG[]>([])
 const currentPage = ref(1)
 const itemsPerPage = 9
-
+const router = useRouter()
 // Filtres - utiliser ref avec un objet simple au lieu de reactive
 const filters = ref({
   search: '',
@@ -200,7 +200,8 @@ const handleFilterChange = (newFilters: Partial<typeof filters.value>) => {
 const handleViewDetails = (ong: ONG) => {
   console.log('Voir les détails de l\'ONG:', ong.name,ong)
   // if (import.meta.client) {
-  //   navigateTo(`/ongs/${ong.id}`)
+    // navigateTo(`/ongs/${ong.id}`)
+    router.push(`/ongs/${ong.id}`)
   // }
 }
 
