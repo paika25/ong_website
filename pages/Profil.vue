@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import Profil from '@/features/user/components/Profil.vue'
+import Profil from '@/features/user/components/Profil.client.vue'
 import Header from "../components/Header.vue"
 import Footer from "../components/Footer.vue"
 import useAuthStore from '../features/auth/stores/auth'

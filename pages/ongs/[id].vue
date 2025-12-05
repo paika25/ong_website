@@ -38,21 +38,21 @@
 </template>
 
 <script setup lang="ts">
-import OngDetail from '@/features/ong/components/OngDetail.vue'
+import OngDetail from '@/features/ong/components/OngDetail.client.vue'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import { getOngById } from '@/features/ong/services/ongService'
 import { onMounted, ref } from 'vue'
 import type { ONG } from '@/features/ong/type'
+import { useRoute } from '#app'
 
 const ong = ref<ONG | null>(null)
 const isLoading = ref(true)
 const error = ref<string | null>(null)
+const route = useRoute()
 
 const handleBack = () => {
-  if (typeof window !== 'undefined') {
-    window.location.href = '/'
-  }
+  navigateTo('/')
 }
 
 // ✅ Charger les données côté client uniquement pour éviter SSR
@@ -61,9 +61,8 @@ onMounted(async () => {
     isLoading.value = true
     error.value = null
     
-    // Récupérer l'ID depuis l'URL côté client
-    const pathParts = window.location.pathname.split('/')
-    const id = pathParts[pathParts.length - 1]
+    // Récupérer l'ID depuis la route Nuxt (SSR-safe)
+    const id = route.params.id as string
     
     if (!id) {
       error.value = 'ID de l\'ONG manquant'

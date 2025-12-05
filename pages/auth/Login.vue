@@ -5,9 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import AuthLogin from '../../features/auth/components/Login.vue'
+import AuthLogin from '../../features/auth/components/Login.client.vue'
 import useAuthStore from '../../features/auth/stores/auth'
-import { navigateTo } from '#app'
 
 const onLoginSuccess = async (payload: any) => {
 	const AuthStore = useAuthStore()	
