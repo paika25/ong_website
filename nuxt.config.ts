@@ -2,6 +2,11 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-10-14',
   devtools: { enabled: true },
+  
+  nitro: {
+    preset: 'netlify'
+  },
+  
   modules: [
     '@nuxt/ui',
     '@pinia/nuxt',
