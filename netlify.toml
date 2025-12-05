@@ -2,9 +2,11 @@
 [build]
   # Commande de build avec nettoyage du cache
   command = "rm -rf .nuxt .output node_modules/.vite node_modules/.cache && npm install && npm run build"
+  publish = "dist"                  # ← changez cette ligne
+  functions = ".netlify/functions"  # optionnel, Netlify le fait déjà
   
   # Répertoire de sortie (Nuxt 3 génère .output)
-  publish = ".output/public"
+  #publish = ".output/public"
   
   # Ignorer le cache Netlify (forcer un build propre)
   ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF"
