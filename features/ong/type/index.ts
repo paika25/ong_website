@@ -51,11 +51,11 @@ export interface ONG {
       value: string | number
     }>
   }
-  investmentOpportunities?: Array<{
+  donationOpportunities?: Array<{
     type: string
     description: string
-    minInvestment: number
-    terms: string
+    minAmount: number
+    benefits: string
   }>
   monitoring?: {
     reportsFrequency: string

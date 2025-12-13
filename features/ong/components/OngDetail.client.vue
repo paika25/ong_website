@@ -52,7 +52,7 @@
               @click="handleJoin"
             >
               <Icon name="i-heroicons-currency-euro" class="w-5 h-5 mr-2" />
-              investisser
+              Faites un don
             </UButton>
             <UButton
               variant="outline"
@@ -309,16 +309,16 @@
           </div>
         </div>
 
-        <!-- Onglet Investissement -->
-        <div v-else-if="item.key === 'investment'" class="space-y-4">
-          <div v-if="ong.investmentOpportunities && ong.investmentOpportunities.length > 0">
+        <!-- Onglet Dons -->
+        <div v-else-if="item.key === 'donation'" class="space-y-4">
+          <div v-if="ong.donationOpportunities && ong.donationOpportunities.length > 0">
             <div class="bg-primary/10 rounded-xl border border-primary/20 p-6 mb-6">
-              <h2 class="text-2xl font-semibold mb-2">Opportunités d'investissement</h2>
+              <h2 class="text-2xl font-semibold mb-2">Opportunités de don</h2>
               <p class="text-muted-foreground">Soutenez nos projets et contribuez à notre impact social.</p>
             </div>
             
             <div 
-              v-for="opportunity in ong.investmentOpportunities" 
+              v-for="opportunity in ong.donationOpportunities" 
               :key="opportunity.type"
               class="bg-card rounded-xl border border-border p-6 hover:shadow-lg transition-shadow"
             >
@@ -328,19 +328,69 @@
                   <p class="text-muted-foreground mb-3">{{ opportunity.description }}</p>
                 </div>
                 <UBadge color="green" variant="soft" size="lg">
-                  {{ formatCurrency(opportunity.minInvestment) }} min
+                  {{ formatCurrency(opportunity.minAmount) }} min
                 </UBadge>
               </div>
               
               <div class="bg-muted/50 rounded-lg p-4 mb-4">
-                <div class="text-sm font-semibold text-muted-foreground mb-1">Conditions</div>
-                <div class="text-sm">{{ opportunity.terms }}</div>
+                <div class="text-sm font-semibold text-muted-foreground mb-1">Avantages</div>
+                <div class="text-sm">{{ opportunity.benefits }}</div>
               </div>
               
-              <UButton color="primary" block @click="handleInvest(opportunity)">
-                <Icon name="i-heroicons-currency-euro" class="w-5 h-5 mr-2" />
-                Investir maintenant
-              </UButton>
+              <!-- Sélection du montant de don -->
+              <div class="space-y-4">
+                <div class="text-sm font-semibold text-muted-foreground">Choisissez votre montant</div>
+                <div class="grid grid-cols-4 gap-3">
+                  <button
+                    v-for="amount in [opportunity.minAmount, opportunity.minAmount*1.5, opportunity.minAmount*2]"
+                    :key="amount"
+                    @click="selectedAmount = amount"
+                    :class="[
+                      'px-4 py-3 rounded-lg border-2 font-semibold transition-all',
+                      selectedAmount === amount
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border hover:border-primary/50 hover:bg-muted'
+                    ]"
+                  >
+                    {{ amount }}€
+                  </button>
+                   <button
+                    @click="selectedAmount = 'custom'"
+                    :class="[
+                      'px-4 py-3 rounded-lg border-2 font-medium transition-all whitespace-nowrap',
+                      selectedAmount === 'custom'
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border hover:border-primary/50 hover:bg-muted'
+                    ]"
+                  >
+                    Autre montant
+                  </button>
+                 
+                </div>
+                
+                <!-- Option don personnalisé -->
+                <div class="flex items-center gap-3">
+                  <input
+                    v-if="selectedAmount === 'custom'"
+                    v-model.number="customAmount"
+                    type="number"
+                    :min="opportunity.minAmount"
+                    placeholder="Montant en €"
+                    class="flex-1 px-4 py-3 rounded-lg border-2 border-primary bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+                
+                <UButton 
+                  color="primary" 
+                  block 
+                  size="lg"
+                  @click="handleDonate(opportunity)"
+                  :disabled="!selectedAmount || (selectedAmount === 'custom' && (!customAmount || customAmount < opportunity.minAmount))"
+                >
+                  <Icon name="i-heroicons-heart" class="w-5 h-5 mr-2" />
+                  Faire un don de {{ selectedAmount === 'custom' ? customAmount : selectedAmount }}€
+                </UButton>
+              </div>
             </div>
           </div>
         </div>
@@ -386,21 +436,21 @@
               <div class="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
                 <Icon name="i-heroicons-document-chart-bar" class="w-6 h-6 text-primary flex-shrink-0" />
                 <div>
-                  <div class="font-semibold mb-1">Rapports</div>
+                  <div class="font-semibold mb-1 flex flex-column items-start">Rapports</div>
                   <div class="text-sm text-muted-foreground">{{ ong.monitoring.reportsFrequency }}</div>
                 </div>
               </div>
               <div class="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
                 <Icon name="i-heroicons-clipboard-document-check" class="w-6 h-6 text-primary flex-shrink-0" />
                 <div>
-                  <div class="font-semibold mb-1">Évaluation</div>
+                  <div class="font-semibold mb-1  flex flex-column items-start">Évaluation</div>
                   <div class="text-sm text-muted-foreground">{{ ong.monitoring.evaluation }}</div>
                 </div>
               </div>
               <div class="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
                 <Icon name="i-heroicons-shield-check" class="w-6 h-6 text-primary flex-shrink-0" />
                 <div>
-                  <div class="font-semibold mb-1">Audits</div>
+                  <div class="font-semibold mb-1 flex flex-column items-start">Audits</div>
                   <div class="text-sm text-muted-foreground">{{ ong.monitoring.audits }}</div>
                 </div>
               </div>
@@ -442,6 +492,8 @@ const props = defineProps<Props>()
 
 // État
 const activeTab = ref(0)
+const selectedAmount = ref<number | 'custom'>(20) // Montant présélectionné par défaut
+const customAmount = ref<number | null>(null)
 
 // Onglets
 const tabs = computed(() => {
@@ -457,11 +509,11 @@ const tabs = computed(() => {
   if (props.ong.impact) {
     baseTabs.push({ label: 'Impact', key: 'impact' })
   }
-  if (props.ong.investmentOpportunities && props.ong.investmentOpportunities.length > 0) {
-    baseTabs.push({ label: 'Investissement', key: 'investment' })
+  if (props.ong.donationOpportunities && props.ong.donationOpportunities.length > 0) {
+    baseTabs.push({ label: 'Dons', key: 'donation' })
   }
   if (props.ong.legal || props.ong.monitoring) {
-    baseTabs.push({ label: 'Transparence', key: 'transparency' })
+    baseTabs.push({ label: 'Administratif', key: 'transparency' })
   }
   
   baseTabs.push({ label: 'Bénévoles', key: 'volunteers' })
@@ -577,10 +629,10 @@ const handleShare = () => {
   }
 }
 
-const handleInvest = (opportunity: any) => {
-  console.log('Investir dans:', opportunity.type, props.ong.name)
-  // TODO: Implémenter la logique d'investissement
-  // Exemple: navigateTo(`/ongs/${props.ong.id}/invest/${opportunity.type}`)
+const handleDonate = (opportunity: any) => {
+  console.log('Faire un don pour:', opportunity.type, props.ong.name)
+  // TODO: Rediriger vers la page de don ou ouvrir un formulaire de don
+  // Exemple: navigateTo(`/ongs/${props.ong.id}/donate?type=${opportunity.type}`)
 }
 </script>
 

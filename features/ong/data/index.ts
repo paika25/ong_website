@@ -63,33 +63,33 @@ export const mockOngs: ONG[] = [
       teachersTrained: 120,
       kpis: [
         { metric: 'Taux de scolarisation', value: '85% dans les zones ciblées' },
-        { metric: 'Nombre d’élèves soutenus', value: 2000 },
-        { metric: 'Taux d’alphabétisation adulte', value: '60% dans les programmes' }
+        { metric: 'Nombre d\’élèves soutenus', value: 2000 },
+        { metric: 'Taux d\’alphabétisation adulte', value: '60% dans les programmes' }
       ]
     },
-    investmentOpportunities: [
+    donationOpportunities: [
       {
-        type: 'Titres associatifs',
-        description: 'Titres avec rémunération annuelle de 2% sur 5 ans.',
-        minInvestment: 1000,
-        terms: 'Remboursement à l’échéance ou réinvestissement.'
+        type: 'Don ponctuel',
+        description: 'Don unique pour soutenir la construction d\'écoles, l\'achat de matériel pédagogique ou une urgence locale. Aidez directement les bénéficiaires sans attendre de retour financier.',
+        minAmount: 20,
+        benefits: 'Remerciement personnalisé et rapport d\'impact sur l\'utilisation des fonds.'
       },
       {
-        type: 'Prêt bancaire',
-        description: 'Prêt à taux préférentiel pour financer la construction d’écoles.',
-        minInvestment: 5000,
-        terms: 'Remboursement sur 7 ans, taux de 1.5%.'
+        type: 'Don mensuel',
+        description: 'Soutien récurrent pour assurer la pérennité des programmes éducatifs, des bourses et des activités quotidiennes.',
+        minAmount: 5,
+        benefits: 'Mises à jour régulières sur l\'impact, priorité pour participer aux événements et transparence sur l\'utilisation des dons.'
       },
       {
-        type: 'Partenariat public-privé',
-        description: 'Collaboration pour des projets d’éducation inclusive.',
-        minInvestment: 10000,
-        terms: 'Rapports trimestriels et visibilité pour les partenaires.'
+        type: 'Parrainage de projet',
+        description: 'Soutenez un projet précis (ex : construction d\'une classe, bourses pour élèves) et suivez son avancement étape par étape.',
+        minAmount: 200,
+        benefits: 'Rapports d\'avancement, photos et mentions de remerciement dans les communications publiques.'
       }
     ],
     monitoring: {
       reportsFrequency: 'Trimestrielle',
-      evaluation: 'Évaluations d’impact annuelles par des experts indépendants',
+      evaluation: "Évaluations d\’impact annuelles par des experts indépendants",
       audits: 'Annuels, réalisés par cabinet externe'
     }
   },
@@ -849,7 +849,7 @@ export const mockOngs: ONG[] = [
     projects: [
       { id: 'p24-1', name: 'Groupes de Soutien', description: 'Sessions de soutien psychologique hebdomadaires.', startDate: '2024-04-15', status: 'ongoing' },
       { id: 'p24-2', name: 'Formation Conseillers', description: 'Formation de conseillers locaux en psychologie de base.', startDate: '2024-05-01', status: 'planned' },
-      { id: 'p24-3', name: 'Ligne d’écoute', description: 'Mise en place d’une ligne téléphonique d’écoute.', startDate: '2024-06-01', status: 'ongoing' },
+      { id: 'p24-3', name: 'Ligne d’écoute', description: 'Mise en place d\’une ligne téléphonique d\’écoute.', startDate: '2024-06-01', status: 'ongoing' },
       { id: 'p24-4', name: 'Ateliers Communautaires', description: 'Ateliers de gestion du stress pour jeunes et familles.', startDate: '2024-07-01', status: 'planned' }
     ],
     email: 'psychosupport@communaute.mg',
@@ -865,16 +865,16 @@ export const mockOngs: ONG[] = [
     location: 'Antananarivo, Madagascar',
     volunteers: 310,
     projects: [
-      { id: 'p25-1', name: 'Plateforme Ressources', description: 'Création d’une plateforme en ligne pour partager ressources et modèles de projets.', startDate: '2018-01-01', status: 'completed' },
+      { id: 'p25-1', name: 'Plateforme Ressources', description: 'Création d\’une plateforme en ligne pour partager ressources et modèles de projets.', startDate: '2018-01-01', status: 'completed' },
       { id: 'p25-2', name: 'Formation Gestion', description: 'Programmes de formation en gestion associative pour leaders locaux.', startDate: '2019-03-01', status: 'completed' },
       { id: 'p25-3', name: 'Micro-subventions', description: 'Attribution de petites subventions pour démarrer des initiatives locales.', startDate: '2020-06-01', status: 'ongoing' },
       { id: 'p25-4', name: 'Réseautage Annuel', description: 'Conférence annuelle des initiatives locales.', startDate: '2021-11-01', status: 'completed' },
       { id: 'p25-5', name: 'Programme Mentorat', description: 'Mentorat entre organisations expérimentées et nouvelles.', startDate: '2022-02-01', status: 'ongoing' },
-      { id: 'p25-6', name: 'Boîte à outils', description: 'Création et diffusion d’outils pratiques pour gestion de projet.', startDate: '2022-09-01', status: 'completed' },
+      { id: 'p25-6', name: 'Boîte à outils', description: 'Création et diffusion d\’outils pratiques pour gestion de projet.', startDate: '2022-09-01', status: 'completed' },
       { id: 'p25-7', name: 'Campagnes Sensibilisation', description: 'Campagnes sur inclusion sociale et bonnes pratiques.', startDate: '2023-03-01', status: 'ongoing' },
       { id: 'p25-8', name: 'Ateliers Financement', description: 'Ateliers pour lever des fonds et écrire des propositions.', startDate: '2023-08-01', status: 'planned' },
-      { id: 'p25-9', name: 'Échange International', description: 'Programme d’échange entre ONG locales et partenaires internationaux.', startDate: '2024-01-01', status: 'planned' },
-      { id: 'p25-10', name: 'Suivi & Evaluation', description: 'Mise en place d’outils de suivi et évaluation pour projets locaux.', startDate: '2019-05-01', status: 'ongoing' }
+      { id: 'p25-9', name: 'Échange International', description: 'Programme d\’échange entre ONG locales et partenaires internationaux.', startDate: '2024-01-01', status: 'planned' },
+      { id: 'p25-10', name: 'Suivi & Evaluation', description: 'Mise en place d\’outils de suivi et évaluation pour projets locaux.', startDate: '2019-05-01', status: 'ongoing' }
     ],
     image: 'https://images.unsplash.com/photo-1520975922051-4c65a8a1a3b9?w=400',
     email: 'contact@initiatives-locales.mg',
