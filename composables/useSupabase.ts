@@ -9,6 +9,8 @@ export const useSupabase = () => {
   }
 
   const config = useRuntimeConfig()
+
+  console.log('Supabase configuration:', config)
   
   const supabaseUrl = config.public.supabaseUrl as string
   const supabaseKey = config.public.supabaseKey as string
