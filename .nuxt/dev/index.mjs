@@ -877,7 +877,10 @@ const _inlineRuntimeConfig = {
       }
     }
   },
-  "public": {},
+  "public": {
+    "supabaseUrl": "https://cdbpsbwhklvkjpaeavnk.supabase.co",
+    "supabaseKey": "sb_publishable_UX23hMKEvRijJTkRFwgXhQ_gq3S10xX"
+  },
   "icon": {
     "serverKnownCssClasses": []
   }

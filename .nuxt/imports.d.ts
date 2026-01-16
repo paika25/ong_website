@@ -33,6 +33,7 @@ export { createGenericProjection, createProjection, logicAnd, logicNot, logicOr,
 export { definePageMeta } from '../node_modules/nuxt/dist/pages/runtime/composables';
 export { defineLazyHydrationComponent } from '#app/composables/lazy-hydration';
 export { useAppColorMode, ColorMode } from '../composables/useColorMode';
+export { useSupabase, checkSupabaseConnection } from '../composables/useSupabase';
 export { defineShortcuts } from '../node_modules/@nuxt/ui/dist/runtime/composables/defineShortcuts';
 export { useProvideButtonGroup, useInjectButtonGroup } from '../node_modules/@nuxt/ui/dist/runtime/composables/useButtonGroup';
 export { useCarouselScroll } from '../node_modules/@nuxt/ui/dist/runtime/composables/useCarouselScroll';

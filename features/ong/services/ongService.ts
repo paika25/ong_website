@@ -3,16 +3,109 @@ import { mockOngs } from "../data"
 
 // ✅ Fonctions simples au lieu de composable pour éviter problèmes SSR
 export const getOngs = async (): Promise<ONG[]> => {
-  // Simulation d'appel API
-  await new Promise(resolve => setTimeout(resolve, 800))
+  const supabase = useSupabase()
   
-  // Retourner une copie simple des données pour éviter les problèmes de sérialisation SSR
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('ongs')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('❌ Erreur Supabase getOngs:', error.message)
+        // Fallback sur les données mockées en cas d'erreur
+        return JSON.parse(JSON.stringify(mockOngs))
+      }
+
+      // Mapper les données Supabase vers le format ONG
+      const ongs: ONG[] = data.map((ong: any) => ({
+        id: ong.id,
+        name: ong.name,
+        description: ong.description,
+        category: ong.category,
+        status: ong.status,
+        location: ong.location,
+        image: ong.image || '',
+        volunteers: ong.volunteers || 0,
+        email: ong.email,
+        phone: ong.phone || '',
+        website: ong.website || '',
+        projects: ong.projects || [],
+        financials: ong.financials || {},
+        legal: ong.legal || {},
+        impact: ong.impact || {},
+        donationOpportunities: ong.donation_opportunities || [],
+        monitoring: ong.monitoring || {},
+        createdAt: ong.created_at,
+        updatedAt: ong.updated_at
+      }))
+
+      console.log(`✅ ${ongs.length} ONGs récupérées depuis Supabase`)
+      return ongs
+    } catch (err) {
+      console.error('❌ Exception Supabase:', err)
+      return JSON.parse(JSON.stringify(mockOngs))
+    }
+  }
+
+  // Mode mock (développement sans Supabase)
+  await new Promise(resolve => setTimeout(resolve, 800))
+  console.log('📦 Utilisation des données mockées')
   return JSON.parse(JSON.stringify(mockOngs))
 }
 
 export const getOngById = async (id: string): Promise<ONG | null> => {
-  await new Promise(resolve => setTimeout(resolve, 300))
+  const supabase = useSupabase()
   
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('ongs')
+        .select('*')
+        .eq('id', id)
+        .single()
+
+      if (error || !data) {
+        console.error('❌ Erreur Supabase getOngById:', error?.message)
+        // Fallback sur mock
+        const ong = mockOngs.find(ong => ong.id === id) || null
+        return ong ? JSON.parse(JSON.stringify(ong)) : null
+      }
+
+      const ong: ONG = {
+        id: data.id,
+        name: data.name,
+        description: data.description,
+        category: data.category,
+        status: data.status,
+        location: data.location,
+        image: data.image || '',
+        volunteers: data.volunteers || 0,
+        email: data.email,
+        phone: data.phone || '',
+        website: data.website || '',
+        projects: data.projects || [],
+        financials: data.financials || {},
+        legal: data.legal || {},
+        impact: data.impact || {},
+        donationOpportunities: data.donation_opportunities || [],
+        monitoring: data.monitoring || {},
+        createdAt: data.created_at,
+        updatedAt: data.updated_at
+      }
+
+      console.log(`✅ ONG ${id} récupérée depuis Supabase`)
+      return ong
+    } catch (err) {
+      console.error('❌ Exception Supabase:', err)
+      const ong = mockOngs.find(ong => ong.id === id) || null
+      return ong ? JSON.parse(JSON.stringify(ong)) : null
+    }
+  }
+
+  // Mode mock
+  await new Promise(resolve => setTimeout(resolve, 300))
   const ong = mockOngs.find(ong => ong.id === id) || null
   return ong ? JSON.parse(JSON.stringify(ong)) : null
 }
