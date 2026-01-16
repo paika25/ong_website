@@ -18,8 +18,6 @@ export const useSupabase = () => {
   const supabaseKey = config.public.supabaseKey as string || 
                       (import.meta.env?.NUXT_PUBLIC_SUPABASE_ANON_KEY as string) ||
                       ''
-// const supabaseUrl = 'https://cdbpsbwhklvkjpaeavnk.supabase.co'
-// const supabaseKey = 'sb_publishable_UX23hMKEvRijJTkRFwgXhQ_gq3S10xX'
 
 
   console.log('🔍 Supabase config check:')

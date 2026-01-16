@@ -11,8 +11,6 @@ const supabaseKey = (typeof window !== 'undefined'
   ? import.meta.env.NUXT_PUBLIC_SUPABASE_ANON_KEY
   : process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY) || ''
 
-// const supabaseUrl = 'https://cdbpsbwhklvkjpaeavnk.supabase.co'
-// const supabaseKey = 'sb_publishable_UX23hMKEvRijJTkRFwgXhQ_gq3S10xX'
 
 // Client Supabase singleton (créé seulement si les credentials sont présents)
 export const supabase = supabaseUrl && supabaseKey
