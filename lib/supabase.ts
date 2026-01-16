@@ -1,15 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
+const config = useRuntimeConfig()
+  
 
 // Configuration Supabase
 // Note: Dans Nuxt 3, les variables NUXT_PUBLIC_* sont automatiquement exposées
 // via import.meta.env côté client et process.env côté serveur
-const supabaseUrl = (typeof window !== 'undefined' 
-  ? import.meta.env.NUXT_PUBLIC_SUPABASE_URL 
-  : process.env.NUXT_PUBLIC_SUPABASE_URL) || ''
-
-const supabaseKey = (typeof window !== 'undefined'
-  ? import.meta.env.NUXT_PUBLIC_SUPABASE_ANON_KEY
-  : process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY) || ''
+const supabaseUrl = config.public.supabaseUrl as string || '';
+const supabaseKey = config.public.supabaseKey as string || '';
 
 
 // Client Supabase singleton (créé seulement si les credentials sont présents)
