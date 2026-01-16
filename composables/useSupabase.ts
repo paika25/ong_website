@@ -20,7 +20,7 @@ export const useSupabase = () => {
                       ''
 
 
-  console.log('🔍 Supabase config check:')
+  console.log('🔍 Supabase config check:',config,import.meta)
   console.log('- URL found:', !!supabaseUrl, '(length:', supabaseUrl?.length, ')')
   console.log('- Key found:', !!supabaseKey, '(length:', supabaseKey?.length, ')')
   console.log('- URL preview:', supabaseUrl?.substring(0, 30) + '...')
