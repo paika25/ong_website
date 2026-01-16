@@ -58,6 +58,11 @@
         </UButton>
       </div>
 
+      <!-- Erreur globale -->
+      <div v-if="globalError" class="p-3 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm">
+        {{ globalError }}
+      </div>
+
       <UButton
         type="submit"
         block
@@ -86,12 +91,14 @@
 
 <script setup lang="ts">
 import { useAuthValidation } from '../composables/useAuthValidation'
-import { ref, reactive, computed, watch, onMounted } from 'vue'
-// navigateTo est auto-importé dans Nuxt
+import { useAuthService } from '../services/authService'
+import { ref, reactive, computed, watch } from 'vue'
+import type { LoginCredentials } from '../types/auth.types'
 
 const emit = defineEmits(['switch-to-signup', 'forgot-password', 'login-success'])
 
 const { validateLogin } = useAuthValidation()
+const { signIn } = useAuthService()
 
 const form = reactive({
   email: '',
@@ -101,6 +108,7 @@ const form = reactive({
 
 const showPassword = ref(false)
 const isLoading = ref(false)
+const globalError = ref<string | null>(null)
 const errors = ref<Record<string, string>>({})
 
 const isFormValid = computed(() => {
@@ -109,6 +117,7 @@ const isFormValid = computed(() => {
 
 watch(form, () => {
   errors.value = validateLogin(form)
+  globalError.value = null
 }, { deep: true })
 
 const handleLogin = async () => {
@@ -119,20 +128,31 @@ const handleLogin = async () => {
   }
 
   isLoading.value = true
+  globalError.value = null
+
   try {
-    // Simulation d'appel API
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // Ici vous appelleriez votre service d'authentification
-    // const response = await authService.login(form)
-    
-    emit('login-success', { user: { email: form.email } })
-    
-    // Redirection ou notification de succès
-    await navigateTo('/')
-  } catch (error) {
-    console.error('Erreur de connexion:', error)
-    // Afficher une notification d'erreur
+    const credentials: LoginCredentials = {
+      email: form.email.trim().toLowerCase(),
+      password: form.password,
+      rememberMe: form.rememberMe
+    }
+
+    console.log('🔐 Tentative de connexion:', credentials.email)
+
+    const result = await signIn(credentials)
+
+    if (result.error) {
+      globalError.value = result.error
+      return
+    }
+
+    if (result.user) {
+      console.log('✅ Connexion réussie:', result.user.email)
+      emit('login-success', { user: result.user })
+    }
+  } catch (error: any) {
+    console.error('❌ Erreur de connexion:', error)
+    globalError.value = error.message || 'Erreur de connexion'
   } finally {
     isLoading.value = false
   }

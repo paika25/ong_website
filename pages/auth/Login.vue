@@ -7,10 +7,18 @@
 <script setup lang="ts">
 import AuthLogin from '../../features/auth/components/Login.client.vue'
 import useAuthStore from '../../features/auth/stores/auth'
+import type { User } from '../../features/auth/types/auth.types'
 
-const onLoginSuccess = async (payload: any) => {
-	const AuthStore = useAuthStore()	
-	AuthStore.setConnected()
+const authStore = useAuthStore()
+
+const onLoginSuccess = async (payload: { user: User } | any) => {
+	// Persister l'utilisateur dans le store
+	if (payload?.user) {
+		authStore.setUser(payload.user)
+		console.log('✅ Utilisateur connecté et persisté:', payload.user.email)
+	} else {
+		authStore.setConnected()
+	}
 	await navigateTo('/')
 }
 
