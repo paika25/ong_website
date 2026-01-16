@@ -5,19 +5,12 @@ export default defineNuxtConfig({
   
   nitro: {
     preset: 'netlify',
-    // Forcer l'exposition des variables d'environnement
-    runtimeConfig: {
-      public: {
-        supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || '',
-        supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      }
-    }
   },
   
   runtimeConfig: {
     public: {
-      supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || '',
-      supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || '',
+      supabaseUrl: '',
+      supabaseKey: '',
     }
   },
   

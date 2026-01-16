@@ -11,15 +11,15 @@ export const useSupabase = () => {
   const config = useRuntimeConfig()
   
   // Essayer plusieurs sources pour les variables (pour compatibilité Netlify)
-  const supabaseUrl_ = config.public.supabaseUrl as string || 
+  const supabaseUrl = config.public.supabaseUrl as string || 
                       (import.meta.env?.NUXT_PUBLIC_SUPABASE_URL as string) ||
                       ''
   
-  const supabaseKey_ = config.public.supabaseKey as string || 
+  const supabaseKey = config.public.supabaseKey as string || 
                       (import.meta.env?.NUXT_PUBLIC_SUPABASE_ANON_KEY as string) ||
                       ''
-const supabaseUrl = 'https://cdbpsbwhklvkjpaeavnk.supabase.co'
-const supabaseKey = 'sb_publishable_UX23hMKEvRijJTkRFwgXhQ_gq3S10xX'
+// const supabaseUrl = 'https://cdbpsbwhklvkjpaeavnk.supabase.co'
+// const supabaseKey = 'sb_publishable_UX23hMKEvRijJTkRFwgXhQ_gq3S10xX'
 
 
   console.log('🔍 Supabase config check:')

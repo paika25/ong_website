@@ -3,16 +3,16 @@ import { createClient } from '@supabase/supabase-js'
 // Configuration Supabase
 // Note: Dans Nuxt 3, les variables NUXT_PUBLIC_* sont automatiquement exposées
 // via import.meta.env côté client et process.env côté serveur
-const supabaseUrl_ = (typeof window !== 'undefined' 
+const supabaseUrl = (typeof window !== 'undefined' 
   ? import.meta.env.NUXT_PUBLIC_SUPABASE_URL 
   : process.env.NUXT_PUBLIC_SUPABASE_URL) || ''
 
-const supabaseKey_ = (typeof window !== 'undefined'
+const supabaseKey = (typeof window !== 'undefined'
   ? import.meta.env.NUXT_PUBLIC_SUPABASE_ANON_KEY
   : process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY) || ''
 
-const supabaseUrl = 'https://cdbpsbwhklvkjpaeavnk.supabase.co'
-const supabaseKey = 'sb_publishable_UX23hMKEvRijJTkRFwgXhQ_gq3S10xX'
+// const supabaseUrl = 'https://cdbpsbwhklvkjpaeavnk.supabase.co'
+// const supabaseKey = 'sb_publishable_UX23hMKEvRijJTkRFwgXhQ_gq3S10xX'
 
 // Client Supabase singleton (créé seulement si les credentials sont présents)
 export const supabase = supabaseUrl && supabaseKey
