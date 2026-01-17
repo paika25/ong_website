@@ -1,37 +1,56 @@
 <template>
-    <div v-if="user" class="flex justify-between ml-2">
-      <div class="flex items-center gap-3">
-        <NuxtLink to="/profil" class="flex items-center space-x-1 text-gray-600 hover:text-red-600" aria-label="Profil" title="Profil">
-          <div class="text-right hidden sm:block">
-            <p class="font-medium">{{ user.fullName }}</p>
-            <p class="text-xs text-muted-foreground">
-              {{ user.accountType === 'user_agent' ? 'Agent ONG' : 'Partenaire' }}
-            </p>
-          </div>
-        
-          <!-- Avatar -->
-
-          <div class="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
-            {{ userInitials }}
-          </div>
+    <template v-if="user">
+      <!-- Navigation -->
+      <nav class="flex items-center gap-2 lg:ml-4 ml-0">
+        <NuxtLink to="/" class="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+          Accueil
         </NuxtLink>
-      </div>
+        <NuxtLink to="/dashboard" class="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+          Dashboard
+        </NuxtLink>
+      </nav>
+      
+      <div class="flex justify-between ml-2">
+        <div class="flex items-center gap-3">
+          <NuxtLink to="/profil" class="flex items-center space-x-1 text-gray-600 hover:text-red-600" aria-label="Profil" title="Profil">
+            <div class="text-right hidden sm:block">
+              <p class="font-medium">{{ user.fullName }}</p>
+              <p class="text-xs text-muted-foreground">
+                {{ user.accountType === 'user_agent' ? 'Agent ONG' : 'Partenaire' }}
+              </p>
+            </div>
+          
+            <!-- Avatar -->
 
-      <!-- Bouton déconnexion -->
-      <UButton 
-        variant="ghost" 
-        color="red" 
-        @click="handleLogout"
-        :loading="loggingOut"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-        </svg>
-        <span class="hidden sm:inline ml-0">Déconnexion</span>
-      </UButton>
+            <div class="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
+              {{ userInitials }}
+            </div>
+          </NuxtLink>
+        </div>
+
+        <!-- Bouton déconnexion -->
+        <UButton 
+          variant="ghost" 
+          color="red" 
+          @click="handleLogout"
+          :loading="loggingOut"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+          <span class="hidden sm:inline ml-0">Déconnexion</span>
+        </UButton>
+      </div>
+    </template>
+
+    <div v-else>
+      <NuxtLink to="/auth/login">
+        <UButton color="primary">
+          Se connecter
+        </UButton>
+      </NuxtLink>
     </div>
-    
-</template>
+  </template>
 
 
 <script setup lang="ts">

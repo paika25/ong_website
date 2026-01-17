@@ -12,16 +12,7 @@
         </div>
 
         <div class="flex items-center gap-4 w-full md:w-[500px] justify-end">
-          <!-- Navigation -->
-          <nav class="flex items-center gap-2 lg:ml-4 ml-0">
-            <NuxtLink to="/" class="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Accueil
-            </NuxtLink>
-            <NuxtLink to="/dashboard" class="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Dashboard
-            </NuxtLink>
-          </nav>
-
+          
           <!-- Afficher l'utilisateur -->
           <ClientOnly>
             <UserHeader />
