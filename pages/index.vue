@@ -24,9 +24,9 @@
 
 <script setup lang="ts" client:only>
 import { onMounted } from 'vue'
-import OngList  from "../features/ong/components/OngList.vue"
+import OngList  from "../features/ong/components/OngList.client.vue"
 import Header from "../components/Header.vue"
-import Footer from "../components/Footer.vue"
+import Footer from "../components/Footer.client.vue"
 
 // Meta tags pour SEO
 useHead({
@@ -37,10 +37,4 @@ useHead({
   ]
 })
 
-// Client-only auth redirect with dynamic import (prevents SSR/Pinia initialization errors)
-onMounted(async () => {
-  const { default: useAuthStore } = await import('../features/auth/stores/auth')
-  const authStore = useAuthStore()
-  authStore.middleware()
-})
 </script>

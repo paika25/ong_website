@@ -1,13 +1,20 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
 export default defineNuxtPlugin((nuxtApp) => {
+  console.log('[PLUGIN] 🚀 Initializing supabase.client.ts plugin')
+  
   const config = useRuntimeConfig()
+  
+  console.log('[PLUGIN] 📝 Config loaded:', {
+    hasUrl: Boolean(config.public?.supabaseUrl),
+    hasKey: Boolean(config.public?.supabaseKey),
+  })
 
   const supabaseUrl = config.public.supabaseUrl as string
   const supabaseKey = config.public.supabaseKey as string
 
   if (!supabaseUrl || !supabaseKey) {
-    console.warn('⚠️ Supabase non configuré')
+    console.error('[PLUGIN] ❌ Supabase non configuré - credentials manquantes')
     return {
       provide: {
         supabase: null
@@ -15,6 +22,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
   }
 
+  console.log('[PLUGIN] 🔧 Creating Supabase client...')
+  
   const supabase = createClient(supabaseUrl, supabaseKey, {
     auth: {
       persistSession: true,
@@ -26,17 +35,32 @@ export default defineNuxtPlugin((nuxtApp) => {
         getItem: (key) => {
           if (typeof window === 'undefined') return null
           
+          console.log('[STORAGE] 🔑 getItem:', key)
+          
           // Essayer localStorage
           const localValue = localStorage.getItem(key)
-          if (localValue) return localValue
+          if (localValue) {
+            console.log('[STORAGE] ✅ Found in localStorage')
+            return localValue
+          }
           
           // Fallback cookies
           const cookies = document.cookie.split(';')
           const cookie = cookies.find(c => c.trim().startsWith(`${key}=`))
-          return cookie ? decodeURIComponent(cookie.split('=')[1]) : null
+          const value = cookie ? decodeURIComponent(cookie.split('=')[1]) : null
+          
+          if (value) {
+            console.log('[STORAGE] ✅ Found in cookies')
+          } else {
+            console.log('[STORAGE] ⚠️ Not found')
+          }
+          
+          return value
         },
         setItem: (key, value) => {
           if (typeof window === 'undefined') return
+          
+          console.log('[STORAGE] 💾 setItem:', key)
           
           localStorage.setItem(key, value)
           
@@ -47,6 +71,8 @@ export default defineNuxtPlugin((nuxtApp) => {
         removeItem: (key) => {
           if (typeof window === 'undefined') return
           
+          console.log('[STORAGE] 🗑️ removeItem:', key)
+          
           localStorage.removeItem(key)
           document.cookie = `${key}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
         }
@@ -54,12 +80,14 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
   })
 
+  console.log('[PLUGIN] ✅ Supabase client created successfully')
+
   // Écouter les changements d'authentification
   supabase.auth.onAuthStateChange(async (event, session) => {
-    console.log('🔄 Auth state:', event)
+    console.log('[PLUGIN] 🔄 Auth state changed:', event, { hasSession: Boolean(session) })
     
     // Import dynamique pour éviter les problèmes de circular dependency
-    const { useAuthStore } = await import('~/features/auth/stores/auth')
+    const { useAuthStore } = await import('~/features/auth/stores/auth.client')
     const authStore = useAuthStore()
     
     if (event === 'SIGNED_IN' && session) {
@@ -111,6 +139,8 @@ export default defineNuxtPlugin((nuxtApp) => {
       authStore.setDisconnected()
     }
   })
+
+  console.log('[PLUGIN] 🎯 Providing $supabase to nuxtApp')
 
   return {
     provide: {

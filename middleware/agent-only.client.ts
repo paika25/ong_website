@@ -1,16 +1,13 @@
 /**
- * Middleware pour les pages réservées aux partenaires
+ * Middleware pour les pages réservées aux agents ONG - CLIENT-ONLY
  * 
  * Usage:
  * definePageMeta({
- *   middleware: ['auth', 'partner-only']
+ *   middleware: ['auth', 'agent-only']
  * })
  */
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  // Côté client uniquement
-  if (!import.meta.client) return
-
-  const { useAuthStore } = await import('~/features/auth/stores/auth')
+  const { useAuthStore } = await import('~/features/auth/stores/auth.client')
   const authStore = useAuthStore()
 
   // Vérifier d'abord l'authentification
@@ -33,8 +30,8 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   }
 
   // Vérifier le rôle
-  if (!authStore.isPartner) {
-    console.warn('⚠️ Accès refusé - Réservé aux partenaires')
+  if (!authStore.isAgent) {
+    console.warn('⚠️ Accès refusé - Réservé aux agents ONG')
     return navigateTo('/dashboard')
   }
 })

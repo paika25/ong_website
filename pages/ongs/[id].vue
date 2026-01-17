@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex flex-col">
+  <div class="min-h-screen flex-col">
     <Header />
     <main class="flex-grow container mx-auto px-4 py-8">
       <ClientOnly>
@@ -38,9 +38,9 @@
 </template>
 
 <script setup lang="ts">
-import OngDetail from '@/features/ong/components/OngDetail.client.vue'
+import OngDetail from '~/features/ong/components/OngDetail.client.vue'
 import Header from '@/components/Header.vue'
-import Footer from '@/components/Footer.vue'
+import Footer from '@/components/Footer.client.vue'
 import { getOngById } from '@/features/ong/services/ongService'
 import { onMounted, ref } from 'vue'
 import type { ONG } from '@/features/ong/type'

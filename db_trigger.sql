@@ -47,3 +47,11 @@ CREATE POLICY "Users can read own account" ON public.accounts
 
 CREATE POLICY "Users can update own account" ON public.accounts
   FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY "Users can insert own account" ON public.accounts
+  FOR INSERT 
+  WITH CHECK (auth.uid() = id);
+
+
+ALTER TABLE public.accounts 
+ALTER COLUMN password_hash DROP NOT NULL;

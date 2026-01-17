@@ -8,6 +8,10 @@ const config = useRuntimeConfig()
 const supabaseUrl = config.public.supabaseUrl as string || '';
 const supabaseKey = config.public.supabaseKey as string || '';
 
+console.log("==============")
+console.log("==============")
+console.log(supabaseUrl,supabaseKey,config)
+console.log("==============")
 
 // Client Supabase singleton (créé seulement si les credentials sont présents)
 export const supabase = supabaseUrl && supabaseKey

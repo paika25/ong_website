@@ -9,7 +9,7 @@ declare global {
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
   const callOnce: typeof import('../../node_modules/nuxt/dist/app/composables/once')['callOnce']
   const cancelIdleCallback: typeof import('../../node_modules/nuxt/dist/app/compat/idle-callback')['cancelIdleCallback']
-  const checkSupabaseConnection: typeof import('../../composables/useSupabase')['checkSupabaseConnection']
+  const checkSupabaseConnection: typeof import('../../composables/useSupabase.client')['checkSupabaseConnection']
   const clearError: typeof import('../../node_modules/nuxt/dist/app/composables/error')['clearError']
   const clearNuxtData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['clearNuxtData']
   const clearNuxtState: typeof import('../../node_modules/nuxt/dist/app/composables/state')['clearNuxtState']
@@ -167,7 +167,7 @@ declare global {
   const useAbs: typeof import('../../node_modules/@vueuse/math')['useAbs']
   const useActiveElement: typeof import('@vueuse/core')['useActiveElement']
   const useAnimate: typeof import('@vueuse/core')['useAnimate']
-  const useAppColorMode: typeof import('../../composables/useColorMode')['useAppColorMode']
+  const useAppColorMode: typeof import('../../composables/useColorMode.client')['useAppColorMode']
   const useAppConfig: typeof import('../../node_modules/nuxt/dist/app/config')['useAppConfig']
   const useArrayDifference: typeof import('@vueuse/core')['useArrayDifference']
   const useArrayEvery: typeof import('@vueuse/core')['useArrayEvery']
@@ -185,7 +185,7 @@ declare global {
   const useAsyncQueue: typeof import('@vueuse/core')['useAsyncQueue']
   const useAsyncState: typeof import('@vueuse/core')['useAsyncState']
   const useAttrs: typeof import('vue')['useAttrs']
-  const useAuth: typeof import('../../composables/useAuth')['useAuth']
+  const useAuth: typeof import('../../composables/useAuth.client')['useAuth']
   const useAverage: typeof import('../../node_modules/@vueuse/math')['useAverage']
   const useBase64: typeof import('@vueuse/core')['useBase64']
   const useBattery: typeof import('@vueuse/core')['useBattery']
@@ -375,7 +375,8 @@ declare global {
   const useStorageAsync: typeof import('@vueuse/core')['useStorageAsync']
   const useStyleTag: typeof import('@vueuse/core')['useStyleTag']
   const useSum: typeof import('../../node_modules/@vueuse/math')['useSum']
-  const useSupabase: typeof import('../../composables/useSupabase')['default']
+  const useSupabase: typeof import('../../composables/useSupabase.client')['useSupabase']
+  const useSupabaseClient: typeof import('../../composables/useSupabase.client')['default']
   const useSupported: typeof import('@vueuse/core')['useSupported']
   const useSwipe: typeof import('@vueuse/core')['useSwipe']
   const useTemplateRef: typeof import('vue')['useTemplateRef']
@@ -443,8 +444,8 @@ declare global {
   export type { Component, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
-  export type { ColorMode } from '../../composables/useColorMode'
-  import('../../composables/useColorMode')
+  export type { ColorMode } from '../../composables/useColorMode.client'
+  import('../../composables/useColorMode.client')
 }
 // for vue template auto import
 import { UnwrapRef } from 'vue'
@@ -458,7 +459,7 @@ declare module 'vue' {
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
     readonly callOnce: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/once')['callOnce']>
     readonly cancelIdleCallback: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/compat/idle-callback')['cancelIdleCallback']>
-    readonly checkSupabaseConnection: UnwrapRef<typeof import('../../composables/useSupabase')['checkSupabaseConnection']>
+    readonly checkSupabaseConnection: UnwrapRef<typeof import('../../composables/useSupabase.client')['checkSupabaseConnection']>
     readonly clearError: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/error')['clearError']>
     readonly clearNuxtData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['clearNuxtData']>
     readonly clearNuxtState: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/state')['clearNuxtState']>
@@ -616,7 +617,7 @@ declare module 'vue' {
     readonly useAbs: UnwrapRef<typeof import('../../node_modules/@vueuse/math')['useAbs']>
     readonly useActiveElement: UnwrapRef<typeof import('@vueuse/core')['useActiveElement']>
     readonly useAnimate: UnwrapRef<typeof import('@vueuse/core')['useAnimate']>
-    readonly useAppColorMode: UnwrapRef<typeof import('../../composables/useColorMode')['useAppColorMode']>
+    readonly useAppColorMode: UnwrapRef<typeof import('../../composables/useColorMode.client')['useAppColorMode']>
     readonly useAppConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/config')['useAppConfig']>
     readonly useArrayDifference: UnwrapRef<typeof import('@vueuse/core')['useArrayDifference']>
     readonly useArrayEvery: UnwrapRef<typeof import('@vueuse/core')['useArrayEvery']>
@@ -634,7 +635,7 @@ declare module 'vue' {
     readonly useAsyncQueue: UnwrapRef<typeof import('@vueuse/core')['useAsyncQueue']>
     readonly useAsyncState: UnwrapRef<typeof import('@vueuse/core')['useAsyncState']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
-    readonly useAuth: UnwrapRef<typeof import('../../composables/useAuth')['useAuth']>
+    readonly useAuth: UnwrapRef<typeof import('../../composables/useAuth.client')['useAuth']>
     readonly useAverage: UnwrapRef<typeof import('../../node_modules/@vueuse/math')['useAverage']>
     readonly useBase64: UnwrapRef<typeof import('@vueuse/core')['useBase64']>
     readonly useBattery: UnwrapRef<typeof import('@vueuse/core')['useBattery']>
@@ -824,7 +825,8 @@ declare module 'vue' {
     readonly useStorageAsync: UnwrapRef<typeof import('@vueuse/core')['useStorageAsync']>
     readonly useStyleTag: UnwrapRef<typeof import('@vueuse/core')['useStyleTag']>
     readonly useSum: UnwrapRef<typeof import('../../node_modules/@vueuse/math')['useSum']>
-    readonly useSupabase: UnwrapRef<typeof import('../../composables/useSupabase')['default']>
+    readonly useSupabase: UnwrapRef<typeof import('../../composables/useSupabase.client')['useSupabase']>
+    readonly useSupabaseClient: UnwrapRef<typeof import('../../composables/useSupabase.client')['default']>
     readonly useSupported: UnwrapRef<typeof import('@vueuse/core')['useSupported']>
     readonly useSwipe: UnwrapRef<typeof import('@vueuse/core')['useSwipe']>
     readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>

@@ -1,17 +1,19 @@
 <template>
 	<div class="min-h-screen flex flex-col items-center justify-center py-12 bg-background">
-		<AuthLogin @login-success="onLoginSuccess" @switch-to-signup="onSwitchToSignup" @forgot-password="onForgotPassword" />
+		<ClientOnly>
+			<AuthLogin @login-success="onLoginSuccess" @switch-to-signup="onSwitchToSignup" @forgot-password="onForgotPassword" />
+		</ClientOnly>
 	</div>
 </template>
 
 <script setup lang="ts">
 import AuthLogin from '~/features/auth/components/Login.client.vue'
-import { useAuthStore } from '~/features/auth/stores/auth'
+import { useAuthStore } from '~/features/auth/stores/auth.client'
 import type { User } from '~/features/auth/types/auth.types'
+import { onMounted } from 'vue'
 
-// Rediriger vers dashboard si déjà connecté
 definePageMeta({
-	middleware: ['guest']
+	middleware: ['guest-client']
 })
 
 const route = useRoute()

@@ -9,12 +9,12 @@
 
 <script setup lang="ts">
 import AuthSignup from '~/features/auth/components/Signup.client.vue'
-import { useAuthStore } from '~/features/auth/stores/auth'
+import { useAuthStore } from '~/features/auth/stores/auth.client'
 import type { User } from '~/features/auth/types/auth.types'
 
 // Rediriger vers dashboard si déjà connecté
 definePageMeta({
-  middleware: ['guest']
+  middleware: ['guest-client']
 })
 
 const authStore = useAuthStore()

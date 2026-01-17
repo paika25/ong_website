@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '~/features/auth/stores/auth'
+import { useAuthStore } from '~/features/auth/stores/auth.client'
 
 definePageMeta({
   layout: false

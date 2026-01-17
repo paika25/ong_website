@@ -12,14 +12,11 @@
 <script setup lang="ts">
 import Profil from '@/features/user/components/Profil.client.vue'
 import Header from "../components/Header.vue"
-import Footer from "../components/Footer.vue"
-import useAuthStore from '../features/auth/stores/auth'
-import { onMounted } from 'vue'
+import Footer from "../components/Footer.client.vue"
 
 
-// Redirect non-logged users to the login page (client-side only)
-onMounted(() => {
- const authStore = useAuthStore()
- authStore.middleware()
+definePageMeta({
+  middleware: ['auth-client']
 })
+
 </script>

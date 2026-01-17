@@ -343,7 +343,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '~/features/auth/stores/auth'
+import { useAuthStore } from '~/features/auth/stores/auth.client'
 import { useUserService } from '../services/userService'
 import type { User } from '../services/userService'
 import { ref, reactive, computed, onMounted } from 'vue'

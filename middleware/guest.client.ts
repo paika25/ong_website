@@ -1,5 +1,5 @@
 /**
- * Middleware pour les invités (non connectés)
+ * Middleware pour les invités (non connectés) - CLIENT-ONLY
  * Redirige vers le dashboard si déjà connecté
  * 
  * Usage:
@@ -8,10 +8,7 @@
  * })
  */
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  // Côté client uniquement
-  if (!import.meta.client) return
-
-  const { useAuthStore } = await import('~/features/auth/stores/auth')
+  const { useAuthStore } = await import('~/features/auth/stores/auth.client')
   const authStore = useAuthStore()
 
   // Si déjà connecté, rediriger
