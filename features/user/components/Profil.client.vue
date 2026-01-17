@@ -1,53 +1,71 @@
 <template>
   <div class="max-w-4xl mx-auto space-y-6">
-    <!-- Header du profil -->
-    <div class="bg-card rounded-xl border border-border overflow-hidden">
-      <!-- Cover image -->
-      <div class="h-32 bg-gradient-to-r from-primary to-accent relative">
-        <UButton
-          v-if="isOwnProfile"
-          variant="solid"
-          color="white"
-          size="xs"
-          class="absolute top-4 right-4"
-          @click="uploadCover"
-        >
-          <Icon name="i-heroicons-camera" class="w-4 h-4 mr-1" />
-          Modifier la couverture
-        </UButton>
-      </div>
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex flex-col items-center justify-center py-20">
+      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+      <p class="text-muted-foreground">Chargement du profil...</p>
+    </div>
 
-      <!-- Informations principales -->
-      <div class="p-6 relative" v-if="user">
-        <!-- Avatar -->
-        <div class="absolute -top-16 left-6">
-          <div class="relative">
-            <UAvatar
-              :src="user.avatar || ''"
-              :alt="user.fullName"
-              size="xl"
-              class="ring-4 ring-background"
-            />
-            <UButton
-              v-if="isOwnProfile"
-              variant="solid"
-              color="primary"
-              size="2xs"
-              class="absolute bottom-0 right-0 rounded-full"
-              @click="uploadAvatar"
-            >
-              <Icon name="i-heroicons-camera" class="w-3 h-3" />
-            </UButton>
-          </div>
+    <!-- Error State -->
+    <div v-else-if="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6 text-center">
+      <Icon name="i-heroicons-exclamation-circle" class="w-12 h-12 text-red-500 mx-auto mb-4" />
+      <h3 class="text-lg font-semibold text-red-700 dark:text-red-400 mb-2">Erreur</h3>
+      <p class="text-red-600 dark:text-red-300 mb-4">{{ error }}</p>
+      <UButton color="red" variant="outline" @click="loadProfile">
+        Réessayer
+      </UButton>
+    </div>
+
+    <!-- Profile Content -->
+    <template v-else-if="user">
+      <!-- Header du profil -->
+      <div class="bg-card rounded-xl border border-border overflow-hidden">
+        <!-- Cover image -->
+        <div class="h-32 bg-gradient-to-r from-primary to-accent relative">
+          <UButton
+            v-if="isOwnProfile"
+            variant="solid"
+            color="white"
+            size="xs"
+            class="absolute top-4 right-4"
+            @click="uploadCover"
+          >
+            <Icon name="i-heroicons-camera" class="w-4 h-4 mr-1" />
+            Modifier la couverture
+          </UButton>
         </div>
 
-        <!-- Actions profile -->
-        <div class="flex justify-end mb-4" v-if="!isOwnProfile">
-          <div class="flex gap-2">
-            <UButton variant="outline" size="sm">
-              <Icon name="i-heroicons-envelope" class="w-4 h-4 mr-1" />
-              Message
-            </UButton>
+        <!-- Informations principales -->
+        <div class="p-6 relative">
+          <!-- Avatar -->
+          <div class="absolute -top-16 left-6">
+            <div class="relative">
+              <UAvatar
+                :src="user.avatar || ''"
+                :alt="user.fullName"
+                size="xl"
+                class="ring-4 ring-background"
+              />
+              <UButton
+                v-if="isOwnProfile"
+                variant="solid"
+                color="primary"
+                size="2xs"
+                class="absolute bottom-0 right-0 rounded-full"
+                @click="uploadAvatar"
+              >
+                <Icon name="i-heroicons-camera" class="w-3 h-3" />
+              </UButton>
+            </div>
+          </div>
+
+          <!-- Actions profile -->
+          <div class="flex justify-end mb-4" v-if="!isOwnProfile">
+            <div class="flex gap-2">
+              <UButton variant="outline" size="sm">
+                <Icon name="i-heroicons-envelope" class="w-4 h-4 mr-1" />
+                Message
+              </UButton>
             <UButton color="primary" size="sm">
               <Icon name="i-heroicons-user-plus" class="w-4 h-4 mr-1" />
               Suivre
@@ -81,37 +99,41 @@
 
           <!-- Métadonnées -->
           <div class="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
-            <div class="flex items-center gap-1">
+            <div v-if="user.location" class="flex items-center gap-1">
               <Icon name="i-heroicons-map-pin" class="w-4 h-4" />
               <span>{{ user.location }}</span>
             </div>
             <div class="flex items-center gap-1">
               <Icon name="i-heroicons-calendar" class="w-4 h-4" />
-              <span>Rejoint en {{ formatDate(user.joinedAt) }}</span>
+              <span>Rejoint en {{ formatDate(user.createdAt) }}</span>
             </div>
             <div class="flex items-center gap-1">
               <Icon name="i-heroicons-envelope" class="w-4 h-4" />
               <span>{{ user.email }}</span>
+            </div>
+            <div v-if="user.website" class="flex items-center gap-1">
+              <Icon name="i-heroicons-globe-alt" class="w-4 h-4" />
+              <a :href="user.website" target="_blank" class="hover:underline">{{ user.website }}</a>
             </div>
           </div>
 
           <!-- Statistiques -->
           <div class="flex gap-6">
             <div class="text-center">
-              <div class="font-semibold text-lg">{{ user.stats.ongs }}</div>
+              <div class="font-semibold text-lg">{{ user.stats?.ongs || 0 }}</div>
               <div class="text-sm text-muted-foreground">ONGs</div>
             </div>
             <div class="text-center">
-              <div class="font-semibold text-lg">{{ user.stats.projects }}</div>
+              <div class="font-semibold text-lg">{{ user.stats?.projects || 0 }}</div>
               <div class="text-sm text-muted-foreground">Projets</div>
             </div>
-            <div class="text-center">
-              <div class="font-semibold text-lg">{{ user.stats.followers }}</div>
-              <div class="text-sm text-muted-foreground">Abonnés</div>
+            <div v-if="user.accountType === 'user_partner'" class="text-center">
+              <div class="font-semibold text-lg">{{ user.stats?.donations || 0 }}</div>
+              <div class="text-sm text-muted-foreground">Dons</div>
             </div>
-            <div class="text-center">
-              <div class="font-semibold text-lg">{{ user.stats.following }}</div>
-              <div class="text-sm text-muted-foreground">Abonnements</div>
+            <div v-if="user.accountType === 'user_partner'" class="text-center">
+              <div class="font-semibold text-lg">{{ (user.stats?.totalDonated || 0).toLocaleString('fr-FR') }} Ar</div>
+              <div class="text-sm text-muted-foreground">Total donné</div>
             </div>
           </div>
         </div>
@@ -218,7 +240,7 @@
     <UTabs :items="tabs" v-model="activeTab">
       <template #ongs>
         <div class="space-y-4">
-          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div v-if="userOngs.length > 0" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div
               v-for="ong in userOngs"
               :key="ong.id"
@@ -239,12 +261,21 @@
               </div>
             </div>
           </div>
+          
+          <!-- Empty state pour ONGs -->
+          <div v-else class="text-center py-8 text-muted-foreground">
+            <Icon name="i-heroicons-building-office" class="w-12 h-12 mx-auto mb-3 opacity-50" />
+            <p>{{ isOwnProfile ? 'Vous n\'êtes membre d\'aucune ONG' : 'Aucune ONG associée' }}</p>
+            <UButton v-if="isOwnProfile" variant="outline" size="sm" class="mt-4" @click="handleNavigate('/ongs')">
+              Explorer les ONGs
+            </UButton>
+          </div>
         </div>
       </template>
 
       <template #projets>
         <div class="space-y-4">
-          <div class="grid gap-4">
+          <div v-if="userProjects.length > 0" class="grid gap-4">
             <div
               v-for="project in userProjects"
               :key="project.id"
@@ -270,6 +301,12 @@
               </div>
             </div>
           </div>
+          
+          <!-- Empty state pour projets -->
+          <div v-else class="text-center py-8 text-muted-foreground">
+            <Icon name="i-heroicons-folder" class="w-12 h-12 mx-auto mb-3 opacity-50" />
+            <p>{{ isOwnProfile ? 'Vous n\'avez pas encore de projets' : 'Aucun projet' }}</p>
+          </div>
         </div>
       </template>
 
@@ -292,25 +329,28 @@
               </p>
             </div>
           </div>
+          
+          <!-- Empty state pour activité -->
+          <div v-if="userActivity.length === 0" class="text-center py-8 text-muted-foreground">
+            <Icon name="i-heroicons-clock" class="w-12 h-12 mx-auto mb-3 opacity-50" />
+            <p>Aucune activité récente</p>
+          </div>
         </div>
       </template>
     </UTabs>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from '~/features/auth/stores/auth'
 import { useUserService } from '../services/userService'
 import type { User } from '../services/userService'
 import { ref, reactive, computed, onMounted } from 'vue'
-// ✅ navigateTo est auto-importé dans Nuxt - ne pas l'importer manuellement
 
-interface Props {
-  userId?: string
-}
-
-const props = defineProps<Props>()
-
-const { getCurrentUser, updateUser } = useUserService()
+const authStore = useAuthStore()
+const { getCurrentUser, updateUser, getUserStats } = useUserService()
+const supabase = useSupabase()
 
 // États
 const user = ref<User | null>(null)
@@ -318,6 +358,8 @@ const editMode = ref(false)
 const activeTab = ref(0)
 const isSaving = ref(false)
 const newSkill = ref('')
+const isLoading = ref(true)
+const error = ref<string | null>(null)
 
 // Formulaire d'édition
 const form = reactive({
@@ -329,77 +371,142 @@ const form = reactive({
   skills: [] as string[]
 })
 
-// Computed
-const isOwnProfile = computed(() => {
-  return !props.userId || props.userId === 'current'
-})
+// C'est toujours le propre profil de l'utilisateur connecté
+const isOwnProfile = computed(() => true)
 
 // Données des onglets
 const tabs = [
-  { label: 'ONGs', key: 'ongs' },
-  { label: 'Projets', key: 'projets' },
-  { label: 'Activité', key: 'activite' }
+  { label: 'ONGs', slot: 'ongs' },
+  { label: 'Projets', slot: 'projets' },
+  { label: 'Activité', slot: 'activite' }
 ]
 
-// Mock data pour les onglets
-const userOngs = ref([
-  {
-    id: '1',
-    name: 'Éducation pour Tous',
-    role: 'Coordinateur',
-    logo: 'https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=100',
-    volunteers: 245,
-    projects: 12
-  },
-  {
-    id: '2',
-    name: 'Santé Communautaire',
-    role: 'Bénévole',
-    logo: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=100',
-    volunteers: 156,
-    projects: 8
-  }
-])
+// Données dynamiques
+const userOngs = ref<any[]>([])
+const userProjects = ref<any[]>([])
+const userActivity = ref<any[]>([])
 
-const userProjects = ref([
-  {
-    id: 'p1',
-    name: 'Accès à l\'eau potable',
-    ong: 'Solidarité Locale',
-    description: 'Installation de puits et systèmes de collecte d\'eau dans plusieurs villages.',
-    status: 'En cours',
-    startDate: '2024-03-15T00:00:00Z',
-    participants: 32
-  },
-  {
-    id: 'p2',
-    name: 'Formation numérique',
-    ong: 'Éducation Numérique',
-    description: 'Ateliers pour former les jeunes aux compétences digitales.',
-    status: 'Planifié',
-    startDate: '2025-01-10T00:00:00Z',
-    participants: 0
-  }
-])
+// Charger les ONGs de l'utilisateur
+async function loadUserOngs(userId: string) {
+  if (!supabase) return
 
-const userActivity = ref([
-  {
-    id: 'a1',
-    user: 'Marius',
-    action: 'a rejoint',
-    target: 'Éducation pour Tous',
-    avatar: 'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=48',
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: 'a2',
-    user: 'Marius',
-    action: 'a publié',
-    target: 'un nouveau projet',
-    avatar: 'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=48',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString()
+  try {
+    // Pour les agents ONG
+    const { data: agentOngs } = await supabase
+      .from('agent_ong_managers')
+      .select(`
+        role,
+        ong:ongs (
+          id,
+          name,
+          logo,
+          volunteers,
+          projects
+        )
+      `)
+      .eq('agent_account_id', userId)
+
+    if (agentOngs && agentOngs.length > 0) {
+      userOngs.value = agentOngs.map((item: any) => ({
+        id: item.ong?.id,
+        name: item.ong?.name || 'ONG',
+        role: item.role || 'Membre',
+        logo: item.ong?.logo || '',
+        volunteers: item.ong?.volunteers || 0,
+        projects: Array.isArray(item.ong?.projects) ? item.ong.projects.length : 0
+      }))
+    }
+  } catch (err) {
+    console.error('Erreur chargement ONGs:', err)
   }
-])
+}
+
+// Charger les projets de l'utilisateur
+async function loadUserProjects(userId: string) {
+  if (!supabase) return
+
+  try {
+    // Récupérer les ONGs de l'utilisateur d'abord
+    const { data: agentOngs } = await supabase
+      .from('agent_ong_managers')
+      .select('ong_id')
+      .eq('agent_account_id', userId)
+
+    if (agentOngs && agentOngs.length > 0) {
+      const ongIds = agentOngs.map((o: any) => o.ong_id)
+
+      const { data: ongs } = await supabase
+        .from('ongs')
+        .select('id, name, projects')
+        .in('id', ongIds)
+
+      if (ongs) {
+        const allProjects: any[] = []
+        ongs.forEach((ong: any) => {
+          if (Array.isArray(ong.projects)) {
+            ong.projects.forEach((project: any) => {
+              allProjects.push({
+                id: project.id || `${ong.id}-${allProjects.length}`,
+                name: project.name || project.title || 'Projet sans nom',
+                ong: ong.name,
+                description: project.description || '',
+                status: project.status || 'En cours',
+                startDate: project.start_date || project.startDate || new Date().toISOString(),
+                participants: project.participants || project.volunteers || 0
+              })
+            })
+          }
+        })
+        userProjects.value = allProjects
+      }
+    }
+  } catch (err) {
+    console.error('Erreur chargement projets:', err)
+  }
+}
+
+// Charger l'activité récente
+async function loadUserActivity(userId: string) {
+  if (!supabase) return
+
+  try {
+    // Activité basée sur les donations ou autres actions
+    const { data: donations } = await supabase
+      .from('donations')
+      .select(`
+        id,
+        amount,
+        created_at,
+        ong:ongs (name)
+      `)
+      .eq('donor_account_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(10)
+
+    if (donations && donations.length > 0) {
+      userActivity.value = donations.map((d: any) => ({
+        id: d.id,
+        user: user.value?.firstName || 'Utilisateur',
+        action: `a fait un don de ${d.amount?.toLocaleString('fr-FR')} Ar à`,
+        target: d.ong?.name || 'une ONG',
+        avatar: user.value?.avatar || '',
+        createdAt: d.created_at
+      }))
+    } else {
+      // Activité par défaut si pas de donations
+      userActivity.value = [{
+        id: 'joined',
+        user: user.value?.firstName || 'Utilisateur',
+        action: 'a rejoint la plateforme',
+        target: '',
+        avatar: user.value?.avatar || '',
+        createdAt: user.value?.createdAt || new Date().toISOString()
+      }]
+    }
+  } catch (err) {
+    console.error('Erreur chargement activité:', err)
+  }
+}
 
 function formatDate(value?: string | Date) {
   if (!value) return ''
@@ -423,37 +530,9 @@ function removeSkill(index: number) {
   form.skills.splice(index, 1)
 }
 
-async function saveProfile() {
-  if (!user.value) return
-  isSaving.value = true
-  try {
-    const payload = {
-      ...user.value,
-      firstName: form.firstName,
-      lastName: form.lastName,
-      bio: form.bio,
-      location: form.location,
-      website: form.website,
-      skills: [...form.skills]
-    }
-    await updateUser(payload)
-    user.value = { ...payload } as User
-    editMode.value = false
-  } catch (err) {
-    console.error(err)
-  } finally {
-    isSaving.value = false
-  }
-}
-
 function cancelEdit() {
   if (!user.value) return
-  form.firstName = (user.value.firstName as string) || ''
-  form.lastName = (user.value.lastName as string) || ''
-  form.bio = user.value.bio || ''
-  form.location = user.value.location || ''
-  form.website = user.value.website || ''
-  form.skills = Array.isArray(user.value.skills) ? [...user.value.skills] : []
+  initForm(user.value)
   newSkill.value = ''
   editMode.value = false
 }
@@ -497,32 +576,130 @@ function getProjectStatusColor(status: string) {
 
 // ✅ Fonction helper pour la navigation
 function handleOngClick(ongId: string) {
-  if (typeof window !== 'undefined') {
-    console.log("ong click",window)
-    window.location.href = `/ongs/${ongId}`
+  if (typeof window !== 'undefined' && ongId) {
+    navigateTo(`/ongs/${ongId}`)
   }
 }
 
 function handleNavigate(path: string) {
   if (typeof window !== 'undefined') {
-    window.location.href = path
+    navigateTo(path)
   }
 }
 
-onMounted(async () => {
+// Initialiser le formulaire avec les données utilisateur
+function initForm(userData: User) {
+  form.firstName = userData.firstName || ''
+  form.lastName = userData.lastName || ''
+  form.bio = userData.bio || ''
+  form.location = userData.location || ''
+  form.website = userData.website || ''
+  form.skills = Array.isArray((userData as any).skills) ? [...(userData as any).skills] : []
+}
+
+// Charger toutes les données du profil depuis le store auth
+async function loadProfile() {
+  isLoading.value = true
+  error.value = null
+
   try {
-    const u = await getCurrentUser()
-    if (u) {
-      user.value = u
-      form.firstName = (u.firstName as string) || ''
-      form.lastName = (u.lastName as string) || ''
-      form.bio = u.bio || ''
-      form.location = u.location || ''
-      form.website = u.website || ''
-      form.skills = Array.isArray(u.skills) ? [...u.skills] : []
+    console.log('1- authstore', authStore)
+    // Vérifier si l'utilisateur est connecté via le store
+    if (!authStore.currentUser) {
+      error.value = 'Vous devez être connecté pour voir votre profil'
+      isLoading.value = false
+      return
     }
-  } catch (e) {
-    console.error('Erreur lors du chargement de l\'utilisateur', e)
+
+    // Construire les données utilisateur depuis le store
+    let userData: User = {
+      id: authStore.currentUser.id,
+      email: authStore.currentUser.email,
+      accountType: authStore.currentUser.accountType as 'user_partner' | 'user_agent',
+      firstName: authStore.currentUser.firstName || '',
+      lastName: authStore.currentUser.lastName || '',
+      fullName: authStore.currentUser.fullName || authStore.currentUser.email,
+      companyName: authStore.currentUser.companyName,
+      avatar: authStore.currentUser.avatar,
+      bio: authStore.currentUser.bio,
+      location: authStore.currentUser.location,
+      website: authStore.currentUser.website,
+      verified: authStore.currentUser.verified || false,
+      createdAt: authStore.currentUser.createdAt || new Date().toISOString(),
+      updatedAt: authStore.currentUser.updatedAt || new Date().toISOString()
+    }
+
+    console.log('2 - userdata',userData)
+
+    // Récupérer les stats depuis Supabase
+    const stats = await getUserStats(userData.id, userData.accountType)
+    userData.stats = stats
+
+    console.log('3 - stats',userData)
+
+    user.value = userData
+    initForm(userData)
+
+    // Charger les données associées en parallèle
+    await Promise.all([
+      loadUserOngs(userData.id),
+      loadUserProjects(userData.id),
+      loadUserActivity(userData.id)
+    ])
+
+    console.log('✅ Profil chargé:', userData.email)
+  } catch (err: any) {
+    console.error('Erreur chargement profil:', err)
+    error.value = err.message || 'Erreur lors du chargement du profil'
+  } finally {
+    isLoading.value = false
   }
+}
+
+// Mettre à jour le profil
+async function saveProfile() {
+  if (!user.value) return
+  
+  isSaving.value = true
+  error.value = null
+
+  try {
+    const payload = {
+      firstName: form.firstName,
+      lastName: form.lastName,
+      bio: form.bio,
+      location: form.location,
+      website: form.website
+    }
+
+    const updatedUser = await updateUser(payload)
+    
+    // Mettre à jour les données locales
+    user.value = updatedUser
+    
+    // Mettre à jour le store auth aussi
+    if (isOwnProfile.value && authStore.currentUser) {
+      authStore.updateUserData({
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        fullName: updatedUser.fullName,
+        bio: updatedUser.bio,
+        location: updatedUser.location,
+        website: updatedUser.website
+      })
+    }
+
+    editMode.value = false
+    console.log('✅ Profil mis à jour')
+  } catch (err: any) {
+    console.error('Erreur sauvegarde:', err)
+    error.value = err.message || 'Erreur lors de la sauvegarde'
+  } finally {
+    isSaving.value = false
+  }
+}
+
+onMounted(() => {
+  loadProfile()
 })
 </script>

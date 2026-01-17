@@ -13,11 +13,15 @@ export interface User {
   verified: boolean
   createdAt: string
   updatedAt: string
+  joinedAt?: string
+  skills?: string[]
   stats?: {
     ongs: number
     projects: number
     donations?: number
     totalDonated?: number
+    followers?: number
+    following?: number
   }
 }
 
@@ -135,7 +139,7 @@ const mapSupabaseToUser = (account: SupabaseAccount): User => {
 }
 
 export const useUserService = () => {
-  const getCurrentUser = async (): Promise<User | null> => {
+    const getCurrentUser = async (): Promise<User | null> => {
     const supabase = useSupabase()
     
     if (supabase) {
@@ -216,30 +220,45 @@ export const useUserService = () => {
   }
 
   const getUserStats = async (userId: string, accountType: string) => {
+    console.log('📊 getUserStats:', userId, accountType)
     const supabase = useSupabase()
-    
+
     if (!supabase) {
+      console.log('⚠️ Supabase non disponible')
       return { ongs: 0, projects: 0, donations: 0, totalDonated: 0 }
     }
 
     try {
       if (accountType === 'user_agent') {
         // Stats pour les agents (gestionnaires d'ONG)
-        const { data: ongs } = await supabase
+        console.log('📊 Chargement stats agent...')
+        const { data: ongs, error: ongsError } = await supabase
           .from('agent_ong_managers')
           .select('ong_id')
           .eq('agent_account_id', userId)
 
-        const { data: ongsData } = await supabase
-          .from('ongs')
-          .select('projects')
-          .in('id', ongs?.map((o: any) => o.ong_id) || [])
+        if (ongsError) {
+          console.warn('⚠️ Erreur agent_ong_managers:', ongsError.message)
+        }
 
-        const totalProjects = ongsData?.reduce((sum: number, ong: any) => {
-          const projects = ong.projects || []
-          return sum + (Array.isArray(projects) ? projects.length : 0)
-        }, 0) || 0
+        let totalProjects = 0
+        if (ongs && ongs.length > 0) {
+          const { data: ongsData, error: projectsError } = await supabase
+            .from('ongs')
+            .select('projects')
+            .in('id', ongs.map((o: any) => o.ong_id))
 
+          if (projectsError) {
+            console.warn('⚠️ Erreur ongs projects:', projectsError.message)
+          }
+
+          totalProjects = ongsData?.reduce((sum: number, ong: any) => {
+            const projects = ong.projects || []
+            return sum + (Array.isArray(projects) ? projects.length : 0)
+          }, 0) || 0
+        }
+
+        console.log('✅ Stats agent:', { ongs: ongs?.length || 0, projects: totalProjects })
         return {
           ongs: ongs?.length || 0,
           projects: totalProjects,
@@ -248,24 +267,50 @@ export const useUserService = () => {
         }
       } else {
         // Stats pour les partenaires (donateurs)
-        const { data: donations } = await supabase
-          .from('donations')
-          .select('amount, status')
-          .eq('donor_account_id', userId)
-          .eq('status', 'completed')
+        console.log('📊 Chargement stats partenaire pour:', userId)
 
-        const totalDonated = donations?.reduce((sum: number, d: any) => sum + d.amount, 0) || 0
-        const uniqueOngs = new Set(donations?.map((d: any) => d.ong_id) || []).size
+        console.log('📊 supabase :', supabase)
+        
+        try {
+          // Timeout de 5 secondes
+          const controller = new AbortController()
+          const timeoutId = setTimeout(() => controller.abort(), 5000)
 
-        return {
-          ongs: uniqueOngs,
-          projects: 0,
-          donations: donations?.length || 0,
-          totalDonated
+          const { data: donations, error: donationsError } = await supabase
+            .from('donations')
+            .select('amount, status, ong_id')
+            .eq('donor_account_id', userId)
+            .eq('status', 'completed')
+
+          clearTimeout(timeoutId)
+
+          if (donationsError) {
+            console.warn('⚠️ Erreur donations (RLS?):', donationsError.message, donationsError.code)
+            return { ongs: 0, projects: 0, donations: 0, totalDonated: 0 }
+          }
+
+          console.log('📊 Donations trouvées:', donations?.length || 0)
+          const totalDonated = donations?.reduce((sum: number, d: any) => sum + (d.amount || 0), 0) || 0
+          const uniqueOngs = new Set(donations?.map((d: any) => d.ong_id).filter(Boolean) || []).size
+
+          console.log('✅ Stats partenaire:', { donations: donations?.length || 0, totalDonated, ongs: uniqueOngs })
+          return {
+            ongs: uniqueOngs,
+            projects: 0,
+            donations: donations?.length || 0,
+            totalDonated
+          }
+        } catch (err: any) {
+          if (err.name === 'AbortError') {
+            console.warn('⚠️ Timeout requête donations')
+          } else {
+            console.error('❌ Erreur donations:', err)
+          }
+          return { ongs: 0, projects: 0, donations: 0, totalDonated: 0 }
         }
       }
-    } catch (err) {
-      console.error('❌ Erreur calcul stats:', err)
+    } catch (err: any) {
+      console.error('❌ Erreur calcul stats:', err?.message || err)
       return { ongs: 0, projects: 0, donations: 0, totalDonated: 0 }
     }
   }

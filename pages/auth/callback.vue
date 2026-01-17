@@ -1,192 +1,197 @@
 <template>
-  <div class="min-h-screen flex flex-col items-center justify-center">
-    <div class="text-center">
-      <div v-if="loading" class="space-y-4">
-        <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-        <p class="text-muted-foreground">Vérification en cours...</p>
+  <div class="min-h-screen flex flex-col items-center justify-center bg-background">
+    <div class="text-center max-w-md mx-auto p-6">
+      <!-- Loading -->
+      <div v-if="status === 'loading'" class="space-y-4">
+        <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <h2 class="text-xl font-semibold">{{ message }}</h2>
       </div>
       
-      <div v-else-if="error" class="space-y-4">
+      <!-- Error -->
+      <div v-else-if="status === 'error'" class="space-y-4">
         <div class="w-16 h-16 mx-auto rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center">
           <svg class="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
         </div>
-        <h2 class="text-xl font-bold text-red-600">Erreur de vérification</h2>
-        <p class="text-muted-foreground">{{ error }}</p>
+        <h2 class="text-xl font-bold text-red-600">Erreur</h2>
+        <p class="text-muted-foreground">{{ message }}</p>
         <UButton to="/auth/login" color="primary">
           Retour à la connexion
         </UButton>
       </div>
       
+      <!-- Success -->
       <div v-else class="space-y-4">
         <div class="w-16 h-16 mx-auto rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
           <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
           </svg>
         </div>
-        <h2 class="text-xl font-bold">Email vérifié !</h2>
-        <p class="text-muted-foreground">Votre compte a été activé avec succès.</p>
-        <p class="text-sm text-muted-foreground">Redirection en cours...</p>
+        <h2 class="text-xl font-bold text-green-600">{{ message }}</h2>
+        <p class="text-muted-foreground">Redirection en cours...</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import useAuthStore from '../../features/auth/stores/auth'
+import { useAuthStore } from '~/features/auth/stores/auth'
 
-const authStore = useAuthStore()
-const loading = ref(true)
-const error = ref<string | null>(null)
+definePageMeta({
+  layout: false
+})
+
+const status = ref<'loading' | 'success' | 'error'>('loading')
+const message = ref('Vérification en cours...')
+
+const route = useRoute()
+
+// Initialiser le store seulement côté client
+const authStore = import.meta.client ? useAuthStore() : null
 
 onMounted(async () => {
+  if (!import.meta.client) return
+  
+  const store = useAuthStore()
+  const supabase = useSupabase()
+  
+  if (!supabase) {
+    status.value = 'error'
+    message.value = 'Service non disponible'
+    return
+  }
+
   try {
-    // Récupérer le hash de l'URL (contient access_token, etc.)
-    const hash = window.location.hash.substring(1)
-    const params = new URLSearchParams(hash)
-    
-    const accessToken = params.get('access_token')
-    const refreshToken = params.get('refresh_token')
-    const type = params.get('type') // 'signup', 'recovery', 'invite'
-    
-    console.log('🔐 Callback auth - type:', type)
-    
-    if (!accessToken) {
-      // Peut-être un callback avec code (PKCE flow)
-      const queryParams = new URLSearchParams(window.location.search)
-      const code = queryParams.get('code')
-      
-      if (code) {
-        // Échanger le code contre une session
-        const supabase = useSupabase()
-        if (supabase) {
-          const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
-          if (exchangeError) {
-            throw new Error(exchangeError.message)
-          }
-          console.log('✅ Session échangée:', data.user?.email)
-        }
-      } else {
-        throw new Error('Token d\'accès manquant')
-      }
-    }
-    
-    // Récupérer la session courante
-    const supabase = useSupabase()
-    if (!supabase) {
-      throw new Error('Supabase non configuré')
-    }
-    
+    message.value = 'Récupération de la session...'
+
     // Supabase détecte automatiquement le token dans l'URL
     const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-    
+
     if (sessionError) {
       throw new Error(sessionError.message)
     }
-    
-    if (!session?.user) {
-      throw new Error('Session non trouvée')
+
+    if (!session) {
+      // Essayer de récupérer depuis le hash
+      const hash = window.location.hash.substring(1)
+      if (hash) {
+        const params = new URLSearchParams(hash)
+        const accessToken = params.get('access_token')
+        
+        if (accessToken) {
+          // Attendre que Supabase traite le token
+          await new Promise(resolve => setTimeout(resolve, 1000))
+          
+          const { data: { session: retrySession } } = await supabase.auth.getSession()
+          if (!retrySession) {
+            throw new Error('Session non trouvée')
+          }
+        } else {
+          throw new Error('Token manquant')
+        }
+      } else {
+        throw new Error('Aucune information d\'authentification')
+      }
     }
+
+    // Récupérer la session finale
+    const { data: { session: finalSession } } = await supabase.auth.getSession()
     
-    console.log('✅ Session récupérée:', session.user.email)
-    
-    // Vérifier/créer l'account dans la table accounts
-    const { data: accountData, error: accountError } = await supabase
+    if (!finalSession?.user) {
+      throw new Error('Utilisateur non trouvé')
+    }
+
+    message.value = 'Chargement du profil...'
+
+    // Vérifier/créer l'account
+    let { data: account } = await supabase
       .from('accounts')
       .select('*')
-      .eq('id', session.user.id)
+      .eq('id', finalSession.user.id)
       .maybeSingle()
-    
-    let user = accountData
-    
-    if (!accountData) {
-      console.log('⚠️ Account non trouvé, création...')
+
+    if (!account) {
+      console.log('📝 Création du compte...')
       
-      // Créer l'account à partir des métadonnées
-      const metadata = session.user.user_metadata
+      const meta = finalSession.user.user_metadata
       
       const { data: newAccount, error: insertError } = await supabase
         .from('accounts')
         .insert({
-          id: session.user.id,
-          email: session.user.email,
-          account_type: metadata?.account_type || 'user_partner',
-          first_name: metadata?.first_name || null,
-          last_name: metadata?.last_name || null,
-          company_name: metadata?.company_name || null,
-          bio: metadata?.bio || null,
-          location: metadata?.location || null,
-          website: metadata?.website || null,
-          verified: true, // Email confirmé !
+          id: finalSession.user.id,
+          email: finalSession.user.email!,
+          account_type: meta?.account_type || 'user_partner',
+          first_name: meta?.first_name || null,
+          last_name: meta?.last_name || null,
+          company_name: meta?.company_name || null,
+          bio: meta?.bio || null,
+          location: meta?.location || null,
+          website: meta?.website || null,
+          verified: true,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
         .select()
         .single()
-      
-      if (insertError) {
-        console.error('❌ Erreur création account:', insertError)
-        // Continuer quand même avec les données de session
-      } else {
-        user = newAccount
-        console.log('✅ Account créé:', newAccount)
+
+      if (!insertError && newAccount) {
+        account = newAccount
       }
-    } else {
-      console.log('✅ Account existant:', accountData)
+    } else if (!account.verified) {
+      // Mettre à jour verified
+      await supabase
+        .from('accounts')
+        .update({ verified: true, updated_at: new Date().toISOString() })
+        .eq('id', finalSession.user.id)
       
-      // Mettre à jour verified si besoin
-      if (!accountData.verified) {
-        await supabase
-          .from('accounts')
-          .update({ verified: true, updated_at: new Date().toISOString() })
-          .eq('id', session.user.id)
-      }
+      account.verified = true
     }
-    
-    // Mapper et stocker l'utilisateur
-    const mappedUser = user ? {
-      id: user.id,
-      email: user.email,
-      accountType: user.account_type,
-      firstName: user.first_name,
-      lastName: user.last_name,
-      fullName: [user.first_name, user.last_name].filter(Boolean).join(' ') || user.email?.split('@')[0],
-      companyName: user.company_name,
-      avatar: user.avatar,
-      bio: user.bio,
-      location: user.location,
-      website: user.website,
-      verified: true,
-      createdAt: user.created_at,
-      updatedAt: user.updated_at
+
+    // Construire l'utilisateur
+    const user = account ? {
+      id: account.id,
+      email: account.email,
+      accountType: account.account_type,
+      firstName: account.first_name,
+      lastName: account.last_name,
+      fullName: [account.first_name, account.last_name].filter(Boolean).join(' ') || account.email,
+      companyName: account.company_name,
+      avatar: account.avatar,
+      bio: account.bio,
+      location: account.location,
+      website: account.website,
+      verified: account.verified,
+      createdAt: account.created_at,
+      updatedAt: account.updated_at
     } : {
-      id: session.user.id,
-      email: session.user.email!,
-      accountType: session.user.user_metadata?.account_type || 'user_partner',
-      firstName: session.user.user_metadata?.first_name || null,
-      lastName: session.user.user_metadata?.last_name || null,
-      fullName: [session.user.user_metadata?.first_name, session.user.user_metadata?.last_name].filter(Boolean).join(' ') || session.user.email?.split('@')[0],
+      id: finalSession.user.id,
+      email: finalSession.user.email!,
+      accountType: finalSession.user.user_metadata?.account_type || 'user_partner',
+      firstName: finalSession.user.user_metadata?.first_name || null,
+      lastName: finalSession.user.user_metadata?.last_name || null,
+      fullName: [finalSession.user.user_metadata?.first_name, finalSession.user.user_metadata?.last_name].filter(Boolean).join(' ') || finalSession.user.email!,
       verified: true,
-      createdAt: session.user.created_at,
-      updatedAt: new Date().toISOString()
+      createdAt: finalSession.user.created_at,
+      updatedAt: finalSession.user.created_at
     }
-    
+
     // Persister dans le store
-    authStore.setUser(mappedUser as any)
-    
-    loading.value = false
-    
-    // Redirection après 2 secondes
+    store.setUser(user as any)
+
+    status.value = 'success'
+    message.value = 'Connexion réussie !'
+
+    // Redirection
+    const redirect = route.query.redirect as string
     setTimeout(() => {
-      navigateTo('/')
-    }, 2000)
-    
+      navigateTo(redirect || '/dashboard')
+    }, 1500)
+
   } catch (err: any) {
     console.error('❌ Erreur callback:', err)
-    error.value = err.message || 'Erreur lors de la vérification'
-    loading.value = false
+    status.value = 'error'
+    message.value = err.message || 'Une erreur est survenue'
   }
 })
 </script>

@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { defineStore, skipHydrate } from 'pinia'
 import { ref, computed } from 'vue'
 import type { User } from '../types/auth.types'
 
@@ -236,12 +236,12 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   return {
-    // state
-    connected,
-    user,
-    loading,
-    initialized,
-    error,
+    // state - skip hydration to avoid SSR issues
+    connected: skipHydrate(connected),
+    user: skipHydrate(user),
+    loading: skipHydrate(loading),
+    initialized: skipHydrate(initialized),
+    error: skipHydrate(error),
     
     // getters
     isConnected,
