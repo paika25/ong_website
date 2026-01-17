@@ -1,12 +1,23 @@
 import type { ONG, OngStats } from "../type"
 import { mockOngs } from "../data"
 
-// ✅ Fonctions simples au lieu de composable pour éviter problèmes SSR
+// Helper pour vérifier si on est côté client
+const isClient = () => typeof window !== 'undefined'
+
+// ✅ Fonctions avec vérification client-only
 export const getOngs = async (): Promise<ONG[]> => {
+  // Ne tenter Supabase que côté client
+  if (!isClient()) {
+    console.log('🔧 [getOngs] SSR: using mock data')
+    return JSON.parse(JSON.stringify(mockOngs))
+  }
+
   const supabase = useSupabase()
   
   if (supabase) {
     try {
+      console.log('🔍 [getOngs] Tentative de récupération depuis Supabase...')
+      
       const { data, error } = await supabase
         .from('ongs')
         .select('*')
@@ -56,10 +67,19 @@ export const getOngs = async (): Promise<ONG[]> => {
 }
 
 export const getOngById = async (id: string): Promise<ONG | null> => {
+  // Ne tenter Supabase que côté client
+  if (!isClient()) {
+    console.log('🔧 [getOngById] SSR: using mock data')
+    const ong = mockOngs.find(ong => ong.id === id) || null
+    return ong ? JSON.parse(JSON.stringify(ong)) : null
+  }
+
   const supabase = useSupabase()
   
   if (supabase) {
     try {
+      console.log(`🔍 [getOngById] Recherche ONG ${id}...`)
+      
       const { data, error } = await supabase
         .from('ongs')
         .select('*')
@@ -111,6 +131,13 @@ export const getOngById = async (id: string): Promise<ONG | null> => {
 }
 
 export const getOngsByCategory = async (category: string): Promise<ONG[]> => {
+  // Simple mock function - no Supabase needed yet
+  if (!isClient()) {
+    console.log('🔧 [getOngsByCategory] SSR: using mock data')
+    const filtered = mockOngs.filter(ong => ong.category === category)
+    return JSON.parse(JSON.stringify(filtered))
+  }
+
   await new Promise(resolve => setTimeout(resolve, 500))
   
   const filtered = mockOngs.filter(ong => ong.category === category)
@@ -118,6 +145,18 @@ export const getOngsByCategory = async (category: string): Promise<ONG[]> => {
 }
 
 export const searchOngs = async (query: string): Promise<ONG[]> => {
+  // Simple mock function - no Supabase needed yet
+  if (!isClient()) {
+    console.log('🔧 [searchOngs] SSR: using mock data')
+    const searchTerm = query.toLowerCase()
+    const filtered = mockOngs.filter(ong => 
+      ong.name.toLowerCase().includes(searchTerm) ||
+      ong.description.toLowerCase().includes(searchTerm) ||
+      ong.location.toLowerCase().includes(searchTerm)
+    )
+    return JSON.parse(JSON.stringify(filtered))
+  }
+
   await new Promise(resolve => setTimeout(resolve, 400))
   
   const searchTerm = query.toLowerCase()

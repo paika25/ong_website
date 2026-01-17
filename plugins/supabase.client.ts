@@ -1,20 +1,21 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
 export default defineNuxtPlugin((nuxtApp) => {
-  console.log('[PLUGIN] 🚀 Initializing supabase.client.ts plugin')
+  console.log('🔌 [PLUGIN] supabase.client.ts init START')
   
   const config = useRuntimeConfig()
-  
-  console.log('[PLUGIN] 📝 Config loaded:', {
-    hasUrl: Boolean(config.public?.supabaseUrl),
-    hasKey: Boolean(config.public?.supabaseKey),
-  })
-
   const supabaseUrl = config.public.supabaseUrl as string
   const supabaseKey = config.public.supabaseKey as string
 
+  console.log('🔌 [PLUGIN] Config:', {
+    url: supabaseUrl,
+    keyLength: supabaseKey?.length,
+    hasUrl: !!supabaseUrl,
+    hasKey: !!supabaseKey
+  })
+
   if (!supabaseUrl || !supabaseKey) {
-    console.error('[PLUGIN] ❌ Supabase non configuré - credentials manquantes')
+    console.error('❌ [PLUGIN] Missing Supabase credentials!')
     return {
       provide: {
         supabase: null
@@ -22,56 +23,41 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
   }
 
-  console.log('[PLUGIN] 🔧 Creating Supabase client...')
-  
+  console.log('🔌 [PLUGIN] Creating Supabase client...')
+
   const supabase = createClient(supabaseUrl, supabaseKey, {
     auth: {
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
       flowType: 'pkce',
-      // Stockage personnalisé pour SSR
       storage: {
         getItem: (key) => {
+          console.log('📦 [STORAGE] getItem:', key)
           if (typeof window === 'undefined') return null
           
-          console.log('[STORAGE] 🔑 getItem:', key)
-          
-          // Essayer localStorage
           const localValue = localStorage.getItem(key)
-          if (localValue) {
-            console.log('[STORAGE] ✅ Found in localStorage')
-            return localValue
-          }
+          console.log('📦 [STORAGE] localStorage value:', localValue ? 'EXISTS' : 'NULL')
+          if (localValue) return localValue
           
-          // Fallback cookies
           const cookies = document.cookie.split(';')
           const cookie = cookies.find(c => c.trim().startsWith(`${key}=`))
-          const value = cookie ? decodeURIComponent(cookie.split('=')[1]) : null
-          
-          if (value) {
-            console.log('[STORAGE] ✅ Found in cookies')
-          } else {
-            console.log('[STORAGE] ⚠️ Not found')
-          }
-          
-          return value
+          const cookieValue = cookie ? decodeURIComponent(cookie.split('=')[1]) : null
+          console.log('📦 [STORAGE] cookie value:', cookieValue ? 'EXISTS' : 'NULL')
+          return cookieValue
         },
         setItem: (key, value) => {
+          console.log('💾 [STORAGE] setItem:', key, value ? '(value set)' : '(empty)')
           if (typeof window === 'undefined') return
-          
-          console.log('[STORAGE] 💾 setItem:', key)
           
           localStorage.setItem(key, value)
           
-          // Cookie pour SSR (7 jours)
           const maxAge = 60 * 60 * 24 * 7
           document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}; SameSite=Lax`
         },
         removeItem: (key) => {
+          console.log('🗑️ [STORAGE] removeItem:', key)
           if (typeof window === 'undefined') return
-          
-          console.log('[STORAGE] 🗑️ removeItem:', key)
           
           localStorage.removeItem(key)
           document.cookie = `${key}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
@@ -80,71 +66,13 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
   })
 
-  console.log('[PLUGIN] ✅ Supabase client created successfully')
+  console.log('✅ [PLUGIN] Supabase client created')
 
   // Écouter les changements d'authentification
-  supabase.auth.onAuthStateChange(async (event, session) => {
-    console.log('[PLUGIN] 🔄 Auth state changed:', event, { hasSession: Boolean(session) })
-    
-    // Import dynamique pour éviter les problèmes de circular dependency
-    const { useAuthStore } = await import('~/features/auth/stores/auth.client')
-    const authStore = useAuthStore()
-    
-    if (event === 'SIGNED_IN' && session) {
-      // Charger le profil depuis accounts
-      const { data: account } = await supabase
-        .from('accounts')
-        .select('*')
-        .eq('id', session.user.id)
-        .maybeSingle()
-
-      if (account) {
-        authStore.setUser({
-          id: account.id,
-          email: account.email,
-          accountType: account.account_type,
-          firstName: account.first_name,
-          lastName: account.last_name,
-          fullName: [account.first_name, account.last_name].filter(Boolean).join(' ') || account.email,
-          companyName: account.company_name,
-          avatar: account.avatar,
-          bio: account.bio,
-          location: account.location,
-          website: account.website,
-          verified: account.verified,
-          createdAt: account.created_at,
-          updatedAt: account.updated_at
-        })
-      } else {
-        // Utiliser metadata comme fallback
-        const meta = session.user.user_metadata
-        authStore.setUser({
-          id: session.user.id,
-          email: session.user.email!,
-          accountType: meta?.account_type || 'user_partner',
-          firstName: meta?.first_name || null,
-          lastName: meta?.last_name || null,
-          fullName: [meta?.first_name, meta?.last_name].filter(Boolean).join(' ') || session.user.email!,
-          companyName: meta?.company_name,
-          avatar: meta?.avatar,
-          bio: meta?.bio,
-          location: meta?.location,
-          website: meta?.website,
-          verified: false,
-          createdAt: session.user.created_at,
-          updatedAt: session.user.updated_at || session.user.created_at
-        })
-      }
-    } else if (event === 'SIGNED_OUT') {
-      authStore.setDisconnected()
-    }
+  supabase.auth.onAuthStateChange((event, session) => {
+    console.log('🔄 [PLUGIN] Auth state:', event, session?.user?.email || 'no user')
   })
 
-  console.log('[PLUGIN] 🎯 Providing $supabase to nuxtApp')
-
-  return {
-    provide: {
-      supabase
-    }
-  }
+  nuxtApp.provide('supabase', supabase)
+  console.log('✅ [PLUGIN] Supabase plugin initialized')
 })
