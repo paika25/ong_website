@@ -30,7 +30,7 @@ import Footer from "../components/Footer.client.vue"
 
 // Meta tags pour SEO
 useHead({
-  title: 'ONGs - Portfolio Marius',
+  title: 'ONGs - Paika',
   meta: [
     { name: 'description', content: 'Découvrez les organisations à but non lucratif et rejoignez leurs projets' },
     { name: 'keywords', content: 'ONG, bénévolat, associations, projets sociaux' }
