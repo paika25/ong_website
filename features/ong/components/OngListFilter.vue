@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-card p-6 rounded-xl border border-border">
+  <div class="bg-card md:p-6 p-3 rounded-xl border border-border">
       <div class="grid md:grid-rows-2 md:grid-cols-2 gap-4">
         <!-- Recherche -->
         <div class="md:col-span-2">

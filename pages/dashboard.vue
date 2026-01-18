@@ -203,9 +203,17 @@
             <h2 class="text-2xl font-bold">Mes Dons</h2>
             <p class="text-muted-foreground">Historique de vos contributions</p>
           </div>
-          <div class="text-right">
-            <p class="text-sm text-muted-foreground">Total des dons</p>
-            <p class="text-2xl font-bold text-primary">{{ totalDonations }} €</p>
+          <div class="flex gap-8">
+            <!-- Nombre de donations -->
+            <div class="text-right">
+              <p class="text-sm text-muted-foreground">Nombre de dons</p>
+              <p class="text-2xl font-bold">{{ userDonations.length }}</p>
+            </div>
+            <!-- Total des dons -->
+            <div class="text-right">
+              <p class="text-sm text-muted-foreground">Total des dons</p>
+              <p class="text-2xl font-bold text-primary">{{ totalDonations }} €</p>
+            </div>
           </div>
         </div>
 

@@ -2,9 +2,9 @@
   <div class="min-h-screen flex flex-col">
     <Header />
     <main class="flex-grow container mx-auto px-4 py-8">
-      <div class="mb-8">
-        <h1 class="text-4xl font-bold mb-2">Liste des ONGs</h1>
-        <p class="text-muted-foreground">Découvrez et rejoignez les organisations à but non lucratif</p>
+      <div class="mb-2 md:mb-8 md:block hidden">
+        <h1 class="text-xl md:text-4xl font-bold mb-2">Liste des ONGs</h1>
+        <p class="text-muted-foreground text-sm md:text-lg">Découvrez et rejoignez les organisations à but non lucratif</p>
       </div>
       <ClientOnly>
         <OngList />
