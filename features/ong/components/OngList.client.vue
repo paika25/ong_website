@@ -78,7 +78,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 // navigateTo est auto-importé dans Nuxt
 import { getOngs, getOngStats } from '../services/ongService'
-import type { ONG } from '../services/ongService'
+import type { ONG } from '../type'
 import Card from './Card.vue'
 import OngListFilter from './OngListFilter.vue'
 

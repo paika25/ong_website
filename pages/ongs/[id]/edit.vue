@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { getOngById } from '~/features/ong/services/ongService'
+import { getOngById, updateOng } from '~/features/ong/services/ongService'
 import type { ONG } from '~/features/ong/type'
 import type { OngFormData } from '~/features/ong/components/OwnOngForm.vue'
 import OwnOngForm from '~/features/ong/components/OwnOngForm.vue'
@@ -89,41 +89,16 @@ async function saveChanges(formData: OngFormData) {
   saving.value = true
 
   try {
-    const supabase = useSupabase()
-    if (supabase) {
-      const { error: updateError } = await supabase
-        .from('ongs')
-        .update({
-          name: formData.name,
-          description: formData.description,
-          category: formData.category,
-          location: formData.location,
-          image: formData.image,
-          email: formData.email,
-          phone: formData.phone,
-          website: formData.website,
-          volunteers: formData.volunteers,
-          projects: formData.projects,
-          financials: formData.financials,
-          legal: formData.legal,
-          impact: formData.impact,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', ongId)
+    const result = await updateOng(ongId, formData)
 
-      if (updateError) {
-        console.error('❌ Erreur Supabase update:', updateError.message)
-        alert('Erreur lors de la sauvegarde : ' + updateError.message)
-        return
-      }
+    if (!result.success) {
+      console.error('❌ Erreur updateOng:', result.error)
+      alert('Erreur lors de la sauvegarde : ' + result.error)
+      return
     }
 
-    // Mettre à jour la référence locale
-    ong.value = {
-      ...ong.value!,
-      ...formData,
-      updatedAt: new Date().toISOString(),
-    }
+    // Mettre à jour la référence locale avec les données retournées par Supabase
+    ong.value = result.data
 
     // Notifier le formulaire que le save est réussi (reset du snapshot)
     formRef.value?.onSaved()

@@ -198,7 +198,7 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '~/features/auth/stores/auth.client'
-import { getOngs } from '~/features/ong/services/ongService'
+import { getOngs,getOwnerOng } from '~/features/ong/services/ongService'
 import type { ONG } from '~/features/ong/type'
 import OwnOng from '~/features/ong/components/OwnOng.vue'
 
@@ -232,10 +232,11 @@ onMounted(async () => {
   try {
     if (user.value?.accountType === 'user_agent') {
       // Charger l'ONG unique de l'agent
-      const allOngs = await getOngs()
+      // const allOngs = await getOngs()
       // TODO: Filtrer par user.value.id quand le champ owner_id sera disponible
       // Pour l'instant, on prend la première ONG comme exemple
-      userOng.value = allOngs.length > 0 ? allOngs[0] : null
+      // userOng.value = allOngs.length > 0 ? allOngs[0] : null
+      userOng.value = await getOwnerOng()
     } else {
       // Charger les dons du partenaire
       // TODO: Implémenter le service de dons
