@@ -63,16 +63,18 @@
             <h2 class="text-2xl font-bold">Mon ONG</h2>
             <p class="text-muted-foreground">Gérez votre organisation</p>
           </div>
-          <UButton v-if="!userOng" variant="default">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Créer mon ONG
-          </UButton>
+          <NuxtLink v-if="!userOng" to="/ongs/new">
+            <UButton variant="default">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Créer mon ONG
+            </UButton>
+          </NuxtLink>
         </div>
 
         <!-- Informations de l'ONG -->
-        <div v-if="userOng" >
+        <div v-if="userOng">
           <OwnOng :ong="userOng"/>
         </div>
 
@@ -85,12 +87,14 @@
           </div>
           <h3 class="text-xl font-semibold mb-2">Vous n'avez pas encore d'ONG</h3>
           <p class="text-muted-foreground mb-6">Créez votre organisation pour commencer à faire la différence</p>
-          <UButton variant="default">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Créer mon ONG
-          </UButton>
+          <NuxtLink to="/ongs/new">
+            <UButton variant="default">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Créer mon ONG
+            </UButton>
+          </NuxtLink>
         </div>
       </div>
 
@@ -198,7 +202,7 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '~/features/auth/stores/auth.client'
-import { getOngs,getOwnerOng } from '~/features/ong/services/ongService'
+import { getOwnerOng } from '~/features/ong/services/ongService'
 import type { ONG } from '~/features/ong/type'
 import OwnOng from '~/features/ong/components/OwnOng.vue'
 
