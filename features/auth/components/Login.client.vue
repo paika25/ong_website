@@ -34,6 +34,7 @@
               <UButton
                 variant="ghost"
                 size="2xs"
+                class="pointer-events-auto"
                 @click="showPassword = !showPassword"
                 :icon="showPassword ? 'i-heroicons-eye-slash' : 'i-heroicons-eye'"
                 color="gray"

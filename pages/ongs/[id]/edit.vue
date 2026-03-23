@@ -97,6 +97,19 @@ async function saveChanges(formData: OngFormData) {
       return
     }
 
+    // Upload de l'image principale si un fichier a été sélectionné
+    if (formRef.value?.hasPendingImage()) {
+      const imageUrl = await formRef.value.uploadImage(ongId)
+      if (imageUrl && result.data) {
+        result.data.image = imageUrl
+      }
+    }
+
+    // Upload des documents en attente
+    if (formRef.value?.hasPendingDocuments()) {
+      await formRef.value.uploadDocuments(ongId)
+    }
+
     // Mettre à jour la référence locale avec les données retournées par Supabase
     ong.value = result.data
 

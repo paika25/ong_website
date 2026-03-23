@@ -458,6 +458,35 @@
           </div>
         </div>
 
+        <!-- Onglet Documents -->
+        <div v-else-if="item.key === 'documents'" class="space-y-4">
+          <div class="bg-card rounded-xl border border-border p-6">
+            <h2 class="text-2xl font-semibold mb-4">Documents officiels</h2>
+            <div class="space-y-3">
+              <a
+                v-for="doc in documents"
+                :key="doc.id"
+                :href="doc.fileUrl"
+                target="_blank"
+                class="flex items-center justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
+              >
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Icon name="i-heroicons-document-text" class="w-5 h-5 text-primary" />
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-medium truncate">{{ doc.name }}</div>
+                    <div class="text-xs text-muted-foreground">
+                      {{ getCategoryDocLabel(doc.category) }} — {{ (doc.fileSize / 1024).toFixed(0) }} Ko
+                    </div>
+                  </div>
+                </div>
+                <Icon name="i-heroicons-arrow-down-tray" class="w-5 h-5 text-muted-foreground flex-shrink-0" />
+              </a>
+            </div>
+          </div>
+        </div>
+
         <!-- Onglet Bénévoles -->
         <div v-else-if="item.key === 'volunteers'" class="bg-card rounded-xl border border-border p-12 text-center">
           <Icon name="i-heroicons-users" class="w-16 h-16 text-muted-foreground mx-auto mb-4" />
@@ -481,8 +510,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import type { ONG } from '../type'
+import { ref, computed, onMounted } from 'vue'
+import type { ONG, OngDocument } from '../type'
+import { getOngDocuments } from '../services'
 
 interface Props {
   ong: ONG
@@ -494,6 +524,12 @@ const props = defineProps<Props>()
 const activeTab = ref(0)
 const selectedAmount = ref<number | 'custom'>(20) // Montant présélectionné par défaut
 const customAmount = ref<number | null>(null)
+const documents = ref<OngDocument[]>([])
+
+// Charger les documents au montage
+onMounted(async () => {
+  documents.value = await getOngDocuments(props.ong.id)
+})
 
 // Onglets
 const tabs = computed(() => {
@@ -514,6 +550,9 @@ const tabs = computed(() => {
   }
   if (props.ong.legal || props.ong.monitoring) {
     baseTabs.push({ label: 'Administratif', key: 'transparency' })
+  }
+  if (documents.value.length > 0) {
+    baseTabs.push({ label: 'Documents', key: 'documents' })
   }
   
   baseTabs.push({ label: 'Bénévoles', key: 'volunteers' })
@@ -592,6 +631,14 @@ const getProjectStatusLabel = (status: string) => {
     canceled: 'Annulé'
   }
   return labels[status as keyof typeof labels] || status
+}
+
+const getCategoryDocLabel = (category: string) => {
+  const labels: Record<string, string> = {
+    legal: '📜 Statuts',
+    activity: '📊 Rapport d\'activité',
+  }
+  return labels[category] || category
 }
 
 // Formatage

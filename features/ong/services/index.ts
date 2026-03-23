@@ -35,6 +35,14 @@ export {
   deleteOng,
 } from './ong.mutations'
 
+// Upload (images)
+export { uploadOngImage, deleteOngImage } from './ong.upload'
+export type { UploadImageResult } from './ong.upload'
+
+// Documents
+export { getOngDocuments, uploadOngDocument, deleteOngDocument } from './ong.documents'
+export type { DocumentResult } from './ong.documents'
+
 // Legacy : joinOng
 export const joinOng = async (ongId: string, userData: any): Promise<boolean> => {
   try {
@@ -50,6 +58,8 @@ export const joinOng = async (ongId: string, userData: any): Promise<boolean> =>
 // Composable backward-compatible
 import { getOngs, getOngById, getOngByAccountId, getOwnerOng, getOngsByCategory, searchOngs } from './ong.queries'
 import { createOng, updateOng, deleteOng } from './ong.mutations'
+import { uploadOngImage, deleteOngImage } from './ong.upload'
+import { getOngDocuments, uploadOngDocument, deleteOngDocument } from './ong.documents'
 import { getOngStats } from './ong.helpers'
 
 export const useOngService = () => ({
@@ -64,4 +74,9 @@ export const useOngService = () => ({
   updateOng,
   deleteOng,
   joinOng,
+  uploadOngImage,
+  deleteOngImage,
+  getOngDocuments,
+  uploadOngDocument,
+  deleteOngDocument,
 })

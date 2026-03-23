@@ -7,6 +7,7 @@ export interface User {
   fullName: string
   companyName?: string | null
   avatar?: string | null
+  cover?: string | null
   bio?: string | null
   location?: string | null
   website?: string | null

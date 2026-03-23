@@ -57,27 +57,35 @@
 
 
 <script setup lang="ts">
+
+import { onMounted } from 'vue'
 import { useAuthStore } from '~/features/auth/stores/auth.client'
 
-const authStore = useAuthStore()
-const user = computed(() => authStore.currentUser)
-const userInitials = computed(() => authStore.userInitials)
-const loggingOut = ref(false)
+const authStore = ref(null)
 
-const supabase = useSupabase()
-const handleLogout = async () => {
-  loggingOut.value = true
-  try {
-    if (supabase) {
-      await supabase.auth.signOut()
+onMounted(() => {
+  authStore.value = useAuthStore()
+  const user = computed(() => authStore.value.currentUser)
+  const userInitials = computed(() => authStore.value.userInitials)
+  const loggingOut = ref(false)
+  
+  const supabase = useSupabase()
+  
+  const handleLogout = async () => {
+    loggingOut.value = true
+    try {
+      if (supabase) {
+        await supabase.auth.signOut()
+      }
+      authStore.setDisconnected()
+      await navigateTo('/auth/login')
+    } catch (e) {
+      console.error('Erreur logout:', e)
+    } finally {
+      loggingOut.value = false
     }
-    authStore.setDisconnected()
-    await navigateTo('/auth/login')
-  } catch (e) {
-    console.error('Erreur logout:', e)
-  } finally {
-    loggingOut.value = false
   }
-}
+})
+
 
 </script>

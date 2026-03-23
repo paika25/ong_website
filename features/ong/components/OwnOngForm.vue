@@ -77,17 +77,74 @@
 
           <!-- Image de couverture -->
           <div>
-            <label class="block text-sm font-medium mb-2">Image de couverture (URL)</label>
-            <input
-              v-model="form.image"
-              type="url"
-              placeholder="https://example.com/image.jpg"
-              class="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-            />
-            <!-- Preview image -->
-            <div v-if="form.image" class="mt-3 relative h-32 rounded-lg overflow-hidden border border-border">
-              <img :src="form.image" :alt="form.name" class="w-full h-full object-cover" @error="form.image = ''" />
+            <label class="block text-sm font-medium mb-2">Image de couverture</label>
+
+            <!-- Preview + actions si image existante -->
+            <div v-if="form.image || imagePreviewUrl" class="mb-3">
+              <div class="relative h-40 rounded-lg overflow-hidden border border-border group">
+                <img
+                  :src="imagePreviewUrl || form.image"
+                  :alt="form.name"
+                  class="w-full h-full object-cover"
+                  @error="onImageError"
+                />
+                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    @click="triggerFileInput"
+                    class="px-3 py-1.5 bg-white text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-100 transition"
+                  >
+                    Changer
+                  </button>
+                  <button
+                    type="button"
+                    @click="removeImage"
+                    class="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+              <!-- Indicateur fichier sélectionné -->
+              <p v-if="selectedImageFile" class="text-xs text-primary mt-1.5 flex items-center gap-1">
+                <span>📎</span>
+                {{ selectedImageFile.name }} ({{ (selectedImageFile.size / 1024 / 1024).toFixed(1) }} Mo)
+                <span class="text-muted-foreground">— sera uploadé à la sauvegarde</span>
+              </p>
             </div>
+
+            <!-- Zone d'upload si pas d'image -->
+            <div
+              v-else
+              @click="triggerFileInput"
+              @dragover.prevent="isDragging = true"
+              @dragleave.prevent="isDragging = false"
+              @drop.prevent="onDrop"
+              :class="[
+                'border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition',
+                isDragging
+                  ? 'border-primary bg-primary/5'
+                  : 'border-border hover:border-primary/50 hover:bg-muted/30'
+              ]"
+            >
+              <svg class="w-10 h-10 mx-auto mb-3 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <p class="text-sm font-medium text-foreground">Cliquez ou glissez une image ici</p>
+              <p class="text-xs text-muted-foreground mt-1">JPG, PNG ou WebP — 5 Mo max</p>
+            </div>
+
+            <!-- Input file caché -->
+            <input
+              ref="fileInputRef"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              class="hidden"
+              @change="onFileSelected"
+            />
+
+            <!-- Erreur upload -->
+            <p v-if="imageError" class="text-xs text-destructive mt-1.5">{{ imageError }}</p>
           </div>
         </div>
       </div>
@@ -421,6 +478,162 @@
       </div>
     </div>
 
+    <!-- Tab : Documents -->
+    <div v-show="activeTab === 'documents'" class="space-y-6">
+      <div class="bg-card border border-border rounded-xl p-6">
+        <h2 class="text-lg font-semibold mb-6">Documents de l'ONG</h2>
+        <p class="text-sm text-muted-foreground mb-6">
+          Ajoutez vos documents officiels pour renforcer la crédibilité de votre ONG.
+          Formats acceptés : PDF, DOC, DOCX, JPG, PNG — 10 Mo max par fichier.
+        </p>
+
+        <div class="space-y-8">
+          <!-- Statuts (legal) -->
+          <div>
+            <h3 class="text-base font-semibold mb-1">* Statuts de l'association</h3>
+            <p class="text-xs text-muted-foreground mb-3">Document légal officiel de votre organisation (statuts déposés en préfecture).</p>
+
+            <!-- Document existant -->
+            <div v-if="legalDoc" class="flex items-center justify-between p-3 bg-muted/50 rounded-lg border border-border mb-2">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-medium truncate">{{ legalDoc.name }}</p>
+                  <p class="text-xs text-muted-foreground">{{ (legalDoc.fileSize / 1024).toFixed(0) }} Ko</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <a :href="legalDoc.fileUrl" target="_blank" class="p-1.5 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                </a>
+                <button type="button" @click="handleDeleteDocument(legalDoc!)" class="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Fichier en attente -->
+            <div v-else-if="pendingLegalFile" class="flex items-center justify-between p-3 bg-primary/5 rounded-lg border border-primary/20 mb-2">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="text-lg">📎</span>
+                <div class="min-w-0">
+                  <p class="text-sm font-medium truncate">{{ pendingLegalFile.file.name }}</p>
+                  <p class="text-xs text-muted-foreground">{{ (pendingLegalFile.file.size / 1024).toFixed(0) }} Ko — <span class="text-primary">sera uploadé à la sauvegarde</span></p>
+                </div>
+              </div>
+              <button type="button" @click="removePendingDocument('legal')" class="p-1.5 rounded-md text-muted-foreground hover:text-destructive transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Upload zone -->
+            <div v-else>
+              <label
+                @dragover.prevent="isDraggingDoc = 'legal'"
+                @dragleave.prevent="isDraggingDoc = null"
+                @drop.prevent="onDropDocument($event, 'legal')"
+                :class="[
+                  'flex items-center justify-center gap-2 border-2 border-dashed rounded-lg p-4 cursor-pointer transition text-sm',
+                  isDraggingDoc === 'legal'
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border hover:border-primary/50 hover:bg-muted/30'
+                ]"
+              >
+                <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <span class="text-muted-foreground">Ajouter les statuts</span>
+                <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="hidden" @change="onDocumentSelected($event, 'legal', 'Statuts de l\'association')" />
+              </label>
+            </div>
+          </div>
+
+          <!-- Rapport d'activité (activity) -->
+          <div>
+            <h3 class="text-base font-semibold mb-1">* Rapport d'activité</h3>
+            <p class="text-xs text-muted-foreground mb-3">Dernier rapport d'activité annuel de votre organisation.</p>
+
+            <!-- Document existant -->
+            <div v-if="activityDoc" class="flex items-center justify-between p-3 bg-muted/50 rounded-lg border border-border mb-2">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-medium truncate">{{ activityDoc.name }}</p>
+                  <p class="text-xs text-muted-foreground">{{ (activityDoc.fileSize / 1024).toFixed(0) }} Ko</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <a :href="activityDoc.fileUrl" target="_blank" class="p-1.5 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                </a>
+                <button type="button" @click="handleDeleteDocument(activityDoc!)" class="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Fichier en attente -->
+            <div v-else-if="pendingActivityFile" class="flex items-center justify-between p-3 bg-primary/5 rounded-lg border border-primary/20 mb-2">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="text-lg">📎</span>
+                <div class="min-w-0">
+                  <p class="text-sm font-medium truncate">{{ pendingActivityFile.file.name }}</p>
+                  <p class="text-xs text-muted-foreground">{{ (pendingActivityFile.file.size / 1024).toFixed(0) }} Ko — <span class="text-primary">sera uploadé à la sauvegarde</span></p>
+                </div>
+              </div>
+              <button type="button" @click="removePendingDocument('activity')" class="p-1.5 rounded-md text-muted-foreground hover:text-destructive transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Upload zone -->
+            <div v-else>
+              <label
+                @dragover.prevent="isDraggingDoc = 'activity'"
+                @dragleave.prevent="isDraggingDoc = null"
+                @drop.prevent="onDropDocument($event, 'activity')"
+                :class="[
+                  'flex items-center justify-center gap-2 border-2 border-dashed rounded-lg p-4 cursor-pointer transition text-sm',
+                  isDraggingDoc === 'activity'
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border hover:border-primary/50 hover:bg-muted/30'
+                ]"
+              >
+                <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <span class="text-muted-foreground">Ajouter le rapport d'activité</span>
+                <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="hidden" @change="onDocumentSelected($event, 'activity', 'Rapport d\'activité')" />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Erreur documents -->
+        <p v-if="docError" class="text-xs text-destructive mt-4">{{ docError }}</p>
+      </div>
+    </div>
+
     <!-- Barre d'actions fixe en bas -->
     <div class="sticky bottom-0 bg-background/95 backdrop-blur-sm border-t border-border -mx-4 px-4 py-4 mt-8">
       <div class="flex items-center justify-between max-w-4xl mx-auto">
@@ -457,7 +670,8 @@
 </template>
 
 <script setup lang="ts">
-import type { ONG, Project } from '~/features/ong/type'
+import type { ONG, Project, OngDocument, DocumentCategory } from '~/features/ong/type'
+import { uploadOngImage, deleteOngImage, getOngDocuments, uploadOngDocument, deleteOngDocument } from '~/features/ong/services'
 
 // ============================================
 // Props & Emits
@@ -523,9 +737,10 @@ const tabs = [
   { id: 'projects' as const, label: 'Projets' },
   { id: 'financials' as const, label: 'Finances' },
   { id: 'impact' as const, label: 'Impact' },
+  { id: 'documents' as const, label: 'Documents' },
 ]
 
-const activeTab = ref<'general' | 'projects' | 'financials' | 'impact'>('general')
+const activeTab = ref<'general' | 'projects' | 'financials' | 'impact' | 'documents'>('general')
 
 // ============================================
 // Formulaire réactif
@@ -580,7 +795,7 @@ const allocationTotal = computed(() =>
 )
 
 const hasChanges = computed(() => {
-  return JSON.stringify(form) !== initialFormSnapshot
+  return JSON.stringify(form) !== initialFormSnapshot || !!selectedImageFile.value || pendingDocuments.value.length > 0
 })
 
 const submitLabel = computed(() =>
@@ -670,6 +885,233 @@ function addKpi() {
   form.impact.kpis.push({ metric: '', value: '' })
 }
 
+// ============================================
+// Image upload
+// ============================================
+
+const fileInputRef = ref<HTMLInputElement | null>(null)
+const selectedImageFile = ref<File | null>(null)
+const imagePreviewUrl = ref<string | null>(null)
+const imageError = ref<string | null>(null)
+const isDragging = ref(false)
+
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 5 Mo
+
+function triggerFileInput() {
+  fileInputRef.value?.click()
+}
+
+function validateAndPreview(file: File): boolean {
+  imageError.value = null
+
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    imageError.value = `Format non supporté (${file.type}). Formats acceptés : JPG, PNG, WebP.`
+    return false
+  }
+  if (file.size > MAX_IMAGE_SIZE) {
+    imageError.value = `Fichier trop volumineux (${(file.size / 1024 / 1024).toFixed(1)} Mo). Maximum : 5 Mo.`
+    return false
+  }
+
+  selectedImageFile.value = file
+  imagePreviewUrl.value = URL.createObjectURL(file)
+  return true
+}
+
+function onFileSelected(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (file) {
+    validateAndPreview(file)
+  }
+  // Reset input pour permettre de re-sélectionner le même fichier
+  input.value = ''
+}
+
+function onDrop(event: DragEvent) {
+  isDragging.value = false
+  const file = event.dataTransfer?.files?.[0]
+  if (file) {
+    validateAndPreview(file)
+  }
+}
+
+function removeImage() {
+  selectedImageFile.value = null
+  if (imagePreviewUrl.value) {
+    URL.revokeObjectURL(imagePreviewUrl.value)
+    imagePreviewUrl.value = null
+  }
+  form.image = ''
+  imageError.value = null
+}
+
+function onImageError() {
+  // Si l'image URL existante est cassée, on la vide
+  if (!selectedImageFile.value) {
+    form.image = ''
+  }
+}
+
+/**
+ * Upload l'image sélectionnée vers Supabase Storage.
+ * Appelé par le parent après la création/update de l'ONG.
+ *
+ * @param ongId - UUID de l'ONG (nécessaire pour le chemin storage)
+ * @returns L'URL publique ou null
+ */
+async function uploadImage(ongId: string): Promise<string | null> {
+  if (!selectedImageFile.value) return null
+
+  imageError.value = null
+  const result = await uploadOngImage(ongId, selectedImageFile.value)
+
+  if (!result.success) {
+    imageError.value = result.error
+    return null
+  }
+
+  // Nettoyage
+  if (imagePreviewUrl.value) {
+    URL.revokeObjectURL(imagePreviewUrl.value)
+    imagePreviewUrl.value = null
+  }
+  selectedImageFile.value = null
+  form.image = result.url || ''
+
+  return result.url
+}
+
+/**
+ * Retourne true si un fichier image est prêt à être uploadé.
+ */
+function hasPendingImage(): boolean {
+  return !!selectedImageFile.value
+}
+
+// ============================================
+// Documents upload
+// ============================================
+
+interface PendingDocument {
+  file: File
+  name: string
+  category: DocumentCategory
+}
+
+const existingDocuments = ref<OngDocument[]>([])
+const pendingDocuments = ref<PendingDocument[]>([])
+const docError = ref<string | null>(null)
+const isDraggingDoc = ref<DocumentCategory | null>(null)
+
+const legalDoc = computed(() => existingDocuments.value.find(d => d.category === 'legal'))
+const activityDoc = computed(() => existingDocuments.value.find(d => d.category === 'activity'))
+const pendingLegalFile = computed(() => pendingDocuments.value.find(d => d.category === 'legal'))
+const pendingActivityFile = computed(() => pendingDocuments.value.find(d => d.category === 'activity'))
+
+const ALLOWED_DOC_TYPES = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'image/jpeg',
+  'image/png',
+]
+const MAX_DOC_SIZE = 10 * 1024 * 1024
+
+function validateDocFile(file: File): string | null {
+  if (!ALLOWED_DOC_TYPES.includes(file.type)) {
+    return `Format non supporté (${file.type}). Formats acceptés : PDF, DOC, DOCX, JPG, PNG.`
+  }
+  if (file.size > MAX_DOC_SIZE) {
+    return `Fichier trop volumineux (${(file.size / 1024 / 1024).toFixed(1)} Mo). Maximum : 10 Mo.`
+  }
+  return null
+}
+
+function onDocumentSelected(event: Event, category: DocumentCategory, defaultName: string) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  docError.value = null
+  const err = validateDocFile(file)
+  if (err) {
+    docError.value = err
+    input.value = ''
+    return
+  }
+
+  // Remplacer s'il y a déjà un pending de cette catégorie
+  pendingDocuments.value = pendingDocuments.value.filter(d => d.category !== category)
+  pendingDocuments.value.push({ file, name: defaultName, category })
+  input.value = ''
+}
+
+function onDropDocument(event: DragEvent, category: DocumentCategory) {
+  isDraggingDoc.value = null
+  const file = event.dataTransfer?.files?.[0]
+  if (!file) return
+
+  docError.value = null
+  const err = validateDocFile(file)
+  if (err) {
+    docError.value = err
+    return
+  }
+
+  const defaultName = category === 'legal' ? "Statuts de l'association" : "Rapport d'activité"
+  pendingDocuments.value = pendingDocuments.value.filter(d => d.category !== category)
+  pendingDocuments.value.push({ file, name: defaultName, category })
+}
+
+function removePendingDocument(category: DocumentCategory) {
+  pendingDocuments.value = pendingDocuments.value.filter(d => d.category !== category)
+}
+
+async function handleDeleteDocument(doc: OngDocument) {
+  if (!confirm(`Supprimer le document "${doc.name}" ?`)) return
+
+  const result = await deleteOngDocument(doc.id, doc.fileUrl)
+  if (result.success) {
+    existingDocuments.value = existingDocuments.value.filter(d => d.id !== doc.id)
+  } else {
+    docError.value = result.error
+  }
+}
+
+async function loadDocuments(ongId: string) {
+  existingDocuments.value = await getOngDocuments(ongId)
+}
+
+/**
+ * Upload tous les documents en attente.
+ * Appelé par le parent après la création/update de l'ONG.
+ */
+async function uploadDocuments(ongId: string) {
+  docError.value = null
+
+  for (const pending of pendingDocuments.value) {
+    const result = await uploadOngDocument(ongId, pending.file, pending.name, pending.category)
+    if (result.success && result.data) {
+      // Remplacer l'éventuel document existant de la même catégorie
+      existingDocuments.value = existingDocuments.value.filter(d => d.category !== pending.category)
+      existingDocuments.value.push(result.data)
+    } else {
+      docError.value = result.error
+    }
+  }
+
+  pendingDocuments.value = []
+}
+
+/**
+ * Retourne true s'il y a des documents en attente d'upload.
+ */
+function hasPendingDocuments(): boolean {
+  return pendingDocuments.value.length > 0
+}
+
 function handleSubmit() {
   emit('submit', { ...form, projects: JSON.parse(JSON.stringify(form.projects)) })
 }
@@ -687,6 +1129,8 @@ function onSaved() {
 watch(() => props.initialData, (data) => {
   if (data) {
     populateForm(data)
+    // Charger les documents existants
+    loadDocuments(data.id)
   }
 }, { immediate: true })
 
@@ -694,5 +1138,9 @@ watch(() => props.initialData, (data) => {
 defineExpose({
   resetForm,
   onSaved,
+  uploadImage,
+  hasPendingImage,
+  uploadDocuments,
+  hasPendingDocuments,
 })
 </script>

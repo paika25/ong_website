@@ -1,46 +1,46 @@
 import process from 'node:process';globalThis._importMeta_={url:import.meta.url,env:process.env};import { tmpdir } from 'node:os';
-import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, getResponseStatus, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getRouterParam, getResponseStatusText } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/h3/dist/index.mjs';
+import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, getResponseStatus, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getRouterParam, getResponseStatusText } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/h3/dist/index.mjs';
 import { Server } from 'node:http';
 import { resolve, dirname, join } from 'node:path';
 import nodeCrypto from 'node:crypto';
 import { parentPort, threadId } from 'node:worker_threads';
-import { escapeHtml } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/@vue/shared/dist/shared.cjs.js';
-import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/vue-bundle-renderer/dist/runtime.mjs';
-import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, joinRelativeURL } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/ufo/dist/index.mjs';
-import { renderToString } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/vue/server-renderer/index.mjs';
-import destr, { destr as destr$1 } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/destr/dist/index.mjs';
-import { createHooks } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/hookable/dist/index.mjs';
-import { createFetch, Headers as Headers$1 } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/ofetch/dist/node.mjs';
-import { fetchNodeRequestHandler, callNodeRequestHandler } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/node-mock-http/dist/index.mjs';
-import { createStorage, prefixStorage } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/unstorage/dist/index.mjs';
-import unstorage_47drivers_47fs from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/unstorage/drivers/fs.mjs';
-import { digest } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/nitropack/node_modules/ohash/dist/index.mjs';
-import { klona } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/klona/dist/index.mjs';
-import defu, { defuFn } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/defu/dist/defu.mjs';
-import { snakeCase } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/scule/dist/index.mjs';
-import { getContext } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/unctx/dist/index.mjs';
-import { toRouteMatcher, createRouter } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/radix3/dist/index.mjs';
+import { escapeHtml } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/@vue/shared/dist/shared.cjs.js';
+import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/vue-bundle-renderer/dist/runtime.mjs';
+import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, joinRelativeURL } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/ufo/dist/index.mjs';
+import { renderToString } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/vue/server-renderer/index.mjs';
+import destr, { destr as destr$1 } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/destr/dist/index.mjs';
+import { createHooks } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/hookable/dist/index.mjs';
+import { createFetch, Headers as Headers$1 } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/ofetch/dist/node.mjs';
+import { fetchNodeRequestHandler, callNodeRequestHandler } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/node-mock-http/dist/index.mjs';
+import { createStorage, prefixStorage } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/unstorage/dist/index.mjs';
+import unstorage_47drivers_47fs from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/unstorage/drivers/fs.mjs';
+import { digest } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/nitropack/node_modules/ohash/dist/index.mjs';
+import { klona } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/klona/dist/index.mjs';
+import defu, { defuFn } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/defu/dist/defu.mjs';
+import { snakeCase } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/scule/dist/index.mjs';
+import { getContext } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/unctx/dist/index.mjs';
+import { toRouteMatcher, createRouter } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/radix3/dist/index.mjs';
 import { readFile } from 'node:fs/promises';
-import consola, { consola as consola$1 } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/consola/dist/index.mjs';
-import { ErrorParser } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/youch-core/build/index.js';
-import { Youch } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/youch/build/index.js';
-import { SourceMapConsumer } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/source-map/source-map.js';
+import consola, { consola as consola$1 } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/consola/dist/index.mjs';
+import { ErrorParser } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/youch-core/build/index.js';
+import { Youch } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/youch/build/index.js';
+import { SourceMapConsumer } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/source-map/source-map.js';
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { stringify, uneval } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/devalue/index.js';
-import { captureRawStackTrace, parseRawStackTrace } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/errx/dist/index.js';
-import { isVNode, toValue, isRef } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/vue/index.mjs';
+import { stringify, uneval } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/devalue/index.js';
+import { captureRawStackTrace, parseRawStackTrace } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/errx/dist/index.js';
+import { isVNode, toValue, isRef } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/vue/index.mjs';
 import { promises } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname as dirname$1, resolve as resolve$1 } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/pathe/dist/index.mjs';
-import { basename } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/@nuxt/icon/node_modules/pathe/dist/index.mjs';
-import { getIcons } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/@iconify/utils/lib/index.mjs';
-import { hash as hash$1 } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/@nuxt/icon/node_modules/ohash/dist/index.mjs';
-import { collections } from 'file:///home/marius/Documents/Project/nuxt-folio/.nuxt/nuxt-icon-server-bundle.mjs';
-import { createHead as createHead$1, propsToString, renderSSRHead } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/unhead/dist/server.mjs';
-import { DeprecationsPlugin, PromisesPlugin, TemplateParamsPlugin, AliasSortingPlugin } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/unhead/dist/plugins.mjs';
-import { walkResolver } from 'file:///home/marius/Documents/Project/nuxt-folio/node_modules/unhead/dist/utils.mjs';
+import { dirname as dirname$1, resolve as resolve$1 } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/pathe/dist/index.mjs';
+import { basename } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/@nuxt/icon/node_modules/pathe/dist/index.mjs';
+import { getIcons } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/@iconify/utils/lib/index.mjs';
+import { hash as hash$1 } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/@nuxt/icon/node_modules/ohash/dist/index.mjs';
+import { collections } from 'file:///Users/marius/Documents/Proffessionnel/ONG/.nuxt/nuxt-icon-server-bundle.mjs';
+import { createHead as createHead$1, propsToString, renderSSRHead } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/unhead/dist/server.mjs';
+import { DeprecationsPlugin, PromisesPlugin, TemplateParamsPlugin, AliasSortingPlugin } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/unhead/dist/plugins.mjs';
+import { walkResolver } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/unhead/dist/utils.mjs';
 
-const serverAssets = [{"baseName":"server","dir":"/home/marius/Documents/Project/nuxt-folio/server/assets"}];
+const serverAssets = [{"baseName":"server","dir":"/Users/marius/Documents/Proffessionnel/ONG/server/assets"}];
 
 const assets$1 = createStorage();
 
@@ -52,11 +52,11 @@ const storage = createStorage({});
 
 storage.mount('/assets', assets$1);
 
-storage.mount('root', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/home/marius/Documents/Project/nuxt-folio","watchOptions":{"ignored":[null]}}));
-storage.mount('src', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/home/marius/Documents/Project/nuxt-folio/server","watchOptions":{"ignored":[null]}}));
-storage.mount('build', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/home/marius/Documents/Project/nuxt-folio/.nuxt"}));
-storage.mount('cache', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/home/marius/Documents/Project/nuxt-folio/.nuxt/cache"}));
-storage.mount('data', unstorage_47drivers_47fs({"driver":"fs","base":"/home/marius/Documents/Project/nuxt-folio/.data/kv"}));
+storage.mount('root', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/Users/marius/Documents/Proffessionnel/ONG","watchOptions":{"ignored":[null]}}));
+storage.mount('src', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/Users/marius/Documents/Proffessionnel/ONG/server","watchOptions":{"ignored":[null]}}));
+storage.mount('build', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/Users/marius/Documents/Proffessionnel/ONG/.nuxt"}));
+storage.mount('cache', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/Users/marius/Documents/Proffessionnel/ONG/.nuxt/cache"}));
+storage.mount('data', unstorage_47drivers_47fs({"driver":"fs","base":"/Users/marius/Documents/Proffessionnel/ONG/.data/kv"}));
 
 function useStorage(base = "") {
   return base ? prefixStorage(storage, base) : storage;
@@ -1258,15 +1258,15 @@ if (!window.__NUXT_DEVTOOLS_TIME_METRIC__) {
 window.__NUXT_DEVTOOLS_TIME_METRIC__.appInit = Date.now()
 `;
 
-const _iylwX2t40RnDnY30go3hbgjWGslU7D_4syLXj2q5gs = (function(nitro) {
+const _dG5kCBnq249uk2TRSIh62j52S5SUVfkros44gnQg8E = (function(nitro) {
   nitro.hooks.hook("render:html", (htmlContext) => {
     htmlContext.head.push(`<script>${script$1}<\/script>`);
   });
 });
 
-const rootDir = "/home/marius/Documents/Project/nuxt-folio";
+const rootDir = "/Users/marius/Documents/Proffessionnel/ONG";
 
-const appHead = {"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"hid":"description","name":"description","content":"Portfolio personnel de Marius"}],"link":[{"rel":"icon","type":"image/x-icon","href":"/favicon.ico"}],"style":[],"script":[],"noscript":[],"title":"Soutenez nos ONG"};
+const appHead = {"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"hid":"description","name":"description","content":"Projet Paika Ong "}],"link":[{"rel":"icon","type":"image/x-icon","href":"/favicon.ico"}],"style":[],"script":[],"noscript":[],"title":"Soutenez nos ONG"};
 
 const appRootTag = "div";
 
@@ -1283,7 +1283,7 @@ const devReducers = {
   URL: (data) => data instanceof URL ? data.toString() : void 0
 };
 const asyncContext = getContext("nuxt-dev", { asyncContext: true, AsyncLocalStorage });
-const _2Q2auboMdlFhb9_nxsTSJbVfXkK9jsySjrVnETeqCR8 = (nitroApp) => {
+const _QsHGK4cVKJECU974xO65FOyg1RE1_XTueHXil9TKqSg = (nitroApp) => {
   const handler = nitroApp.h3App.handler;
   nitroApp.h3App.handler = (event) => {
     return asyncContext.callAsync({ logs: [], event }, () => handler(event));
@@ -1354,19 +1354,34 @@ function onConsoleLog(callback) {
 
 const script = "\"use strict\";(()=>{const t=window,e=document.documentElement,c=[\"dark\",\"light\"],n=getStorageValue(\"localStorage\",\"nuxt-color-mode\")||\"dark\";let i=n===\"system\"?u():n;const r=e.getAttribute(\"data-color-mode-forced\");r&&(i=r),l(i),t[\"__NUXT_COLOR_MODE__\"]={preference:n,value:i,getColorScheme:u,addColorScheme:l,removeColorScheme:d};function l(o){const s=\"\"+o+\"\",a=\"\";e.classList?e.classList.add(s):e.className+=\" \"+s,a&&e.setAttribute(\"data-\"+a,o)}function d(o){const s=\"\"+o+\"\",a=\"\";e.classList?e.classList.remove(s):e.className=e.className.replace(new RegExp(s,\"g\"),\"\"),a&&e.removeAttribute(\"data-\"+a)}function f(o){return t.matchMedia(\"(prefers-color-scheme\"+o+\")\")}function u(){if(t.matchMedia&&f(\"\").media!==\"not all\"){for(const o of c)if(f(\":\"+o).matches)return o}return\"light\"}})();function getStorageValue(t,e){switch(t){case\"localStorage\":return window.localStorage.getItem(e);case\"sessionStorage\":return window.sessionStorage.getItem(e);case\"cookie\":return getCookie(e);default:return null}}function getCookie(t){const c=(\"; \"+window.document.cookie).split(\"; \"+t+\"=\");if(c.length===2)return c.pop()?.split(\";\").shift()}";
 
-const _MvN610VHI5ABLgrcJZEbM71O5qQ16fJeAqKgFxxQ6j4 = (function(nitro) {
+const _ErdtmwJcqqpQ5PD4b4UyI856ixhiUzsheifQwM0kEwY = (function(nitro) {
   nitro.hooks.hook("render:html", (htmlContext) => {
     htmlContext.head.push(`<script>${script}<\/script>`);
   });
 });
 
 const plugins = [
-  _iylwX2t40RnDnY30go3hbgjWGslU7D_4syLXj2q5gs,
-_2Q2auboMdlFhb9_nxsTSJbVfXkK9jsySjrVnETeqCR8,
-_MvN610VHI5ABLgrcJZEbM71O5qQ16fJeAqKgFxxQ6j4
+  _dG5kCBnq249uk2TRSIh62j52S5SUVfkros44gnQg8E,
+_QsHGK4cVKJECU974xO65FOyg1RE1_XTueHXil9TKqSg,
+_ErdtmwJcqqpQ5PD4b4UyI856ixhiUzsheifQwM0kEwY
 ];
 
-const assets = {};
+const assets = {
+  "/index.mjs": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"14697-QcgIzgUH7ieaUzE751t7IUVjz14\"",
+    "mtime": "2026-03-23T04:04:10.460Z",
+    "size": 83607,
+    "path": "index.mjs"
+  },
+  "/index.mjs.map": {
+    "type": "application/json",
+    "etag": "\"485af-31xiKPbABQu6u/j/6xHIOKNM1kw\"",
+    "mtime": "2026-03-23T04:04:10.460Z",
+    "size": 296367,
+    "path": "index.mjs.map"
+  }
+};
 
 function readAsset (id) {
   const serverDir = dirname$1(fileURLToPath(globalThis._importMeta_.url));
@@ -1391,7 +1406,7 @@ function getAsset (id) {
 
 const METHODS = /* @__PURE__ */ new Set(["HEAD", "GET"]);
 const EncodingMap = { gzip: ".gz", br: ".br" };
-const _WTy9qD = eventHandler((event) => {
+const _DyLm2U = eventHandler((event) => {
   if (event.method && !METHODS.has(event.method)) {
     return;
   }
@@ -1545,7 +1560,7 @@ function publicAssetsURL(...path) {
 
 const warnOnceSet = /* @__PURE__ */ new Set();
 const DEFAULT_ENDPOINT = "https://api.iconify.design";
-const _oS2YYI = defineCachedEventHandler(async (event) => {
+const _3jmRZG = defineCachedEventHandler(async (event) => {
   const url = getRequestURL(event);
   if (!url)
     return createError({ status: 400, message: "Invalid icon request" });
@@ -1665,8 +1680,8 @@ function setSSRError(ssrContext, error) {
 
 const APP_ROOT_OPEN_TAG = `<${appRootTag}${propsToString(appRootAttrs)}>`;
 const APP_ROOT_CLOSE_TAG = `</${appRootTag}>`;
-const getServerEntry = () => import('file:///home/marius/Documents/Project/nuxt-folio/.nuxt//dist/server/server.mjs').then((r) => r.default || r);
-const getClientManifest = () => import('file:///home/marius/Documents/Project/nuxt-folio/.nuxt//dist/server/client.manifest.mjs').then((r) => r.default || r).then((r) => typeof r === "function" ? r() : r);
+const getServerEntry = () => import('file:///Users/marius/Documents/Proffessionnel/ONG/.nuxt//dist/server/server.mjs').then((r) => r.default || r);
+const getClientManifest = () => import('file:///Users/marius/Documents/Proffessionnel/ONG/.nuxt//dist/server/client.manifest.mjs').then((r) => r.default || r).then((r) => typeof r === "function" ? r() : r);
 const getSSRRenderer = lazyCachedFunction(async () => {
   const manifest = await getClientManifest();
   if (!manifest) {
@@ -1915,14 +1930,14 @@ async function getIslandContext(event) {
   return ctx;
 }
 
-const _lazy_4zgfdT = () => Promise.resolve().then(function () { return renderer$1; });
+const _lazy_7RYPIX = () => Promise.resolve().then(function () { return renderer$1; });
 
 const handlers = [
-  { route: '', handler: _WTy9qD, lazy: false, middleware: true, method: undefined },
-  { route: '/__nuxt_error', handler: _lazy_4zgfdT, lazy: true, middleware: false, method: undefined },
-  { route: '/api/_nuxt_icon/:collection', handler: _oS2YYI, lazy: false, middleware: false, method: undefined },
+  { route: '', handler: _DyLm2U, lazy: false, middleware: true, method: undefined },
+  { route: '/__nuxt_error', handler: _lazy_7RYPIX, lazy: true, middleware: false, method: undefined },
+  { route: '/api/_nuxt_icon/:collection', handler: _3jmRZG, lazy: false, middleware: false, method: undefined },
   { route: '/__nuxt_island/**', handler: _SxA8c9, lazy: false, middleware: false, method: undefined },
-  { route: '/**', handler: _lazy_4zgfdT, lazy: true, middleware: false, method: undefined }
+  { route: '/**', handler: _lazy_7RYPIX, lazy: true, middleware: false, method: undefined }
 ];
 
 function createNitroApp() {

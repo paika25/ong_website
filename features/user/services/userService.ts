@@ -7,6 +7,7 @@ export interface User {
   fullName: string
   companyName?: string
   avatar?: string
+  cover?: string
   bio?: string
   location?: string
   website?: string
@@ -33,6 +34,7 @@ export interface UserUpdateData {
   location?: string
   website?: string
   avatar?: string
+  cover?: string
 }
 
 interface SupabaseAccount {
@@ -43,6 +45,7 @@ interface SupabaseAccount {
   last_name: string
   company_name?: string
   avatar?: string
+  cover?: string
   bio?: string
   location?: string
   website?: string
@@ -129,6 +132,7 @@ const mapSupabaseToUser = (account: SupabaseAccount): User => {
     fullName: `${account.first_name || ''} ${account.last_name || ''}`.trim(),
     companyName: account.company_name,
     avatar: account.avatar,
+    cover: account.cover,
     bio: account.bio,
     location: account.location,
     website: account.website,
@@ -335,6 +339,7 @@ export const useUserService = () => {
         if (userData.location !== undefined) updateData.location = userData.location
         if (userData.website !== undefined) updateData.website = userData.website
         if (userData.avatar !== undefined) updateData.avatar = userData.avatar
+        if (userData.cover !== undefined) updateData.cover = userData.cover
         updateData.updated_at = new Date().toISOString()
 
         const { data, error } = await supabase
@@ -388,13 +393,17 @@ export const useUserService = () => {
         }
 
         // Upload vers Supabase Storage
-        const fileExt = file.name.split('.').pop()
+        const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg'
         const fileName = `${user.id}-${Date.now()}.${fileExt}`
         const filePath = `avatars/${fileName}`
 
         const { error: uploadError } = await supabase.storage
-          .from('public')
-          .upload(filePath, file)
+          .from('avatars')
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: true,
+            contentType: file.type,
+          })
 
         if (uploadError) {
           throw uploadError
@@ -402,7 +411,7 @@ export const useUserService = () => {
 
         // Obtenir l'URL publique
         const { data } = supabase.storage
-          .from('public')
+          .from('avatars')
           .getPublicUrl(filePath)
 
         const avatarUrl = data.publicUrl
@@ -424,6 +433,56 @@ export const useUserService = () => {
     // Mode mock
     await new Promise(resolve => setTimeout(resolve, 2000))
     return `https://images.unsplash.com/photo-${Date.now()}?w=200`
+  }
+
+  const updateCover = async (file: File): Promise<string> => {
+    const supabase = useSupabase()
+    
+    if (supabase) {
+      try {
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
+        
+        if (authError || !user) {
+          throw new Error('Utilisateur non connect\u00e9')
+        }
+
+        const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg'
+        const fileName = `${user.id}-cover-${Date.now()}.${fileExt}`
+        const filePath = `covers/${fileName}`
+
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: true,
+            contentType: file.type,
+          })
+
+        if (uploadError) {
+          throw uploadError
+        }
+
+        const { data } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath)
+
+        const coverUrl = data.publicUrl
+
+        await supabase
+          .from('accounts')
+          .update({ cover: coverUrl, updated_at: new Date().toISOString() })
+          .eq('email', user.email)
+
+        console.log('\u2705 Couverture upload\u00e9e avec succ\u00e8s')
+        return coverUrl
+      } catch (err: any) {
+        console.error('\u274c Erreur upload couverture:', err)
+        throw err
+      }
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    return `https://images.unsplash.com/photo-${Date.now()}?w=1200`
   }
 
   const searchUsers = async (query: string): Promise<User[]> => {
@@ -506,6 +565,7 @@ export const useUserService = () => {
     getUserById,
     updateUser,
     updateAvatar,
+    updateCover,
     searchUsers,
     deleteAccount,
     getUserStats

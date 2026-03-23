@@ -21,7 +21,13 @@
       <!-- Header du profil -->
       <div class="bg-card rounded-xl border border-border overflow-hidden">
         <!-- Cover image -->
-        <div class="h-32 bg-gradient-to-r from-primary to-accent relative">
+        <div class="h-32 bg-gradient-to-r from-primary to-accent relative overflow-hidden">
+          <img
+            v-if="user.cover"
+            :src="user.cover"
+            :alt="`Couverture de ${user.fullName}`"
+            class="w-full h-full object-cover"
+          />
           <UButton
             v-if="isOwnProfile"
             variant="solid"
@@ -95,7 +101,7 @@
             </UBadge>
           </div>
 
-          <p class="text-muted-foreground mb-3">{{ user.bio }}</p>
+          <p class="text-muted-foreground mb-3 whitespace-pre-line">{{ user.bio }}</p>
 
           <!-- Métadonnées -->
           <div class="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
@@ -349,7 +355,7 @@ import type { User } from '../services/userService'
 import { ref, reactive, computed, onMounted } from 'vue'
 
 const authStore = useAuthStore()
-const { getCurrentUser, updateUser, getUserStats } = useUserService()
+const { getCurrentUser, updateUser, updateAvatar, updateCover, getUserStats } = useUserService()
 const supabase = useSupabase()
 
 // États
@@ -540,11 +546,32 @@ function cancelEdit() {
 function uploadAvatar() {
   const input = document.createElement('input')
   input.type = 'file'
-  input.accept = 'image/*'
-  input.onchange = () => {
+  input.accept = 'image/jpeg,image/png,image/webp'
+  input.onchange = async () => {
     const file = input.files && input.files[0]
     if (!file || !user.value) return
-    user.value.avatar = URL.createObjectURL(file)
+
+    // Preview immédiat
+    const previewUrl = URL.createObjectURL(file)
+    const previousAvatar = user.value.avatar
+    user.value.avatar = previewUrl
+
+    try {
+      const avatarUrl = await updateAvatar(file)
+      URL.revokeObjectURL(previewUrl)
+      user.value.avatar = avatarUrl
+
+      // Mettre à jour le store auth
+      if (authStore.currentUser) {
+        authStore.updateUserData({ avatar: avatarUrl })
+      }
+      console.log('✅ Avatar uploadé et persisté')
+    } catch (err: any) {
+      console.error('❌ Erreur upload avatar:', err)
+      URL.revokeObjectURL(previewUrl)
+      user.value.avatar = previousAvatar
+      error.value = err.message || 'Erreur lors de l\'upload de l\'avatar'
+    }
   }
   input.click()
 }
@@ -552,11 +579,32 @@ function uploadAvatar() {
 function uploadCover() {
   const input = document.createElement('input')
   input.type = 'file'
-  input.accept = 'image/*'
-  input.onchange = () => {
+  input.accept = 'image/jpeg,image/png,image/webp'
+  input.onchange = async () => {
     const file = input.files && input.files[0]
     if (!file || !user.value) return
-    ;(user.value as any).cover = URL.createObjectURL(file)
+
+    // Preview immédiat
+    const previewUrl = URL.createObjectURL(file)
+    const previousCover = user.value.cover
+    ;(user.value as any).cover = previewUrl
+
+    try {
+      const coverUrl = await updateCover(file)
+      URL.revokeObjectURL(previewUrl)
+      ;(user.value as any).cover = coverUrl
+
+      // Mettre à jour le store auth
+      if (authStore.currentUser) {
+        authStore.updateUserData({ cover: coverUrl } as any)
+      }
+      console.log('✅ Couverture uploadée et persistée')
+    } catch (err: any) {
+      console.error('❌ Erreur upload couverture:', err)
+      URL.revokeObjectURL(previewUrl)
+      ;(user.value as any).cover = previousCover
+      error.value = err.message || 'Erreur lors de l\'upload de la couverture'
+    }
   }
   input.click()
 }
@@ -621,6 +669,7 @@ async function loadProfile() {
       fullName: authStore.currentUser.fullName || authStore.currentUser.email,
       companyName: authStore.currentUser.companyName,
       avatar: authStore.currentUser.avatar,
+      cover: (authStore.currentUser as any).cover,
       bio: authStore.currentUser.bio,
       location: authStore.currentUser.location,
       website: authStore.currentUser.website,

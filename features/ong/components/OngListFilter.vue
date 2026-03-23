@@ -114,6 +114,15 @@ const emit = defineEmits<{
 const filters = reactive<OngFilters>({ ...props.filter })
 const showAdvancedFilters = ref(false)
 
+// sync local copy when parent prop changes
+watch(
+  () => props.filter,
+  (newVal) => {
+    Object.assign(filters, newVal)
+  },
+  { deep: true }
+)
+
 // emit changes to parent when local filters change
 watch(
   () => ({ ...filters }),

@@ -81,3 +81,18 @@ export interface Project {
   impact?: string
   budget?: number
 }
+
+// ── Documents ONG ──────────────────────────
+
+export type DocumentCategory = 'legal' | 'activity'
+
+export interface OngDocument {
+  id: string
+  ongId: string
+  name: string
+  category: DocumentCategory
+  fileUrl: string
+  fileSize: number
+  mimeType: string
+  createdAt: string
+}

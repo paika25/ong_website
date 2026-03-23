@@ -9,6 +9,7 @@ interface SupabaseAccount {
   last_name: string | null
   company_name?: string | null
   avatar?: string | null
+  cover?: string | null
   bio?: string | null
   location?: string | null
   website?: string | null
@@ -30,6 +31,7 @@ const mapSupabaseToUser = (account: SupabaseAccount): User => {
     fullName: [account.first_name, account.last_name].filter(Boolean).join(' ') || account.email.split('@')[0],
     companyName: account.company_name,
     avatar: account.avatar,
+    cover: account.cover,
     bio: account.bio,
     location: account.location,
     website: account.website,

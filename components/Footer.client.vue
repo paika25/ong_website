@@ -18,6 +18,11 @@
           <p class="mb-2">
             © {{ currentYear }} Paika project. Tous droits réservés.
           </p>
+          <div class="flex items-center justify-center gap-3 mb-2">
+            <NuxtLink to="/terms" class="hover:text-foreground transition-colors">Conditions d'utilisation</NuxtLink>
+            <span>·</span>
+            <NuxtLink to="/privacy" class="hover:text-foreground transition-colors">Politique de confidentialité</NuxtLink>
+          </div>
           <p>
             Développé avec Vue.js, Nuxt.js & Tailwind CSS
           </p>
