@@ -272,7 +272,7 @@
           <div v-else class="text-center py-8 text-muted-foreground">
             <Icon name="i-heroicons-building-office" class="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p>{{ isOwnProfile ? 'Vous n\'êtes membre d\'aucune ONG' : 'Aucune ONG associée' }}</p>
-            <UButton v-if="isOwnProfile" variant="outline" size="sm" class="mt-4" @click="handleNavigate('/ongs')">
+            <UButton v-if="isOwnProfile" variant="outline" size="sm" class="mt-4" @click="handleNavigate('/')">
               Explorer les ONGs
             </UButton>
           </div>
