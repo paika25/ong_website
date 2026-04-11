@@ -262,6 +262,7 @@ declare global {
   const useLink: typeof import('../../node_modules/vue-router')['useLink']
   const useLoadingIndicator: typeof import('../../node_modules/nuxt/dist/app/composables/loading-indicator')['useLoadingIndicator']
   const useLocalStorage: typeof import('@vueuse/core')['useLocalStorage']
+  const useLocationAutocomplete: typeof import('../../composables/useLocationAutocomplete')['useLocationAutocomplete']
   const useMagicKeys: typeof import('@vueuse/core')['useMagicKeys']
   const useManualRefHistory: typeof import('@vueuse/core')['useManualRefHistory']
   const useMath: typeof import('../../node_modules/@vueuse/math')['useMath']
@@ -446,6 +447,9 @@ declare global {
   // @ts-ignore
   export type { ColorMode } from '../../composables/useColorMode.client'
   import('../../composables/useColorMode.client')
+  // @ts-ignore
+  export type { LocationSuggestion } from '../../composables/useLocationAutocomplete'
+  import('../../composables/useLocationAutocomplete')
 }
 // for vue template auto import
 import { UnwrapRef } from 'vue'
@@ -712,6 +716,7 @@ declare module 'vue' {
     readonly useLink: UnwrapRef<typeof import('../../node_modules/vue-router')['useLink']>
     readonly useLoadingIndicator: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/loading-indicator')['useLoadingIndicator']>
     readonly useLocalStorage: UnwrapRef<typeof import('@vueuse/core')['useLocalStorage']>
+    readonly useLocationAutocomplete: UnwrapRef<typeof import('../../composables/useLocationAutocomplete')['useLocationAutocomplete']>
     readonly useMagicKeys: UnwrapRef<typeof import('@vueuse/core')['useMagicKeys']>
     readonly useManualRefHistory: UnwrapRef<typeof import('@vueuse/core')['useManualRefHistory']>
     readonly useMath: UnwrapRef<typeof import('../../node_modules/@vueuse/math')['useMath']>

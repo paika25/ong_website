@@ -34,6 +34,7 @@ export { definePageMeta } from '../node_modules/nuxt/dist/pages/runtime/composab
 export { defineLazyHydrationComponent } from '#app/composables/lazy-hydration';
 export { useAuth } from '../composables/useAuth.client';
 export { useAppColorMode, ColorMode } from '../composables/useColorMode.client';
+export { useLocationAutocomplete, LocationSuggestion } from '../composables/useLocationAutocomplete';
 export { default as useSupabaseClient, useSupabase, checkSupabaseConnection } from '../composables/useSupabase.client';
 export { defineShortcuts } from '../node_modules/@nuxt/ui/dist/runtime/composables/defineShortcuts';
 export { useProvideButtonGroup, useInjectButtonGroup } from '../node_modules/@nuxt/ui/dist/runtime/composables/useButtonGroup';
