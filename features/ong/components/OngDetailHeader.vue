@@ -23,40 +23,42 @@
       </div>
 
       <div class="absolute top-4 left-4">
-        <UBadge color="blue" variant="soft" size="lg">
+        <UBadge color="blue" variant="solid" size="lg" class="shadow-md">
           {{ categoryLabel }}
         </UBadge>
+      </div>
+
+      <!-- Boutons en bas à droite de l'image -->
+      <div class="absolute bottom-4 right-4 flex gap-3">
+        <UButton
+          color="primary"
+          size="lg"
+          :disabled="ong.status !== 'active'"
+          @click="$emit('join')"
+        >
+          <Icon name="i-heroicons-currency-euro" class="w-5 h-5 mr-2" />
+          Faites un don
+        </UButton>
+        <UButton
+          variant="outline"
+          size="lg"
+          class="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20"
+          @click="$emit('shareDonation')"
+        >
+          <Icon name="i-heroicons-share" class="w-5 h-5" />
+        </UButton>
       </div>
     </div>
 
     <!-- Informations principales -->
     <div class="p-6 md:p-8">
-      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
-        <div class="flex-1">
+      <div class="flex flex-col items-center gap-4 mb-6">
+        <div class="text-center">
           <h1 class="text-3xl md:text-4xl font-bold mb-3">{{ ong.name }}</h1>
-          <div class="flex items-center text-muted-foreground mb-4">
+          <div class="flex items-center justify-center text-muted-foreground mb-4">
             <Icon name="i-heroicons-map-pin" class="w-5 h-5 mr-2" />
             <span class="text-lg">{{ ong.location }}</span>
           </div>
-        </div>
-
-        <div class="flex gap-3">
-          <UButton
-            color="primary"
-            size="lg"
-            :disabled="ong.status !== 'active'"
-            @click="$emit('join')"
-          >
-            <Icon name="i-heroicons-currency-euro" class="w-5 h-5 mr-2" />
-            Faites un don
-          </UButton>
-          <UButton
-            variant="outline"
-            size="lg"
-            @click="$emit('shareDonation')"
-          >
-            <Icon name="i-heroicons-share" class="w-5 h-5" />
-          </UButton>
         </div>
       </div>
 
