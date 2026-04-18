@@ -16,9 +16,9 @@
       <div class="flex justify-between ml-2">
         <div class="flex items-center gap-3">
           <NuxtLink to="/profil" class="flex items-center space-x-1 text-gray-600 hover:text-red-600" aria-label="Profil" title="Profil">
-            <div class="text-right hidden sm:block">
-              <p class="font-medium">{{ user.fullName }}</p>
-              <p class="text-xs text-muted-foreground">
+            <div class="text-right hidden sm:block max-w-[120px]">
+              <p class="font-medium truncate">{{ user.fullName?.split(' ')[0] }}</p>
+              <p class="text-xs text-muted-foreground truncate">
                 {{ user.accountType === 'user_agent' ? 'Agent ONG' : 'Partenaire' }}
               </p>
             </div>
@@ -59,7 +59,8 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/features/auth/stores/auth.client'
 
-const authStore = useAuthStore()
+const { $pinia } = useNuxtApp()
+const authStore = useAuthStore($pinia as any)
 const user = computed(() => authStore.currentUser)
 const userInitials = computed(() => authStore.userInitials)
 const loggingOut = ref(false)

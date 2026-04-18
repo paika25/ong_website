@@ -1,11 +1,10 @@
 import type { User } from '~/features/auth/types/auth.types'
+import { useAuthStore } from '~/features/auth/stores/auth.client'
 
-/**
- * Composable pour gérer l'authentification
- */
 export const useAuth = () => {
   const supabase = useSupabase()
-  const authStore = useAuthStore()
+  const { $pinia } = useNuxtApp()
+  const authStore = useAuthStore($pinia as any)
 
   /**
    * Utilisateur connecté
