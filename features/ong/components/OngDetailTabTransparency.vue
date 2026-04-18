@@ -2,33 +2,46 @@
   <div class="space-y-6">
     <!-- Informations légales -->
     <div v-if="legal" class="bg-card rounded-xl border border-border p-6">
-      <h2 class="text-2xl font-semibold mb-4">Informations légales</h2>
-      <div class="space-y-3">
-        <div v-if="legal.siret" class="flex items-center gap-3">
-          <Icon name="i-heroicons-identification" class="w-5 h-5 text-primary" />
-          <div>
-            <div class="text-sm text-muted-foreground">SIRET</div>
-            <div class="font-medium">{{ legal.siret }}</div>
+      <h2 class="text-2xl font-semibold mb-6">Informations légales</h2>
+      <div class="flex flex-col md:flex-row gap-8">
+
+        <!-- Conformité (gauche) -->
+        <div v-if="legal.compliance" class="flex-1">
+          <div class="text-sm text-muted-foreground mb-3">Conformité</div>
+          <div class="space-y-2">
+            <div v-if="legal.compliance.dataProtection" class="flex items-start gap-2">
+              <Icon name="i-heroicons-shield-check" class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <span class="text-sm text-left">{{ legal.compliance.dataProtection }}</span>
+            </div>
+            <div v-if="legal.compliance.financialTransparency" class="flex items-start gap-2">
+              <Icon name="i-heroicons-shield-check" class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <span class="text-sm text-left">{{ legal.compliance.financialTransparency }}</span>
+            </div>
           </div>
         </div>
-        <div v-if="legal.registrationDate" class="flex items-center gap-3">
-          <Icon name="i-heroicons-calendar" class="w-5 h-5 text-primary" />
-          <div>
-            <div class="text-sm text-muted-foreground">Date d'enregistrement</div>
-            <div class="font-medium">{{ formatDate(legal.registrationDate) }}</div>
+
+        <!-- SIRET + Date (droite) -->
+        <div class="flex-1 space-y-3">
+          <div v-if="legal.siret" class="flex items-center gap-5">
+            <div class="w-10 h-10 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Icon name="i-heroicons-identification" class="w-5 h-5 text-primary" />
+            </div>
+            <div class="text-left">
+              <div class="text-xs text-muted-foreground">SIRET</div>
+              <div class="text-sm font-medium">{{ legal.siret }}</div>
+            </div>
+          </div>
+          <div v-if="legal.registrationDate" class="flex items-center gap-5">
+            <div class="w-10 h-10 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Icon name="i-heroicons-calendar" class="w-5 h-5 text-primary" />
+            </div>
+            <div class="text-left">
+              <div class="text-xs text-muted-foreground">Date d'enregistrement</div>
+              <div class="text-sm font-medium">{{ formatDate(legal.registrationDate) }}</div>
+            </div>
           </div>
         </div>
-        <div v-if="legal.compliance">
-          <div class="text-sm text-muted-foreground mb-2">Conformité</div>
-          <div v-if="legal.compliance.dataProtection" class="flex items-start gap-2 mb-2">
-            <Icon name="i-heroicons-shield-check" class="w-5 h-5 text-green-600 flex-shrink-0" />
-            <span class="text-sm">{{ legal.compliance.dataProtection }}</span>
-          </div>
-          <div v-if="legal.compliance.financialTransparency" class="flex items-start gap-2">
-            <Icon name="i-heroicons-shield-check" class="w-5 h-5 text-green-600 flex-shrink-0" />
-            <span class="text-sm">{{ legal.compliance.financialTransparency }}</span>
-          </div>
-        </div>
+
       </div>
     </div>
 
