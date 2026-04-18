@@ -10,14 +10,12 @@
       :key="opportunity.type"
       class="bg-card rounded-xl border border-border p-6 hover:shadow-lg transition-shadow"
     >
-      <div class="flex items-start justify-between mb-4">
-        <div>
-          <h3 class="text-xl font-semibold mb-2">{{ opportunity.type }}</h3>
-          <p class="text-muted-foreground mb-3">{{ opportunity.description }}</p>
-        </div>
-        <UBadge color="green" variant="soft" size="lg">
+      <div class="relative mb-4">
+        <UBadge color="green" variant="soft" size="lg" class="absolute top-0 right-0">
           {{ formatCurrency(opportunity.minAmount) }} min
         </UBadge>
+        <h3 class="text-xl font-semibold text-center mb-2">{{ opportunity.type }}</h3>
+        <p class="text-muted-foreground text-center mb-3">{{ opportunity.description }}</p>
       </div>
 
       <div class="bg-muted/50 rounded-lg p-4 mb-4">
