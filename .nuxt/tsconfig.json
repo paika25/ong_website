@@ -128,7 +128,7 @@
         "./tailwind/expose/*"
       ],
       "#app-manifest": [
-        "./manifest/meta/dev"
+        "./manifest/meta/7f44fe8d-7f3d-4bda-9890-b2e9cfd1a0ce"
       ],
       "#components": [
         "./components"
@@ -181,6 +181,6 @@
     "../.data",
     "../node_modules/runtime/server",
     "../node_modules/dist/runtime/server",
-    "dev"
+    "../.netlify/functions-internal"
   ]
 }
