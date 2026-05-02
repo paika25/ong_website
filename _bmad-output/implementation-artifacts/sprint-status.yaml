@@ -1,0 +1,122 @@
+# generated: 2026-05-02
+# last_updated: 2026-05-02
+# project: ong_website
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: "2026-05-02"
+last_updated: "2026-05-02"
+project: ong_website
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+
+  # ─────────────────────────────────────────────────────────────
+  # Epic 1 : Fondation & Authentification
+  # ─────────────────────────────────────────────────────────────
+  epic-1: backlog
+  1-1-migration-vers-architecture-feature-based-gardes-techniques: backlog
+  1-2-migrations-supabase-tables-de-fondation-triggers-immuabilite: backlog
+  1-3-validation-rls-multi-tenant-par-tests-e2e: backlog
+  1-4-custom-jwt-claims-middleware-de-roles-nuxt: backlog
+  1-5-contrats-de-services-partages-stubs-types-frozen: backlog
+  1-6-spike-vanilla-pay-validation-de-lintegration-sandbox: backlog
+  1-7-inscription-utilisateur: backlog
+  1-8-authentification-email-mot-de-passe: backlog
+  1-9-reinitialisation-de-mot-de-passe: backlog
+  1-10-gestion-du-profil-compte-deconnexion-globale: backlog
+  1-11-observabilite-monitoring-feature-flags: backlog
+  epic-1-retrospective: optional
+
+  # ─────────────────────────────────────────────────────────────
+  # Epic 2 : Profil ONG & Dossier de Candidature
+  # ─────────────────────────────────────────────────────────────
+  epic-2: backlog
+  2-1-infrastructure-feature-ong-profile-composant-documentuploadzone: backlog
+  2-2-composant-stepperform-5-etapes-non-lineaire: backlog
+  2-3-creation-profil-ong-etapes-identite-mission-documents: backlog
+  2-4-creation-profil-ong-etapes-projets-contacts-reprise-formulaire: backlog
+  2-5-modification-profil-ong-configuration-visibilite-publique: backlog
+  2-6-soumission-dossier-suivi-statut-telechargement-recapitulatif: backlog
+  epic-2-retrospective: optional
+
+  # ─────────────────────────────────────────────────────────────
+  # Epic 3 : Vérification Back-office & Badge
+  # ─────────────────────────────────────────────────────────────
+  epic-3: backlog
+  3-1-infrastructure-feature-verification-composants-pipelinekanban-badgevertifie: backlog
+  3-2-pipeline-kanban-liste-et-detail-des-dossiers: backlog
+  3-3-actions-de-verification-valider-rejeter-demander-complement: backlog
+  3-4-historique-et-tracabilite-des-actions-back-office: backlog
+  3-5-messagerie-integree-back-office-ong: backlog
+  epic-3-retrospective: optional
+
+  # ─────────────────────────────────────────────────────────────
+  # Epic 4 : Score de Transparence
+  # ─────────────────────────────────────────────────────────────
+  epic-4: backlog
+  4-1-implementation-score-service-ts-moteur-de-calcul: backlog
+  4-2-composant-scoretransparencewidget-parcours-agent: backlog
+  4-3-gouvernance-algorithme-versions-disputes: backlog
+  epic-4-retrospective: optional
+
+  # ─────────────────────────────────────────────────────────────
+  # Epic 5 : Abonnement Vanilla Pay & Audit Trail Financier
+  # ─────────────────────────────────────────────────────────────
+  epic-5: backlog
+  5-1-implementation-payment-service-ts-merkle-chain-sha-256: backlog
+  5-2-parcours-abonnement-vanilla-pay-agent: backlog
+  5-3-composant-transactionstatusbadge-ux-paiement-notifications-expiration: backlog
+  epic-5-retrospective: optional
+
+  # ─────────────────────────────────────────────────────────────
+  # Epic 6 : Marketplace Bailleur & Découverte
+  # ─────────────────────────────────────────────────────────────
+  epic-6: backlog
+  6-1-infrastructure-feature-marketplace-pdf-service-ts: backlog
+  6-2-liste-publique-ongs-filtres-url-persistent: backlog
+  6-3-profil-public-ong-telechargement-rapport-pdf: backlog
+  6-4-favoris-notifications-historique-financements: backlog
+  epic-6-retrospective: optional
+
+  # ─────────────────────────────────────────────────────────────
+  # Epic 7 : Virements Bailleurs & Analytics Back-office
+  # ─────────────────────────────────────────────────────────────
+  epic-7: backlog
+  7-1-handler-virements-vanilla-pay-immuabilite: backlog
+  7-2-preuve-dimmuabilite-hash-sha-256-quotidien: backlog
+  7-3-dashboard-back-office-metriques-live: backlog
+  7-4-rapports-agreges-exports-gestion-parametres-plateforme: backlog
+  epic-7-retrospective: optional
