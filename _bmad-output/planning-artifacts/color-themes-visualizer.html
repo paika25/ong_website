@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paika — Visualiseur de Thèmes Visuels</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #0F172A; color: #E2E8F0; }
+
+  .page-header {
+    text-align: center;
+    padding: 48px 24px 32px;
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    border-bottom: 1px solid #1E293B;
+  }
+  .page-header h1 { font-size: 28px; font-weight: 700; color: #F8FAFC; margin-bottom: 8px; }
+  .page-header p { color: #94A3B8; font-size: 15px; }
+
+  .tabs {
+    display: flex;
+    gap: 0;
+    justify-content: center;
+    padding: 24px 24px 0;
+    border-bottom: 1px solid #1E293B;
+    background: #0F172A;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .tab-btn {
+    padding: 12px 28px;
+    border: none;
+    background: transparent;
+    color: #64748B;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    letter-spacing: 0.01em;
+  }
+  .tab-btn:hover { color: #E2E8F0; }
+  .tab-btn.active { color: #F8FAFC; border-bottom-color: #6366F1; }
+
+  .theme-panel { display: none; padding: 40px 24px; max-width: 1100px; margin: 0 auto; }
+  .theme-panel.active { display: block; }
+
+  /* ─── THEME CARD HEADER ─────────────────────────────── */
+  .theme-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    background: #1E293B;
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 32px;
+    border: 1px solid #334155;
+  }
+  .theme-palette { display: flex; gap: 8px; flex-wrap: wrap; }
+  .swatch {
+    width: 36px; height: 36px; border-radius: 8px;
+    border: 2px solid rgba(255,255,255,0.1);
+    position: relative;
+  }
+  .swatch-label { font-size: 10px; color: #94A3B8; text-align: center; margin-top: 4px; }
+  .theme-meta h2 { font-size: 22px; font-weight: 700; color: #F8FAFC; margin-bottom: 6px; }
+  .theme-meta p { color: #94A3B8; font-size: 14px; line-height: 1.6; max-width: 600px; }
+  .theme-meta .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 8px 4px 0 0;
+  }
+
+  /* ─── MOCKUP GRID ────────────────────────────────────── */
+  .mockup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  .mockup-grid.wide { grid-template-columns: 1fr; }
+  @media (max-width: 700px) { .mockup-grid { grid-template-columns: 1fr; } }
+
+  .mockup-card {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #1E293B;
+  }
+  .mockup-label {
+    background: #1E293B;
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748B;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid #0F172A;
+  }
+
+  /* ─── THEME 1 : CONFIANCE INSTITUTIONNELLE ──────────── */
+  .t1 {
+    --bg: #FFFFFF;
+    --surface: #F8FAFC;
+    --border: #E2E8F0;
+    --text: #0F172A;
+    --text-muted: #64748B;
+    --primary: #1B4B82;
+    --primary-light: #2563EB;
+    --primary-soft: #DBEAFE;
+    --accent: #16A34A;
+    --accent-soft: #DCFCE7;
+    --verified: #16A34A;
+    --pending: #D97706;
+    --pending-soft: #FEF3C7;
+    --rejected: #DC2626;
+    --score-high: #16A34A;
+    --score-mid: #D97706;
+    --score-low: #EF4444;
+    --shadow: 0 1px 4px rgba(15,23,42,0.08), 0 4px 16px rgba(15,23,42,0.04);
+  }
+
+  /* ─── THEME 2 : TERRE & CROISSANCE ──────────────────── */
+  .t2 {
+    --bg: #FFFBF7;
+    --surface: #FEF9F4;
+    --border: #E7C99E;
+    --text: #1C0A00;
+    --text-muted: #78442A;
+    --primary: #92400E;
+    --primary-light: #B45309;
+    --primary-soft: #FEF3C7;
+    --accent: #15803D;
+    --accent-soft: #DCFCE7;
+    --verified: #15803D;
+    --pending: #B45309;
+    --pending-soft: #FFEDD5;
+    --rejected: #B91C1C;
+    --score-high: #15803D;
+    --score-mid: #B45309;
+    --score-low: #B91C1C;
+    --shadow: 0 1px 4px rgba(28,10,0,0.08), 0 4px 16px rgba(28,10,0,0.04);
+  }
+
+  /* ─── THEME 3 : PRÉCISION MODERNE ───────────────────── */
+  .t3 {
+    --bg: #FAFAFA;
+    --surface: #F1F5F9;
+    --border: #CBD5E1;
+    --text: #1E293B;
+    --text-muted: #64748B;
+    --primary: #312E81;
+    --primary-light: #4F46E5;
+    --primary-soft: #EEF2FF;
+    --accent: #0D9488;
+    --accent-soft: #CCFBF1;
+    --verified: #0D9488;
+    --pending: #D97706;
+    --pending-soft: #FEF3C7;
+    --rejected: #DC2626;
+    --score-high: #0D9488;
+    --score-mid: #D97706;
+    --score-low: #EF4444;
+    --shadow: 0 1px 4px rgba(30,41,59,0.06), 0 4px 16px rgba(30,41,59,0.04);
+  }
+
+  /* ─── SHARED COMPONENT STYLES ────────────────────────── */
+  .ui-frame {
+    background: var(--bg);
+    padding: 20px;
+    font-size: 13px;
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+  }
+
+  /* Badge Vérifié */
+  .badge-verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-soft);
+    color: var(--verified);
+    border: 1.5px solid var(--verified);
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+  .badge-verified::before { content: "✓"; font-size: 12px; }
+
+  .badge-pending {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--pending-soft);
+    color: var(--pending);
+    border: 1.5px solid var(--pending);
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .badge-pending::before { content: "⏳"; font-size: 11px; }
+
+  /* ONG Profile Card */
+  .ong-profile {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .ong-profile-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .ong-avatar {
+    width: 48px; height: 48px;
+    border-radius: 10px;
+    background: var(--primary-soft);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .ong-name { font-weight: 700; font-size: 15px; color: var(--text); margin-bottom: 3px; }
+  .ong-sector { font-size: 12px; color: var(--text-muted); }
+
+  /* Score Widget */
+  .score-widget {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 12px;
+  }
+  .score-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .score-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .score-value { font-size: 22px; font-weight: 800; color: var(--score-high); }
+  .score-bar-track {
+    height: 8px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--score-mid) 0%, var(--score-high) 70%);
+    transition: width 0.6s ease;
+  }
+  .score-hint { font-size: 11px; color: var(--text-muted); }
+  .score-hint span { color: var(--primary-light); font-weight: 600; }
+
+  /* Stepper Form */
+  .stepper {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .stepper-steps {
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+  .step-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step-dot.done { background: var(--accent); color: white; }
+  .step-dot.active { background: var(--primary); color: white; box-shadow: 0 0 0 3px var(--primary-soft); }
+  .step-dot.todo { background: var(--border); color: var(--text-muted); }
+  .step-line { flex: 1; height: 2px; background: var(--border); }
+  .step-line.done { background: var(--accent); }
+
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 0.05em; }
+  .form-input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.15s;
+  }
+  .form-input:focus { border-color: var(--primary-light); }
+  .form-input.filled { border-color: var(--accent); background: var(--accent-soft); }
+
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .btn-primary:hover { background: var(--primary-light); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--primary);
+    border: 1.5px solid var(--border);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+
+  /* Pipeline Kanban */
+  .kanban { display: flex; gap: 10px; overflow-x: auto; }
+  .kanban-col {
+    flex: 1;
+    min-width: 160px;
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 10px;
+  }
+  .kanban-col-header {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .kanban-count {
+    background: var(--border);
+    color: var(--text-muted);
+    border-radius: 999px;
+    padding: 1px 8px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .kanban-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+    box-shadow: var(--shadow);
+    border-left: 3px solid var(--border);
+  }
+  .kanban-card.urgent { border-left-color: var(--pending); }
+  .kanban-card.verified { border-left-color: var(--verified); }
+  .kanban-card-name { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .kanban-card-meta { font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; }
+  .urgent-tag { color: var(--pending); font-weight: 600; }
+
+  /* Notification */
+  .notif {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--accent-soft);
+    border: 1.5px solid var(--verified);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .notif-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .notif-title { font-size: 14px; font-weight: 700; color: var(--verified); margin-bottom: 3px; }
+  .notif-body { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+  /* Typography specimen */
+  .typo-specimen { background: var(--bg); padding: 20px; }
+  .t-h1 { font-size: 26px; font-weight: 800; color: var(--text); line-height: 1.2; margin-bottom: 6px; }
+  .t-h2 { font-size: 18px; font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 6px; }
+  .t-h3 { font-size: 14px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .t-body { font-size: 14px; color: var(--text); line-height: 1.6; margin-bottom: 6px; }
+  .t-small { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+  .t-link { color: var(--primary-light); font-size: 14px; font-weight: 500; text-decoration: underline; }
+
+  /* Color Tokens */
+  .token-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+  .token-cell { border-radius: 8px; overflow: hidden; border: 1px solid rgba(0,0,0,0.08); }
+  .token-swatch { height: 48px; }
+  .token-info { padding: 6px 8px; background: var(--bg); }
+  .token-name { font-size: 10px; font-weight: 600; color: var(--text-muted); display: block; }
+  .token-hex { font-size: 11px; color: var(--text); font-family: monospace; }
+
+  /* Accessibility row */
+  .a11y-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--surface);
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+  }
+  .a11y-swatch { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+  .a11y-label { font-size: 12px; color: var(--text); flex: 1; }
+  .a11y-ratio { font-size: 11px; font-family: monospace; }
+  .pass { color: #16A34A; font-weight: 700; }
+  .warn { color: #D97706; font-weight: 700; }
+
+  /* Dashboard preview */
+  .dashboard-shell {
+    background: var(--bg);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .dashboard-topbar {
+    background: var(--primary);
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+  }
+  .dashboard-topbar strong { font-size: 15px; font-weight: 800; letter-spacing: -0.01em; }
+  .topbar-right { display: flex; gap: 16px; align-items: center; opacity: 0.85; font-size: 12px; }
+  .dashboard-body { display: flex; }
+  .dashboard-sidebar {
+    width: 160px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 14px 10px;
+    flex-shrink: 0;
+  }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px;
+    border-radius: 7px;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+    cursor: pointer;
+  }
+  .sidebar-item.active {
+    background: var(--primary-soft);
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .sidebar-icon { font-size: 13px; }
+  .dashboard-main { flex: 1; padding: 16px; overflow: hidden; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 12px; }
+
+  /* ─────────────── */
+  .divider { border: none; border-top: 1px solid #1E293B; margin: 32px 0; }
+  .section-heading {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748B;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #1E293B;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Paika — Visualiseur de Thèmes Visuels</h1>
+  <p>3 directions visuelles en contexte UI réel · Choisissez celle qui correspond le mieux à l'identité Paika</p>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('t1')">Thème 1 · Confiance Institutionnelle</button>
+  <button class="tab-btn" onclick="showTab('t2')">Thème 2 · Terre &amp; Croissance</button>
+  <button class="tab-btn" onclick="showTab('t3')">Thème 3 · Précision Moderne</button>
+</div>
+
+<!-- ════════════════════════════════════════════
+     THÈME 1 : CONFIANCE INSTITUTIONNELLE
+════════════════════════════════════════════ -->
+<div id="t1" class="theme-panel active t1">
+
+  <div class="theme-header">
+    <div>
+      <div class="theme-palette">
+        <div>
+          <div class="swatch" style="background:#1B4B82"></div>
+          <div class="swatch-label">Primary</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#2563EB"></div>
+          <div class="swatch-label">Accent</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#16A34A"></div>
+          <div class="swatch-label">Verified</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#D97706"></div>
+          <div class="swatch-label">Pending</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#DC2626"></div>
+          <div class="swatch-label">Rejected</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#F8FAFC; border-color: #CBD5E1;"></div>
+          <div class="swatch-label">Surface</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#0F172A"></div>
+          <div class="swatch-label">Text</div>
+        </div>
+      </div>
+    </div>
+    <div class="theme-meta">
+      <h2>Confiance Institutionnelle</h2>
+      <p>Bleu institutionnel profond + vert certification. Inspire la confiance immédiate pour les bailleurs (GIZ, AFD). Codes couleur universellement associés à la crédibilité et au sérieux institutionnel.</p>
+      <span class="tag" style="background:#DBEAFE; color:#1B4B82;">Confiance</span>
+      <span class="tag" style="background:#DCFCE7; color:#16A34A;">Certification</span>
+      <span class="tag" style="background:#F1F5F9; color:#64748B;">Professionnel</span>
+    </div>
+  </div>
+
+  <!-- Dashboard Shell -->
+  <div class="section-heading">Dashboard Agent — Vue complète</div>
+  <div class="mockup-card" style="margin-bottom:20px;">
+    <div class="mockup-label">Dashboard Agent (Haingo)</div>
+    <div class="dashboard-shell t1">
+      <div class="dashboard-topbar">
+        <strong>Paika</strong>
+        <div class="topbar-right">
+          <span>Tableau de bord</span>
+          <span>🔔</span>
+          <span>Haingo M.</span>
+        </div>
+      </div>
+      <div class="dashboard-body">
+        <div class="dashboard-sidebar">
+          <div class="sidebar-item active"><span class="sidebar-icon">🏠</span>Tableau de bord</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📋</span>Mon dossier</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📄</span>Documents</div>
+          <div class="sidebar-item"><span class="sidebar-icon">💳</span>Abonnement</div>
+          <div class="sidebar-item"><span class="sidebar-icon">⚙️</span>Paramètres</div>
+        </div>
+        <div class="dashboard-main">
+          <div class="notif">
+            <div class="notif-icon">🎉</div>
+            <div>
+              <div class="notif-title">Votre ONG est maintenant Vérifiée Paika</div>
+              <div class="notif-body">Certification obtenue le 01/05/2026 · Votre profil est visible des bailleurs</div>
+            </div>
+          </div>
+          <div class="section-title">Votre statut</div>
+          <div style="display:flex; gap:10px; margin-bottom:14px;">
+            <span class="badge-verified">Vérifié Paika</span>
+            <span style="font-size:12px; color:var(--text-muted); align-self:center;">Certifié le 01/05/2026</span>
+          </div>
+          <div class="score-widget">
+            <div class="score-header">
+              <span class="score-label">Score de Transparence</span>
+              <span class="score-value">78/100</span>
+            </div>
+            <div class="score-bar-track">
+              <div class="score-bar-fill" style="width:78%"></div>
+            </div>
+            <div class="score-hint"><span>+7 pts</span> disponibles · Ajoutez votre rapport annuel 2024</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup-grid">
+    <!-- Stepper Form -->
+    <div class="mockup-card">
+      <div class="mockup-label">Formulaire multi-étapes (StepperForm)</div>
+      <div class="ui-frame t1">
+        <div class="stepper t1">
+          <div class="stepper-steps">
+            <div class="step-dot done">✓</div>
+            <div class="step-line done"></div>
+            <div class="step-dot done">✓</div>
+            <div class="step-line done"></div>
+            <div class="step-dot active">3</div>
+            <div class="step-line"></div>
+            <div class="step-dot todo">4</div>
+            <div class="step-line"></div>
+            <div class="step-dot todo">5</div>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin-bottom:14px;">Étape 3/5 — Documents légaux</div>
+          <div class="form-group">
+            <label class="form-label">Statuts de l'association</label>
+            <input class="form-input filled" value="statuts_asbl_2024.pdf ✓" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Récépissé d'enregistrement</label>
+            <input class="form-input" placeholder="Choisir un fichier…">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rapport annuel (facultatif)</label>
+            <input class="form-input" placeholder="Choisir un fichier…">
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">✓ Sauvegardé automatiquement</div>
+          <div class="form-actions">
+            <button class="btn-secondary t1">Précédent</button>
+            <button class="btn-primary t1">Continuer →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kanban Back-office -->
+    <div class="mockup-card">
+      <div class="mockup-label">Pipeline Back-office (PipelineKanban)</div>
+      <div class="ui-frame t1">
+        <div class="kanban t1">
+          <div class="kanban-col">
+            <div class="kanban-col-header">À vérifier <span class="kanban-count">4</span></div>
+            <div class="kanban-card urgent">
+              <div class="kanban-card-name">ONG Fiantso</div>
+              <div class="kanban-card-meta"><span>Score: 42</span><span class="urgent-tag">⚠ 52h</span></div>
+            </div>
+            <div class="kanban-card">
+              <div class="kanban-card-name">CRAM Antananarivo</div>
+              <div class="kanban-card-meta"><span>Score: 67</span><span>8h</span></div>
+            </div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-col-header">En cours <span class="kanban-count">2</span></div>
+            <div class="kanban-card" style="border-left-color:var(--primary)">
+              <div class="kanban-card-name">Taratra ONG</div>
+              <div class="kanban-card-meta"><span>Score: 71</span><span style="color:var(--primary)">Vous</span></div>
+            </div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-col-header">Validé <span class="kanban-count">7</span></div>
+            <div class="kanban-card verified">
+              <div class="kanban-card-name">ONG Miara-Dia</div>
+              <div class="kanban-card-meta"><span>Score: 84</span><span>✓</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Typography -->
+  <div class="mockup-card" style="margin-bottom:20px;">
+    <div class="mockup-label">Système Typographique</div>
+    <div class="typo-specimen t1">
+      <div class="t-h1">Infrastructure de Confiance pour les ONGs</div>
+      <div class="t-h2">Score de Transparence — 78 / 100</div>
+      <div class="t-h3">Documents légaux vérifiés</div>
+      <div class="t-body">Paika certifie les organisations à but non lucratif malgaches et les connecte aux bailleurs institutionnels. Chaque dossier est vérifié par notre équipe avant publication.</div>
+      <div class="t-small">Certifié le 01 mai 2026 · Score recalculé automatiquement · 6 critères vérifiés</div>
+      <div class="t-link">Télécharger le rapport de vérification (PDF) →</div>
+    </div>
+  </div>
+
+  <!-- Accessibility -->
+  <div class="mockup-card">
+    <div class="mockup-label">Accessibilité — Ratios de contraste</div>
+    <div class="ui-frame t1">
+      <div class="a11y-row t1">
+        <div class="a11y-swatch" style="background:#1B4B82; color:white;">Aa</div>
+        <div class="a11y-label">Primary (#1B4B82) sur blanc</div>
+        <div class="a11y-ratio pass">8.4:1 ✓ AAA</div>
+      </div>
+      <div class="a11y-row t1">
+        <div class="a11y-swatch" style="background:#16A34A; color:white;">Aa</div>
+        <div class="a11y-label">Verified (#16A34A) sur blanc</div>
+        <div class="a11y-ratio pass">4.6:1 ✓ AA</div>
+      </div>
+      <div class="a11y-row t1">
+        <div class="a11y-swatch" style="background:#D97706; color:white;">Aa</div>
+        <div class="a11y-label">Pending (#D97706) sur blanc</div>
+        <div class="a11y-ratio warn">2.8:1 ⚠ fond clair requis</div>
+      </div>
+      <div class="a11y-row t1">
+        <div class="a11y-swatch" style="background:#0F172A; color:white;">Aa</div>
+        <div class="a11y-label">Text primary (#0F172A) sur blanc</div>
+        <div class="a11y-ratio pass">19.6:1 ✓ AAA</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     THÈME 2 : TERRE & CROISSANCE
+════════════════════════════════════════════ -->
+<div id="t2" class="theme-panel t2">
+
+  <div class="theme-header">
+    <div>
+      <div class="theme-palette">
+        <div>
+          <div class="swatch" style="background:#92400E"></div>
+          <div class="swatch-label">Primary</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#B45309"></div>
+          <div class="swatch-label">Accent</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#15803D"></div>
+          <div class="swatch-label">Verified</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#B45309"></div>
+          <div class="swatch-label">Pending</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#B91C1C"></div>
+          <div class="swatch-label">Rejected</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#FFFBF7; border-color:#E7C99E;"></div>
+          <div class="swatch-label">Surface</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#1C0A00"></div>
+          <div class="swatch-label">Text</div>
+        </div>
+      </div>
+    </div>
+    <div class="theme-meta">
+      <h2>Terre &amp; Croissance</h2>
+      <p>Terracotta malgache + vert nature. Ancré dans le contexte local, chaleureux et authentique. Évoque la terre malgache, la croissance organique et le tissu associatif de terrain. Distinctif, mémorable.</p>
+      <span class="tag" style="background:#FFEDD5; color:#92400E;">Authenticité locale</span>
+      <span class="tag" style="background:#DCFCE7; color:#15803D;">Croissance</span>
+      <span class="tag" style="background:#FEF9F4; color:#78442A; border:1px solid #E7C99E;">Chaleureux</span>
+    </div>
+  </div>
+
+  <div class="mockup-card" style="margin-bottom:20px;">
+    <div class="mockup-label">Dashboard Agent (Haingo)</div>
+    <div class="dashboard-shell t2">
+      <div class="dashboard-topbar" style="background:#92400E;">
+        <strong>Paika</strong>
+        <div class="topbar-right">
+          <span>Tableau de bord</span>
+          <span>🔔</span>
+          <span>Haingo M.</span>
+        </div>
+      </div>
+      <div class="dashboard-body">
+        <div class="dashboard-sidebar t2">
+          <div class="sidebar-item active t2"><span class="sidebar-icon">🏠</span>Tableau de bord</div>
+          <div class="sidebar-item t2"><span class="sidebar-icon">📋</span>Mon dossier</div>
+          <div class="sidebar-item t2"><span class="sidebar-icon">📄</span>Documents</div>
+          <div class="sidebar-item t2"><span class="sidebar-icon">💳</span>Abonnement</div>
+          <div class="sidebar-item t2"><span class="sidebar-icon">⚙️</span>Paramètres</div>
+        </div>
+        <div class="dashboard-main t2">
+          <div class="notif t2">
+            <div class="notif-icon">🎉</div>
+            <div>
+              <div class="notif-title">Votre ONG est maintenant Vérifiée Paika</div>
+              <div class="notif-body">Certification obtenue le 01/05/2026 · Votre profil est visible des bailleurs</div>
+            </div>
+          </div>
+          <div class="section-title t2">Votre statut</div>
+          <div style="display:flex; gap:10px; margin-bottom:14px;">
+            <span class="badge-verified t2">Vérifié Paika</span>
+            <span style="font-size:12px; color:var(--text-muted); align-self:center;">Certifié le 01/05/2026</span>
+          </div>
+          <div class="score-widget t2">
+            <div class="score-header">
+              <span class="score-label">Score de Transparence</span>
+              <span class="score-value">78/100</span>
+            </div>
+            <div class="score-bar-track">
+              <div class="score-bar-fill" style="width:78%; background: linear-gradient(90deg, #B45309 0%, #15803D 70%);"></div>
+            </div>
+            <div class="score-hint"><span>+7 pts</span> disponibles · Ajoutez votre rapport annuel 2024</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup-grid">
+    <div class="mockup-card">
+      <div class="mockup-label">Formulaire multi-étapes</div>
+      <div class="ui-frame t2">
+        <div class="stepper t2">
+          <div class="stepper-steps">
+            <div class="step-dot done t2" style="background:#15803D; color:white;">✓</div>
+            <div class="step-line done t2" style="background:#15803D;"></div>
+            <div class="step-dot done t2" style="background:#15803D; color:white;">✓</div>
+            <div class="step-line done t2" style="background:#15803D;"></div>
+            <div class="step-dot active t2" style="background:#92400E; color:white; box-shadow: 0 0 0 3px #FEF3C7;">3</div>
+            <div class="step-line"></div>
+            <div class="step-dot todo">4</div>
+            <div class="step-line"></div>
+            <div class="step-dot todo">5</div>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin-bottom:14px;">Étape 3/5 — Documents légaux</div>
+          <div class="form-group">
+            <label class="form-label">Statuts de l'association</label>
+            <input class="form-input filled" value="statuts_asbl_2024.pdf ✓" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Récépissé d'enregistrement</label>
+            <input class="form-input" placeholder="Choisir un fichier…">
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">✓ Sauvegardé automatiquement</div>
+          <div class="form-actions">
+            <button class="btn-secondary t2" style="color:var(--primary); border-color:var(--border);">Précédent</button>
+            <button class="btn-primary t2" style="background:var(--primary);">Continuer →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mockup-card">
+      <div class="mockup-label">Pipeline Back-office</div>
+      <div class="ui-frame t2">
+        <div class="kanban t2">
+          <div class="kanban-col t2">
+            <div class="kanban-col-header">À vérifier <span class="kanban-count">4</span></div>
+            <div class="kanban-card urgent t2" style="border-left-color:#B45309;">
+              <div class="kanban-card-name">ONG Fiantso</div>
+              <div class="kanban-card-meta"><span>Score: 42</span><span class="urgent-tag" style="color:#B45309;">⚠ 52h</span></div>
+            </div>
+            <div class="kanban-card t2">
+              <div class="kanban-card-name">CRAM Antananarivo</div>
+              <div class="kanban-card-meta"><span>Score: 67</span><span>8h</span></div>
+            </div>
+          </div>
+          <div class="kanban-col t2">
+            <div class="kanban-col-header">En cours <span class="kanban-count">2</span></div>
+            <div class="kanban-card t2" style="border-left-color:#92400E;">
+              <div class="kanban-card-name">Taratra ONG</div>
+              <div class="kanban-card-meta"><span>Score: 71</span><span style="color:#92400E;">Vous</span></div>
+            </div>
+          </div>
+          <div class="kanban-col t2">
+            <div class="kanban-col-header">Validé <span class="kanban-count">7</span></div>
+            <div class="kanban-card verified t2" style="border-left-color:#15803D;">
+              <div class="kanban-card-name">ONG Miara-Dia</div>
+              <div class="kanban-card-meta"><span>Score: 84</span><span>✓</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup-card" style="margin-bottom:20px;">
+    <div class="mockup-label">Système Typographique</div>
+    <div class="typo-specimen t2">
+      <div class="t-h1" style="color:#1C0A00;">Infrastructure de Confiance pour les ONGs</div>
+      <div class="t-h2" style="color:#1C0A00;">Score de Transparence — 78 / 100</div>
+      <div class="t-h3" style="color:#78442A;">Documents légaux vérifiés</div>
+      <div class="t-body" style="color:#1C0A00;">Paika certifie les organisations à but non lucratif malgaches et les connecte aux bailleurs institutionnels. Chaque dossier est vérifié par notre équipe avant publication.</div>
+      <div class="t-small" style="color:#78442A;">Certifié le 01 mai 2026 · Score recalculé automatiquement · 6 critères vérifiés</div>
+      <div class="t-link" style="color:#B45309;">Télécharger le rapport de vérification (PDF) →</div>
+    </div>
+  </div>
+
+  <div class="mockup-card">
+    <div class="mockup-label">Accessibilité — Ratios de contraste</div>
+    <div class="ui-frame t2">
+      <div class="a11y-row t2">
+        <div class="a11y-swatch" style="background:#92400E; color:white;">Aa</div>
+        <div class="a11y-label">Primary (#92400E) sur blanc</div>
+        <div class="a11y-ratio pass">7.1:1 ✓ AAA</div>
+      </div>
+      <div class="a11y-row t2">
+        <div class="a11y-swatch" style="background:#15803D; color:white;">Aa</div>
+        <div class="a11y-label">Verified (#15803D) sur blanc</div>
+        <div class="a11y-ratio pass">5.1:1 ✓ AA</div>
+      </div>
+      <div class="a11y-row t2">
+        <div class="a11y-swatch" style="background:#B45309; color:white;">Aa</div>
+        <div class="a11y-label">Pending (#B45309) sur blanc</div>
+        <div class="a11y-ratio warn">3.2:1 ⚠ fond clair requis</div>
+      </div>
+      <div class="a11y-row t2">
+        <div class="a11y-swatch" style="background:#1C0A00; color:white;">Aa</div>
+        <div class="a11y-label">Text (#1C0A00) sur blanc</div>
+        <div class="a11y-ratio pass">20.1:1 ✓ AAA</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     THÈME 3 : PRÉCISION MODERNE
+════════════════════════════════════════════ -->
+<div id="t3" class="theme-panel t3">
+
+  <div class="theme-header">
+    <div>
+      <div class="theme-palette">
+        <div>
+          <div class="swatch" style="background:#312E81"></div>
+          <div class="swatch-label">Primary</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#4F46E5"></div>
+          <div class="swatch-label">Accent</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#0D9488"></div>
+          <div class="swatch-label">Verified</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#D97706"></div>
+          <div class="swatch-label">Pending</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#DC2626"></div>
+          <div class="swatch-label">Rejected</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#F1F5F9; border-color:#CBD5E1;"></div>
+          <div class="swatch-label">Surface</div>
+        </div>
+        <div>
+          <div class="swatch" style="background:#1E293B"></div>
+          <div class="swatch-label">Text</div>
+        </div>
+      </div>
+    </div>
+    <div class="theme-meta">
+      <h2>Précision Moderne</h2>
+      <p>Indigo profond + teal certification. Moderne, précis, SaaS professionnel. S'inspire de Linear, Notion, et des outils B2B haut de gamme. Convient parfaitement pour rassurer des bailleurs internationaux habitués à des outils comme Salesforce ou HubSpot.</p>
+      <span class="tag" style="background:#EEF2FF; color:#312E81;">Moderne</span>
+      <span class="tag" style="background:#CCFBF1; color:#0D9488;">Précision</span>
+      <span class="tag" style="background:#F1F5F9; color:#64748B;">SaaS B2B</span>
+    </div>
+  </div>
+
+  <div class="mockup-card" style="margin-bottom:20px;">
+    <div class="mockup-label">Dashboard Agent (Haingo)</div>
+    <div class="dashboard-shell t3">
+      <div class="dashboard-topbar" style="background:#312E81;">
+        <strong>Paika</strong>
+        <div class="topbar-right">
+          <span>Tableau de bord</span>
+          <span>🔔</span>
+          <span>Haingo M.</span>
+        </div>
+      </div>
+      <div class="dashboard-body">
+        <div class="dashboard-sidebar t3">
+          <div class="sidebar-item active t3"><span class="sidebar-icon">🏠</span>Tableau de bord</div>
+          <div class="sidebar-item t3"><span class="sidebar-icon">📋</span>Mon dossier</div>
+          <div class="sidebar-item t3"><span class="sidebar-icon">📄</span>Documents</div>
+          <div class="sidebar-item t3"><span class="sidebar-icon">💳</span>Abonnement</div>
+          <div class="sidebar-item t3"><span class="sidebar-icon">⚙️</span>Paramètres</div>
+        </div>
+        <div class="dashboard-main t3">
+          <div class="notif t3">
+            <div class="notif-icon">🎉</div>
+            <div>
+              <div class="notif-title" style="color:#0D9488;">Votre ONG est maintenant Vérifiée Paika</div>
+              <div class="notif-body">Certification obtenue le 01/05/2026 · Votre profil est visible des bailleurs</div>
+            </div>
+          </div>
+          <div class="section-title t3">Votre statut</div>
+          <div style="display:flex; gap:10px; margin-bottom:14px;">
+            <span class="badge-verified t3">Vérifié Paika</span>
+            <span style="font-size:12px; color:var(--text-muted); align-self:center;">Certifié le 01/05/2026</span>
+          </div>
+          <div class="score-widget t3">
+            <div class="score-header">
+              <span class="score-label">Score de Transparence</span>
+              <span class="score-value" style="color:#0D9488;">78/100</span>
+            </div>
+            <div class="score-bar-track">
+              <div class="score-bar-fill" style="width:78%; background: linear-gradient(90deg, #D97706 0%, #0D9488 70%);"></div>
+            </div>
+            <div class="score-hint"><span style="color:#4F46E5;">+7 pts</span> disponibles · Ajoutez votre rapport annuel 2024</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup-grid">
+    <div class="mockup-card">
+      <div class="mockup-label">Formulaire multi-étapes</div>
+      <div class="ui-frame t3">
+        <div class="stepper t3">
+          <div class="stepper-steps">
+            <div class="step-dot done t3" style="background:#0D9488; color:white;">✓</div>
+            <div class="step-line done t3" style="background:#0D9488;"></div>
+            <div class="step-dot done t3" style="background:#0D9488; color:white;">✓</div>
+            <div class="step-line done t3" style="background:#0D9488;"></div>
+            <div class="step-dot active t3" style="background:#312E81; color:white; box-shadow: 0 0 0 3px #EEF2FF;">3</div>
+            <div class="step-line"></div>
+            <div class="step-dot todo">4</div>
+            <div class="step-line"></div>
+            <div class="step-dot todo">5</div>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin-bottom:14px;">Étape 3/5 — Documents légaux</div>
+          <div class="form-group">
+            <label class="form-label">Statuts de l'association</label>
+            <input class="form-input filled t3" style="border-color:#0D9488; background:#CCFBF1;" value="statuts_asbl_2024.pdf ✓" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Récépissé d'enregistrement</label>
+            <input class="form-input t3" placeholder="Choisir un fichier…">
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">✓ Sauvegardé automatiquement</div>
+          <div class="form-actions">
+            <button class="btn-secondary t3" style="color:var(--primary); border-color:var(--border);">Précédent</button>
+            <button class="btn-primary t3" style="background:#312E81;">Continuer →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mockup-card">
+      <div class="mockup-label">Pipeline Back-office</div>
+      <div class="ui-frame t3">
+        <div class="kanban t3">
+          <div class="kanban-col t3">
+            <div class="kanban-col-header">À vérifier <span class="kanban-count">4</span></div>
+            <div class="kanban-card urgent t3" style="border-left-color:#D97706;">
+              <div class="kanban-card-name">ONG Fiantso</div>
+              <div class="kanban-card-meta"><span>Score: 42</span><span class="urgent-tag">⚠ 52h</span></div>
+            </div>
+            <div class="kanban-card t3">
+              <div class="kanban-card-name">CRAM Antananarivo</div>
+              <div class="kanban-card-meta"><span>Score: 67</span><span>8h</span></div>
+            </div>
+          </div>
+          <div class="kanban-col t3">
+            <div class="kanban-col-header">En cours <span class="kanban-count">2</span></div>
+            <div class="kanban-card t3" style="border-left-color:#312E81;">
+              <div class="kanban-card-name">Taratra ONG</div>
+              <div class="kanban-card-meta"><span>Score: 71</span><span style="color:#4F46E5;">Vous</span></div>
+            </div>
+          </div>
+          <div class="kanban-col t3">
+            <div class="kanban-col-header">Validé <span class="kanban-count">7</span></div>
+            <div class="kanban-card verified t3" style="border-left-color:#0D9488;">
+              <div class="kanban-card-name">ONG Miara-Dia</div>
+              <div class="kanban-card-meta"><span>Score: 84</span><span style="color:#0D9488;">✓</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup-card" style="margin-bottom:20px;">
+    <div class="mockup-label">Système Typographique</div>
+    <div class="typo-specimen t3">
+      <div class="t-h1" style="color:#1E293B;">Infrastructure de Confiance pour les ONGs</div>
+      <div class="t-h2" style="color:#1E293B;">Score de Transparence — 78 / 100</div>
+      <div class="t-h3" style="color:#64748B;">Documents légaux vérifiés</div>
+      <div class="t-body" style="color:#1E293B;">Paika certifie les organisations à but non lucratif malgaches et les connecte aux bailleurs institutionnels. Chaque dossier est vérifié par notre équipe avant publication.</div>
+      <div class="t-small" style="color:#64748B;">Certifié le 01 mai 2026 · Score recalculé automatiquement · 6 critères vérifiés</div>
+      <div class="t-link" style="color:#4F46E5;">Télécharger le rapport de vérification (PDF) →</div>
+    </div>
+  </div>
+
+  <div class="mockup-card">
+    <div class="mockup-label">Accessibilité — Ratios de contraste</div>
+    <div class="ui-frame t3">
+      <div class="a11y-row t3">
+        <div class="a11y-swatch" style="background:#312E81; color:white;">Aa</div>
+        <div class="a11y-label">Primary (#312E81) sur blanc</div>
+        <div class="a11y-ratio pass">12.1:1 ✓ AAA</div>
+      </div>
+      <div class="a11y-row t3">
+        <div class="a11y-swatch" style="background:#0D9488; color:white;">Aa</div>
+        <div class="a11y-label">Verified (#0D9488) sur blanc</div>
+        <div class="a11y-ratio pass">4.5:1 ✓ AA</div>
+      </div>
+      <div class="a11y-row t3">
+        <div class="a11y-swatch" style="background:#D97706; color:white;">Aa</div>
+        <div class="a11y-label">Pending (#D97706) sur blanc</div>
+        <div class="a11y-ratio warn">2.8:1 ⚠ fond clair requis</div>
+      </div>
+      <div class="a11y-row t3">
+        <div class="a11y-swatch" style="background:#1E293B; color:white;">Aa</div>
+        <div class="a11y-label">Text (#1E293B) sur blanc</div>
+        <div class="a11y-ratio pass">16.1:1 ✓ AAA</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.theme-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

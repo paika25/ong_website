@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paika — Directions de Design</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: #0F172A; color: #E2E8F0; }
+
+/* ── PAGE HEADER ── */
+.page-header { text-align: center; padding: 40px 24px 28px; background: #0F172A; border-bottom: 1px solid #1E293B; }
+.page-header h1 { font-size: 26px; font-weight: 800; color: #F8FAFC; margin-bottom: 6px; }
+.page-header p { color: #64748B; font-size: 14px; }
+
+/* ── DIRECTION TABS ── */
+.dir-tabs { display: flex; gap: 0; overflow-x: auto; background: #0F172A; border-bottom: 1px solid #1E293B; padding: 0 24px; position: sticky; top: 0; z-index: 100; }
+.dir-tab { padding: 14px 20px; border: none; background: transparent; color: #64748B; font-size: 12px; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; font-family: inherit; letter-spacing: 0.02em; }
+.dir-tab:hover { color: #CBD5E1; }
+.dir-tab.active { color: #F8FAFC; border-bottom-color: #6366F1; }
+
+/* ── SCREEN TABS ── */
+.screen-tabs { display: flex; gap: 8px; padding: 20px 32px 0; background: #0F172A; }
+.screen-tab { padding: 8px 16px; border-radius: 8px 8px 0 0; border: 1px solid #1E293B; border-bottom: none; background: #1E293B; color: #64748B; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.screen-tab.active { background: #1E3A5F; color: #93C5FD; border-color: #1E3A5F; }
+
+/* ── PANELS ── */
+.dir-panel { display: none; }
+.dir-panel.active { display: block; }
+.screen-panel { display: none; padding: 0 32px 40px; background: #0F172A; }
+.screen-panel.active { display: block; }
+
+/* ── DIRECTION HEADER ── */
+.dir-header { padding: 24px 32px 0; display: flex; align-items: flex-start; gap: 20px; }
+.dir-philosophy { background: #1E293B; border-radius: 12px; padding: 18px 22px; flex: 1; border: 1px solid #334155; }
+.dir-philosophy h2 { font-size: 17px; font-weight: 700; color: #F8FAFC; margin-bottom: 6px; }
+.dir-philosophy p { font-size: 13px; color: #94A3B8; line-height: 1.6; }
+.dir-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.dir-tag { padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+
+.frame-wrap { background: #1E293B; border-radius: 12px; border: 1px solid #334155; overflow: hidden; margin-top: 16px; }
+.frame-label { background: #0F172A; padding: 8px 16px; font-size: 11px; font-weight: 600; color: #475569; letter-spacing: 0.07em; text-transform: uppercase; border-bottom: 1px solid #1E293B; }
+
+/* ══════════════════════════════════════════
+   TOKENS PARTAGÉS
+══════════════════════════════════════════ */
+:root {
+  --c-primary:    #1B4B82;
+  --c-action:     #2563EB;
+  --c-soft:       #DBEAFE;
+  --c-verified:   #16A34A;
+  --c-vsft:       #DCFCE7;
+  --c-building:   #F59E0B;
+  --c-bsft:       #FFFBEB;
+  --c-solid:      #0D9488;
+  --c-pending-t:  #B45309;
+  --c-pending-bg: #FEF3C7;
+  --c-rejected:   #DC2626;
+  --c-bg:         #FFFFFF;
+  --c-surface:    #F8FAFC;
+  --c-border:     #E2E8F0;
+  --c-text:       #0F172A;
+  --c-muted:      #64748B;
+  --c-subtle:     #94A3B8;
+  --c-num:        #6B7280;
+}
+
+/* ══════════════════════════════════════════
+   SHARED COMPONENT ATOMS
+══════════════════════════════════════════ */
+.ui { font-family: 'Inter', -apple-system, sans-serif; font-size: 13px; color: var(--c-text); background: var(--c-bg); }
+
+.badge-verified { display:inline-flex; align-items:center; gap:5px; background:var(--c-vsft); color:var(--c-verified); border:1.5px solid var(--c-verified); border-radius:999px; padding:4px 12px; font-size:12px; font-weight:700; }
+.badge-building  { display:inline-flex; align-items:center; gap:5px; background:var(--c-bsft);  color:#92400E;           border:1.5px solid var(--c-building);  border-radius:999px; padding:4px 12px; font-size:12px; font-weight:600; }
+.badge-pending   { display:inline-flex; align-items:center; gap:5px; background:var(--c-pending-bg); color:var(--c-pending-t); border:1.5px solid var(--c-building); border-radius:999px; padding:4px 12px; font-size:12px; font-weight:600; }
+
+.score-num { font-size: 28px; font-weight: 800; color: var(--c-num); }
+.score-num span { font-size: 14px; font-weight: 400; color: var(--c-muted); }
+
+.topbar { background:var(--c-primary); color:white; padding:11px 20px; display:flex; align-items:center; justify-content:space-between; }
+.topbar-brand { font-size:16px; font-weight:800; letter-spacing:-0.01em; }
+.topbar-right { display:flex; gap:16px; align-items:center; font-size:12px; opacity:0.85; }
+
+.sidebar { width:200px; background:var(--c-surface); border-right:1px solid var(--c-border); padding:12px 8px; flex-shrink:0; }
+.si { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:7px; font-size:12px; color:var(--c-muted); margin-bottom:2px; cursor:pointer; }
+.si.active { background:var(--c-soft); color:var(--c-primary); font-weight:600; }
+.si-icon { font-size:13px; width:16px; text-align:center; }
+
+.shell { display:flex; flex-direction:column; }
+.shell-body { display:flex; flex:1; }
+.main { flex:1; padding:16px 20px; overflow:hidden; }
+
+.section-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--c-muted); margin-bottom:12px; }
+.card { background:var(--c-bg); border:1px solid var(--c-border); border-radius:10px; padding:16px; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+.card + .card { margin-top:12px; }
+
+.score-bar-track { height:7px; background:var(--c-border); border-radius:999px; overflow:hidden; }
+.score-bar-fill { height:100%; border-radius:999px; }
+
+.btn { padding:9px 18px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; border:none; }
+.btn-primary { background:var(--c-action); color:white; }
+.btn-ghost { background:transparent; color:var(--c-action); border:1.5px solid var(--c-border); }
+
+.form-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:var(--c-muted); margin-bottom:4px; display:block; }
+.form-input { width:100%; padding:9px 12px; border:1.5px solid var(--c-border); border-radius:7px; font-size:13px; color:var(--c-text); background:var(--c-bg); font-family:inherit; }
+.form-input.filled { border-color:var(--c-verified); background:var(--c-vsft); }
+.form-group { margin-bottom:12px; }
+
+.kanban-wrap { display:flex; gap:10px; }
+.kcol { flex:1; min-width:0; background:var(--c-surface); border-radius:9px; padding:10px; }
+.kcol-hdr { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--c-muted); margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; }
+.kcount { background:var(--c-border); color:var(--c-muted); border-radius:999px; padding:1px 7px; font-size:11px; font-weight:700; }
+.kcard { background:var(--c-bg); border:1px solid var(--c-border); border-radius:7px; padding:9px 10px; margin-bottom:7px; border-left:3px solid var(--c-border); box-shadow:0 1px 2px rgba(0,0,0,0.04); }
+.kcard.urgent { border-left-color:var(--c-building); }
+.kcard.done { border-left-color:var(--c-verified); }
+.kcard.wip { border-left-color:var(--c-action); }
+.kcard-name { font-size:12px; font-weight:600; color:var(--c-text); margin-bottom:3px; }
+.kcard-meta { font-size:11px; color:var(--c-muted); display:flex; justify-content:space-between; }
+
+/* ══════════════════════════════════════════
+   DIRECTION 1 — CLARTÉ INSTITUTIONNELLE
+   Whitespace généreux, badge hero, bailleur first
+══════════════════════════════════════════ */
+.d1-profile-hero { background:linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border-bottom:1px solid var(--c-border); padding:28px 28px 20px; }
+.d1-ong-name { font-size:24px; font-weight:800; color:var(--c-text); margin-bottom:6px; }
+.d1-meta { font-size:13px; color:var(--c-muted); margin-bottom:14px; }
+.d1-badge-row { display:flex; align-items:center; gap:12px; }
+.d1-cert-date { font-size:12px; color:var(--c-muted); }
+.d1-score-card { background:var(--c-bg); border-radius:12px; padding:20px; border:1px solid var(--c-border); margin:16px 0; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+.d1-score-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.d1-score-label { font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--c-muted); }
+.d1-score-big { font-size:36px; font-weight:800; color:var(--c-num); }
+.d1-score-big em { font-size:15px; font-weight:400; font-style:normal; color:var(--c-muted); }
+.d1-score-status { font-size:12px; font-weight:600; color:var(--c-solid); background:var(--c-vsft); border-radius:999px; padding:3px 10px; }
+.d1-criteria { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:10px; }
+.d1-crit { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--c-muted); }
+.d1-crit-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+/* ══════════════════════════════════════════
+   DIRECTION 2 — SCORE EN SCÈNE
+   Score circulaire comme signature visuelle centrale
+══════════════════════════════════════════ */
+.d2-score-circle { position:relative; width:100px; height:100px; }
+.d2-ring { transform:rotate(-90deg); }
+.d2-ring-bg { fill:none; stroke:var(--c-border); stroke-width:8; }
+.d2-ring-fill { fill:none; stroke-width:8; stroke-linecap:round; transition:stroke-dashoffset 0.6s ease; }
+.d2-ring-text { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.d2-score-val { font-size:22px; font-weight:800; color:var(--c-num); }
+.d2-score-sub { font-size:9px; font-weight:600; color:var(--c-muted); text-transform:uppercase; letter-spacing:0.04em; }
+.d2-criterion { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:7px; background:var(--c-surface); margin-bottom:5px; }
+.d2-crit-bar { flex:1; height:4px; background:var(--c-border); border-radius:999px; overflow:hidden; }
+.d2-crit-fill { height:100%; border-radius:999px; }
+.d2-crit-name { font-size:11px; color:var(--c-text); min-width:110px; }
+.d2-crit-pts { font-size:11px; font-weight:600; color:var(--c-muted); min-width:40px; text-align:right; }
+
+/* ══════════════════════════════════════════
+   DIRECTION 3 — PIPELINE EXPERT
+   Back-office ultra-dense, opérateur first
+══════════════════════════════════════════ */
+.d3-topbar { background:var(--c-primary); color:white; padding:9px 16px; display:flex; align-items:center; gap:16px; font-size:12px; }
+.d3-topbar strong { font-size:14px; font-weight:800; }
+.d3-topbar-stats { margin-left:auto; display:flex; gap:16px; }
+.d3-stat { text-align:center; }
+.d3-stat-val { font-size:16px; font-weight:800; display:block; }
+.d3-stat-lbl { font-size:10px; opacity:0.7; }
+.d3-filter-bar { background:var(--c-surface); border-bottom:1px solid var(--c-border); padding:8px 14px; display:flex; gap:8px; align-items:center; }
+.d3-filter { padding:5px 10px; border-radius:6px; font-size:11px; font-weight:600; border:1px solid var(--c-border); background:var(--c-bg); color:var(--c-muted); cursor:pointer; font-family:inherit; }
+.d3-filter.active { background:var(--c-soft); color:var(--c-primary); border-color:var(--c-action); }
+.d3-table { width:100%; border-collapse:collapse; font-size:12px; }
+.d3-table th { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--c-muted); padding:8px 10px; border-bottom:1px solid var(--c-border); text-align:left; background:var(--c-surface); }
+.d3-table td { padding:8px 10px; border-bottom:1px solid var(--c-border); color:var(--c-text); vertical-align:middle; }
+.d3-table tr:hover td { background:var(--c-surface); }
+.d3-urgent { color:var(--c-pending-t); font-weight:700; font-size:11px; }
+.d3-action-btn { padding:4px 10px; border-radius:5px; font-size:11px; font-weight:600; border:none; cursor:pointer; font-family:inherit; }
+.d3-validate { background:var(--c-vsft); color:var(--c-verified); }
+.d3-ask { background:var(--c-bsft); color:#92400E; }
+
+/* ══════════════════════════════════════════
+   DIRECTION 4 — PROGRESSION NARRATIVE
+   Stepper agent, chaque étape raconte quelque chose
+══════════════════════════════════════════ */
+.d4-progress-header { background:var(--c-primary); color:white; padding:16px 20px; }
+.d4-progress-title { font-size:14px; font-weight:700; margin-bottom:8px; opacity:0.9; }
+.d4-progress-bar-track { height:5px; background:rgba(255,255,255,0.2); border-radius:999px; overflow:hidden; }
+.d4-progress-bar-fill { height:100%; background:white; border-radius:999px; }
+.d4-progress-pct { font-size:11px; margin-top:5px; opacity:0.75; text-align:right; }
+.d4-stepper { display:flex; gap:0; padding:14px 20px; border-bottom:1px solid var(--c-border); overflow-x:auto; }
+.d4-step { display:flex; flex-direction:column; align-items:center; gap:4px; flex:1; min-width:48px; }
+.d4-step-dot { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; }
+.d4-step-dot.done { background:var(--c-verified); color:white; }
+.d4-step-dot.active { background:var(--c-primary); color:white; box-shadow:0 0 0 3px var(--c-soft); }
+.d4-step-dot.todo { background:var(--c-border); color:var(--c-muted); }
+.d4-step-lbl { font-size:9px; color:var(--c-muted); text-align:center; line-height:1.2; }
+.d4-step-line { width:1px; height:20px; background:var(--c-border); margin-top:-10px; margin-bottom:-10px; z-index:0; }
+.d4-hint { background:var(--c-bsft); border:1px solid var(--c-building); border-radius:9px; padding:12px 14px; margin-bottom:14px; }
+.d4-hint-icon { font-size:14px; margin-right:6px; }
+.d4-hint-text { font-size:12px; color:#92400E; }
+.d4-hint-pts { font-weight:700; }
+.d4-upload-zone { border:2px dashed var(--c-border); border-radius:9px; padding:20px; text-align:center; color:var(--c-muted); font-size:12px; background:var(--c-surface); }
+.d4-upload-zone.filled { border-color:var(--c-verified); background:var(--c-vsft); color:var(--c-verified); font-weight:600; }
+.d4-score-footer { background:var(--c-surface); border-top:1px solid var(--c-border); padding:12px 16px; display:flex; align-items:center; justify-content:space-between; }
+.d4-score-mini { display:flex; align-items:center; gap:8px; }
+.d4-score-mini-val { font-size:16px; font-weight:800; color:var(--c-num); }
+.d4-score-mini-lbl { font-size:10px; color:var(--c-muted); }
+.d4-score-tag { background:var(--c-bsft); color:#92400E; border-radius:999px; padding:3px 10px; font-size:11px; font-weight:600; }
+
+/* ══════════════════════════════════════════
+   DIRECTION 5 — CONFIANCE 3 SECONDES
+   Bailleur: profil ONG scannable ultra-rapidement
+══════════════════════════════════════════ */
+.d5-ong-card { border:1px solid var(--c-border); border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+.d5-card-top { display:flex; gap:16px; align-items:flex-start; padding:20px; }
+.d5-avatar { width:56px; height:56px; border-radius:12px; background:var(--c-soft); display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:800; color:var(--c-primary); flex-shrink:0; }
+.d5-card-info { flex:1; }
+.d5-card-name { font-size:18px; font-weight:800; color:var(--c-text); margin-bottom:3px; }
+.d5-card-sector { font-size:12px; color:var(--c-muted); margin-bottom:8px; }
+.d5-card-badges { display:flex; gap:8px; flex-wrap:wrap; }
+.d5-score-strip { background:var(--c-surface); border-top:1px solid var(--c-border); padding:14px 20px; display:flex; gap:20px; align-items:center; }
+.d5-score-big { font-size:32px; font-weight:800; color:var(--c-num); line-height:1; }
+.d5-score-detail { flex:1; }
+.d5-score-status-lbl { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--c-solid); margin-bottom:6px; }
+.d5-criteria-row { display:flex; gap:6px; flex-wrap:wrap; }
+.d5-crit-pill { padding:3px 9px; border-radius:999px; font-size:10px; font-weight:600; }
+.d5-card-actions { padding:14px 20px; border-top:1px solid var(--c-border); display:flex; gap:8px; }
+.d5-search { display:flex; gap:8px; margin-bottom:14px; align-items:center; }
+.d5-search-input { flex:1; padding:9px 14px; border:1.5px solid var(--c-border); border-radius:8px; font-size:13px; font-family:inherit; color:var(--c-text); }
+.d5-filter-chips { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+.d5-chip { padding:5px 12px; border-radius:999px; border:1.5px solid var(--c-border); font-size:11px; font-weight:600; color:var(--c-muted); cursor:pointer; background:var(--c-bg); font-family:inherit; }
+.d5-chip.active { background:var(--c-soft); color:var(--c-primary); border-color:var(--c-action); }
+
+/* ══════════════════════════════════════════
+   DIRECTION 6 — MOBILE FIRST AGENT
+   Navigation bottom, cards stackées, thumb-friendly
+══════════════════════════════════════════ */
+.d6-mobile-frame { max-width:375px; margin:0 auto; background:var(--c-bg); border-radius:20px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.3); border:1px solid var(--c-border); }
+.d6-status-bar { background:var(--c-primary); height:28px; padding:0 16px; display:flex; align-items:center; justify-content:space-between; }
+.d6-status-bar span { font-size:10px; color:rgba(255,255,255,0.8); font-weight:600; }
+.d6-header { background:var(--c-primary); padding:12px 16px 16px; color:white; }
+.d6-header-greeting { font-size:12px; opacity:0.8; margin-bottom:2px; }
+.d6-header-name { font-size:17px; font-weight:700; }
+.d6-header-org { font-size:11px; opacity:0.7; }
+.d6-hero-card { background:white; margin:12px; border-radius:14px; padding:16px; box-shadow:0 2px 12px rgba(0,0,0,0.08); }
+.d6-hero-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+.d6-hero-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--c-muted); }
+.d6-hero-score { font-size:32px; font-weight:800; color:var(--c-num); }
+.d6-hero-score sub { font-size:14px; font-weight:400; color:var(--c-muted); }
+.d6-score-bar { height:8px; background:var(--c-border); border-radius:999px; overflow:hidden; margin-bottom:8px; }
+.d6-score-fill { height:100%; border-radius:999px; }
+.d6-next-action { background:var(--c-bsft); border-radius:9px; padding:10px; display:flex; align-items:center; gap:8px; }
+.d6-next-icon { font-size:16px; }
+.d6-next-text { font-size:11px; color:#92400E; flex:1; }
+.d6-next-pts { font-size:11px; font-weight:700; color:var(--c-building); }
+.d6-cards { padding:0 12px; }
+.d6-card { background:var(--c-bg); border:1px solid var(--c-border); border-radius:12px; padding:14px; margin-bottom:10px; }
+.d6-card-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.d6-card-title { font-size:13px; font-weight:700; color:var(--c-text); }
+.d6-card-status { font-size:10px; font-weight:600; }
+.d6-doc-row { display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--c-border); }
+.d6-doc-row:last-child { border-bottom:none; }
+.d6-doc-icon { font-size:14px; width:18px; text-align:center; }
+.d6-doc-name { font-size:11px; color:var(--c-text); flex:1; }
+.d6-doc-status { font-size:10px; font-weight:600; }
+.d6-bottom-nav { background:var(--c-bg); border-top:1px solid var(--c-border); padding:8px 0 12px; display:flex; }
+.d6-nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; }
+.d6-nav-icon { font-size:18px; }
+.d6-nav-label { font-size:9px; font-weight:600; color:var(--c-muted); }
+.d6-nav-item.active .d6-nav-label { color:var(--c-primary); }
+.d6-nav-dot { width:4px; height:4px; border-radius:50%; background:var(--c-primary); }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Paika — Directions de Design</h1>
+  <p>6 directions · 3 vues chacune — Agent, Bailleur, Back-office · Choisissez une direction ou combinez des éléments</p>
+</div>
+
+<div class="dir-tabs">
+  <button class="dir-tab active" onclick="showDir(1,this)">1 · Clarté Institutionnelle</button>
+  <button class="dir-tab" onclick="showDir(2,this)">2 · Score en Scène</button>
+  <button class="dir-tab" onclick="showDir(3,this)">3 · Pipeline Expert</button>
+  <button class="dir-tab" onclick="showDir(4,this)">4 · Progression Narrative</button>
+  <button class="dir-tab" onclick="showDir(5,this)">5 · Confiance 3 Secondes</button>
+  <button class="dir-tab" onclick="showDir(6,this)">6 · Mobile First</button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DIRECTION 1 — CLARTÉ INSTITUTIONNELLE
+══════════════════════════════════════════ -->
+<div id="dir1" class="dir-panel active">
+  <div class="dir-header">
+    <div class="dir-philosophy">
+      <h2>Clarté Institutionnelle</h2>
+      <p>Whitespace généreux, hiérarchie nette, badge en position de prestige. L'interface respire — chaque élément est à sa place, rien ne se dispute l'attention. Convainc les bailleurs en 3 secondes sans effort.</p>
+      <div class="dir-tags">
+        <span class="dir-tag" style="background:#DBEAFE;color:#1B4B82;">Confiance immédiate</span>
+        <span class="dir-tag" style="background:#DCFCE7;color:#15803D;">Badge hero</span>
+        <span class="dir-tag" style="background:#F1F5F9;color:#475569;">Spacieux</span>
+      </div>
+    </div>
+  </div>
+  <div class="screen-tabs" id="tabs-d1">
+    <button class="screen-tab active" onclick="showScreen('d1','agent',this)">Dashboard Agent</button>
+    <button class="screen-tab" onclick="showScreen('d1','partner',this)">Profil Bailleur</button>
+    <button class="screen-tab" onclick="showScreen('d1','backoffice',this)">Back-office</button>
+  </div>
+
+  <!-- D1 — Agent -->
+  <div id="d1-agent" class="screen-panel active">
+    <div class="frame-wrap">
+      <div class="frame-label">Dashboard Agent — Haingo (ONG Miray)</div>
+      <div class="ui shell">
+        <div class="topbar"><span class="topbar-brand">Paika</span><div class="topbar-right"><span>🔔</span><span>Haingo M.</span></div></div>
+        <div class="shell-body">
+          <div class="sidebar">
+            <div class="si active"><span class="si-icon">🏠</span>Tableau de bord</div>
+            <div class="si"><span class="si-icon">📋</span>Mon dossier</div>
+            <div class="si"><span class="si-icon">📄</span>Documents</div>
+            <div class="si"><span class="si-icon">💳</span>Abonnement</div>
+            <div class="si"><span class="si-icon">⚙️</span>Paramètres</div>
+          </div>
+          <div class="main">
+            <div style="background:#DCFCE7;border:1.5px solid #16A34A;border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;">
+              <span style="font-size:18px;">🎉</span>
+              <div><div style="font-size:13px;font-weight:700;color:#15803D;">ONG Miray est maintenant Vérifiée Paika</div><div style="font-size:11px;color:#64748B;margin-top:2px;">Certifiée le 01/05/2026 · Profil visible des bailleurs</div></div>
+            </div>
+            <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+              <span class="badge-verified">✓ Vérifié Paika</span>
+              <span style="font-size:12px;color:#64748B;">Certifié le 01/05/2026</span>
+            </div>
+            <div class="card">
+              <div class="section-title" style="margin-bottom:10px;">Score de Transparence</div>
+              <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:10px;">
+                <div class="score-num">78<span>/100</span></div>
+                <span style="background:#CCFBF1;color:#0D9488;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:600;margin-bottom:4px;">Dossier solide</span>
+              </div>
+              <div class="score-bar-track" style="margin-bottom:8px;">
+                <div class="score-bar-fill" style="width:78%;background:linear-gradient(90deg,#F59E0B 0%,#0D9488 70%);"></div>
+              </div>
+              <div style="font-size:11px;color:#64748B;"><span style="color:#2563EB;font-weight:600;">+7 pts disponibles</span> · Ajoutez votre rapport annuel 2024</div>
+            </div>
+            <div class="card" style="margin-top:12px;">
+              <div class="section-title">Actions recommandées</div>
+              <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #E2E8F0;">
+                <span style="font-size:14px;">📊</span><span style="font-size:12px;flex:1;">Rapport annuel 2024</span><span style="font-size:11px;font-weight:600;color:#0D9488;">+7 pts</span><button class="btn btn-ghost" style="padding:5px 12px;font-size:11px;">Uploader</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;padding:8px 0;">
+                <span style="font-size:14px;">👥</span><span style="font-size:12px;flex:1;">Membres du conseil</span><span style="font-size:11px;font-weight:600;color:#0D9488;">+5 pts</span><button class="btn btn-ghost" style="padding:5px 12px;font-size:11px;">Compléter</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D1 — Partner -->
+  <div id="d1-partner" class="screen-panel">
+    <div class="frame-wrap">
+      <div class="frame-label">Profil ONG — Vue Bailleur (Marc, GIZ)</div>
+      <div class="ui">
+        <div class="topbar"><span class="topbar-brand">Paika</span><div class="topbar-right"><span>Bailleurs</span><span>Recherche</span><span>Marc D.</span></div></div>
+        <div class="d1-profile-hero">
+          <div class="d1-ong-name">ONG Miray</div>
+          <div class="d1-meta">Santé communautaire · Antananarivo, Madagascar · Fondée 2017</div>
+          <div class="d1-badge-row">
+            <span class="badge-verified" style="font-size:14px;padding:6px 16px;">✓ Vérifié Paika</span>
+            <span class="d1-cert-date">Certifiée le 01 mai 2026</span>
+          </div>
+        </div>
+        <div style="padding:20px;">
+          <div class="d1-score-card">
+            <div class="d1-score-row">
+              <div>
+                <div class="d1-score-label">Score de Transparence</div>
+                <div class="d1-score-big">78<em>/100</em></div>
+              </div>
+              <span class="d1-score-status">Dossier solide</span>
+            </div>
+            <div class="score-bar-track" style="margin-bottom:10px;">
+              <div class="score-bar-fill" style="width:78%;background:linear-gradient(90deg,#F59E0B 0%,#0D9488 70%);"></div>
+            </div>
+            <div class="d1-criteria">
+              <div class="d1-crit"><div class="d1-crit-dot" style="background:#16A34A;"></div>Statuts légaux</div>
+              <div class="d1-crit"><div class="d1-crit-dot" style="background:#16A34A;"></div>Gouvernance</div>
+              <div class="d1-crit"><div class="d1-crit-dot" style="background:#16A34A;"></div>Projets documentés</div>
+              <div class="d1-crit"><div class="d1-crit-dot" style="background:#F59E0B;"></div>Rapport financier</div>
+              <div class="d1-crit"><div class="d1-crit-dot" style="background:#16A34A;"></div>Contacts vérifiés</div>
+              <div class="d1-crit"><div class="d1-crit-dot" style="background:#E2E8F0;"></div>Audit externe</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button class="btn btn-primary" style="flex:1;">Télécharger le rapport PDF</button>
+            <button class="btn btn-ghost">Contacter l'ONG</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D1 — Backoffice -->
+  <div id="d1-backoffice" class="screen-panel">
+    <div class="frame-wrap">
+      <div class="frame-label">Pipeline Back-office — Fanja</div>
+      <div class="ui shell">
+        <div class="topbar"><span class="topbar-brand">Paika · Back-office</span><div class="topbar-right"><span style="background:rgba(255,255,255,0.15);border-radius:6px;padding:3px 10px;">4 urgents</span><span>Fanja R.</span></div></div>
+        <div class="shell-body">
+          <div class="sidebar">
+            <div class="si active"><span class="si-icon">📊</span>Pipeline</div>
+            <div class="si"><span class="si-icon">✅</span>Traités</div>
+            <div class="si"><span class="si-icon">⚙️</span>Paramètres</div>
+          </div>
+          <div class="main">
+            <div class="kanban-wrap">
+              <div class="kcol">
+                <div class="kcol-hdr">À vérifier <span class="kcount">4</span></div>
+                <div class="kcard urgent"><div class="kcard-name">ONG Fiantso</div><div class="kcard-meta"><span>Score: 42</span><span class="d3-urgent">⚠ 52h</span></div></div>
+                <div class="kcard urgent"><div class="kcard-name">CRAM Tana</div><div class="kcard-meta"><span>Score: 55</span><span class="d3-urgent">⚠ 49h</span></div></div>
+                <div class="kcard"><div class="kcard-name">Fivondronan'ny</div><div class="kcard-meta"><span>Score: 67</span><span>12h</span></div></div>
+                <div class="kcard"><div class="kcard-name">ONG Taratra</div><div class="kcard-meta"><span>Score: 71</span><span>6h</span></div></div>
+              </div>
+              <div class="kcol">
+                <div class="kcol-hdr">En cours <span class="kcount">2</span></div>
+                <div class="kcard wip"><div class="kcard-name">Miara-Mandroso</div><div class="kcard-meta"><span>Score: 63</span><span style="color:#2563EB;">Vous</span></div></div>
+                <div class="kcard wip" style="border-left-color:#64748B;opacity:0.6;"><div class="kcard-name">Action Sante</div><div class="kcard-meta"><span>Score: 58</span><span style="color:#64748B;">Hery</span></div></div>
+              </div>
+              <div class="kcol">
+                <div class="kcol-hdr">Complément <span class="kcount">1</span></div>
+                <div class="kcard" style="border-left-color:#F59E0B;"><div class="kcard-name">ONG Vonjy</div><div class="kcard-meta"><span>Score: 38</span><span style="color:#B45309;">Docs manq.</span></div></div>
+              </div>
+              <div class="kcol">
+                <div class="kcol-hdr">Validé <span class="kcount">7</span></div>
+                <div class="kcard done"><div class="kcard-name">ONG Miray</div><div class="kcard-meta"><span>Score: 78</span><span style="color:#16A34A;">✓</span></div></div>
+                <div class="kcard done"><div class="kcard-name">Fitiavana ONG</div><div class="kcard-meta"><span>Score: 82</span><span style="color:#16A34A;">✓</span></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DIRECTION 2 — SCORE EN SCÈNE
+══════════════════════════════════════════ -->
+<div id="dir2" class="dir-panel">
+  <div class="dir-header">
+    <div class="dir-philosophy">
+      <h2>Score en Scène</h2>
+      <p>Le Score de Transparence est la signature visuelle centrale — affiché en grand, avec ses critères détaillés toujours visibles. Chaque point gagné est un événement. Pour Haingo, la progression est le moteur. Pour Marc, le détail du Score remplace la due diligence manuelle.</p>
+      <div class="dir-tags">
+        <span class="dir-tag" style="background:#CCFBF1;color:#0D9488;">Score central</span>
+        <span class="dir-tag" style="background:#DBEAFE;color:#1B4B82;">Transparence totale</span>
+        <span class="dir-tag" style="background:#FFFBEB;color:#92400E;">Progression motivante</span>
+      </div>
+    </div>
+  </div>
+  <div class="screen-tabs" id="tabs-d2">
+    <button class="screen-tab active" onclick="showScreen('d2','agent',this)">Dashboard Agent</button>
+    <button class="screen-tab" onclick="showScreen('d2','partner',this)">Profil Bailleur</button>
+    <button class="screen-tab" onclick="showScreen('d2','backoffice',this)">Back-office</button>
+  </div>
+
+  <!-- D2 — Agent -->
+  <div id="d2-agent" class="screen-panel active">
+    <div class="frame-wrap">
+      <div class="frame-label">Dashboard Agent — Score en Scène</div>
+      <div class="ui shell">
+        <div class="topbar"><span class="topbar-brand">Paika</span><div class="topbar-right"><span>🔔</span><span>Haingo M.</span></div></div>
+        <div class="shell-body">
+          <div class="sidebar">
+            <div class="si active"><span class="si-icon">🏠</span>Tableau de bord</div>
+            <div class="si"><span class="si-icon">📋</span>Mon dossier</div>
+            <div class="si"><span class="si-icon">📄</span>Documents</div>
+            <div class="si"><span class="si-icon">💳</span>Abonnement</div>
+          </div>
+          <div class="main" style="display:flex;gap:16px;">
+            <!-- Score central -->
+            <div style="flex:1;">
+              <div class="card" style="text-align:center;padding:24px;">
+                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#64748B;margin-bottom:16px;">Score de Transparence</div>
+                <!-- SVG Circle -->
+                <div style="position:relative;width:120px;height:120px;margin:0 auto 16px;">
+                  <svg width="120" height="120" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#E2E8F0" stroke-width="10"/>
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#0D9488" stroke-width="10" stroke-linecap="round"
+                      stroke-dasharray="314" stroke-dashoffset="69" transform="rotate(-90 60 60)"/>
+                  </svg>
+                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                    <span style="font-size:28px;font-weight:800;color:#6B7280;">78</span>
+                    <span style="font-size:9px;color:#94A3B8;text-transform:uppercase;letter-spacing:0.05em;">/100</span>
+                  </div>
+                </div>
+                <span style="background:#CCFBF1;color:#0D9488;border-radius:999px;padding:4px 14px;font-size:12px;font-weight:600;">Dossier solide</span>
+                <div style="font-size:11px;color:#64748B;margin-top:10px;"><span style="color:#2563EB;font-weight:600;">+7 pts disponibles</span></div>
+              </div>
+              <div class="card" style="margin-top:12px;">
+                <div class="section-title">Statut</div>
+                <span class="badge-verified">✓ Vérifié Paika</span>
+                <div style="font-size:11px;color:#64748B;margin-top:6px;">Certifié le 01/05/2026</div>
+              </div>
+            </div>
+            <!-- Critères détail -->
+            <div style="flex:1.2;">
+              <div class="section-title">Détail des critères</div>
+              <div class="d2-criterion"><div class="d2-crit-name">Statuts légaux</div><div class="d2-crit-bar"><div class="d2-crit-fill" style="width:100%;background:#16A34A;"></div></div><div class="d2-crit-pts" style="color:#16A34A;">15/15</div></div>
+              <div class="d2-criterion"><div class="d2-crit-name">Gouvernance</div><div class="d2-crit-bar"><div class="d2-crit-fill" style="width:100%;background:#16A34A;"></div></div><div class="d2-crit-pts" style="color:#16A34A;">20/20</div></div>
+              <div class="d2-criterion"><div class="d2-crit-name">Projets</div><div class="d2-crit-bar"><div class="d2-crit-fill" style="width:83%;background:#0D9488;"></div></div><div class="d2-crit-pts" style="color:#0D9488;">25/30</div></div>
+              <div class="d2-criterion"><div class="d2-crit-name">Contacts</div><div class="d2-crit-bar"><div class="d2-crit-fill" style="width:100%;background:#16A34A;"></div></div><div class="d2-crit-pts" style="color:#16A34A;">10/10</div></div>
+              <div class="d2-criterion"><div class="d2-crit-name">Rapport financier</div><div class="d2-crit-bar"><div class="d2-crit-fill" style="width:0%;background:#F59E0B;"></div></div><div class="d2-crit-pts" style="color:#B45309;">0/15</div></div>
+              <div class="d2-criterion"><div class="d2-crit-name">Audit externe</div><div class="d2-crit-bar"><div class="d2-crit-fill" style="width:0%;background:#E2E8F0;"></div></div><div class="d2-crit-pts">0/10</div></div>
+              <div style="margin-top:12px;"><button class="btn btn-primary" style="width:100%;">Compléter pour +7 pts</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D2 — Partner -->
+  <div id="d2-partner" class="screen-panel">
+    <div class="frame-wrap">
+      <div class="frame-label">Profil ONG — Score en Scène (Marc)</div>
+      <div class="ui">
+        <div class="topbar"><span class="topbar-brand">Paika</span><div class="topbar-right"><span>Marc D. · GIZ</span></div></div>
+        <div style="padding:20px;">
+          <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;">
+            <div style="flex:1;min-width:200px;">
+              <div style="font-size:20px;font-weight:800;color:#0F172A;margin-bottom:4px;">ONG Miray</div>
+              <div style="font-size:12px;color:#64748B;margin-bottom:12px;">Santé communautaire · Antananarivo</div>
+              <span class="badge-verified">✓ Vérifié Paika</span>
+              <div style="font-size:11px;color:#64748B;margin-top:6px;">Certifiée le 01 mai 2026</div>
+              <div style="margin-top:14px;"><button class="btn btn-primary" style="width:100%;font-size:12px;">Télécharger rapport PDF</button></div>
+            </div>
+            <div style="flex:1;min-width:220px;">
+              <div class="card">
+                <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;">
+                  <div style="position:relative;width:80px;height:80px;flex-shrink:0;">
+                    <svg width="80" height="80" viewBox="0 0 80 80">
+                      <circle cx="40" cy="40" r="32" fill="none" stroke="#E2E8F0" stroke-width="7"/>
+                      <circle cx="40" cy="40" r="32" fill="none" stroke="#0D9488" stroke-width="7" stroke-linecap="round"
+                        stroke-dasharray="201" stroke-dashoffset="44" transform="rotate(-90 40 40)"/>
+                    </svg>
+                    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                      <span style="font-size:20px;font-weight:800;color:#6B7280;">78</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#64748B;">Score</div>
+                    <span style="background:#CCFBF1;color:#0D9488;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:600;">Dossier solide</span>
+                    <div style="font-size:11px;color:#64748B;margin-top:4px;">6 critères vérifiés · 2 en attente</div>
+                  </div>
+                </div>
+                <div class="d2-criterion" style="margin-bottom:4px;"><div class="d2-crit-name" style="font-size:11px;">Statuts légaux</div><div class="d2-crit-bar"><div class="d2-crit-fill" style="width:100%;background:#16A34A;"></div></div><div class="d2-crit-pts" style="color:#16A34A;font-size:11px;">✓</div></div>
+                <div class="d2-criterion" style="margin-bottom:4px;"><div class="d2-crit-name" style="font-size:11px;">Gouvernance</div><div class="d2-crit-bar"><div class="d2-crit-fill" style="width:100%;background:#16A34A;"></div></div><div class="d2-crit-pts" style="color:#16A34A;font-size:11px;">✓</div></div>
+                <div class="d2-criterion" style="margin-bottom:4px;"><div class="d2-crit-name" style="font-size:11px;">Rapport financier</div><div class="d2-crit-bar"><div class="d2-crit-fill" style="width:0%;"></div></div><div class="d2-crit-pts" style="color:#B45309;font-size:11px;">—</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D2 — Backoffice -->
+  <div id="d2-backoffice" class="screen-panel">
+    <div class="frame-wrap">
+      <div class="frame-label">Back-office — Détail dossier avec Score</div>
+      <div class="ui shell">
+        <div class="topbar"><span class="topbar-brand">Paika · Back-office</span><div class="topbar-right"><span>Fanja R.</span></div></div>
+        <div class="shell-body">
+          <div class="sidebar">
+            <div class="si active"><span class="si-icon">📊</span>Pipeline</div>
+            <div class="si"><span class="si-icon">✅</span>Traités</div>
+          </div>
+          <div class="main" style="display:flex;gap:14px;">
+            <div style="width:220px;flex-shrink:0;">
+              <div class="section-title">Dossier en cours</div>
+              <div class="card">
+                <div style="font-size:14px;font-weight:700;margin-bottom:4px;">ONG Fiantso</div>
+                <div style="font-size:11px;color:#64748B;margin-bottom:10px;">Soumis il y a 52h</div>
+                <div style="text-align:center;margin-bottom:10px;">
+                  <svg width="70" height="70" viewBox="0 0 70 70">
+                    <circle cx="35" cy="35" r="28" fill="none" stroke="#E2E8F0" stroke-width="7"/>
+                    <circle cx="35" cy="35" r="28" fill="none" stroke="#2563EB" stroke-width="7" stroke-linecap="round"
+                      stroke-dasharray="176" stroke-dashoffset="97" transform="rotate(-90 35 35)"/>
+                  </svg>
+                  <div style="font-size:20px;font-weight:800;color:#6B7280;margin-top:-46px;position:relative;z-index:1;">42</div>
+                  <div style="margin-top:30px;"></div>
+                  <span style="background:#DBEAFE;color:#2563EB;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:600;">En révision</span>
+                </div>
+                <div style="display:flex;gap:6px;margin-top:10px;">
+                  <button class="d3-action-btn d3-validate" style="flex:1;padding:7px;">✓ Valider</button>
+                  <button class="d3-action-btn d3-ask" style="flex:1;padding:7px;">Complément</button>
+                </div>
+              </div>
+            </div>
+            <div style="flex:1;">
+              <div class="section-title">Checklist de vérification</div>
+              <div class="d2-criterion"><div class="d2-crit-name">Statuts légaux</div><div class="d2-crit-bar"><div class="d2-crit-fill" style="width:100%;background:#16A34A;"></div></div><div class="d2-crit-pts" style="color:#16A34A;">✓ Présent</div></div>
+              <div class="d2-criterion"><div class="d2-crit-name">Récépissé enregistrement</div><div class="d2-crit-bar"><div class="d2-crit-fill" style="width:100%;background:#16A34A;"></div></div><div class="d2-crit-pts" style="color:#16A34A;">✓ Présent</div></div>
+              <div class="d2-criterion"><div class="d2-crit-name">Membres du CA</div><div class="d2-crit-bar"><div class="d2-crit-fill" style="width:66%;background:#F59E0B;"></div></div><div class="d2-crit-pts" style="color:#B45309;">Partiel</div></div>
+              <div class="d2-criterion"><div class="d2-crit-name">Rapport financier</div><div class="d2-crit-bar"><div class="d2-crit-fill" style="width:0%;"></div></div><div class="d2-crit-pts" style="color:#DC2626;">Absent</div></div>
+              <div class="d2-criterion"><div class="d2-crit-name">Projets documentés</div><div class="d2-crit-bar"><div class="d2-crit-fill" style="width:100%;background:#16A34A;"></div></div><div class="d2-crit-pts" style="color:#16A34A;">✓ Présent</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DIRECTION 3 — PIPELINE EXPERT
+══════════════════════════════════════════ -->
+<div id="dir3" class="dir-panel">
+  <div class="dir-header">
+    <div class="dir-philosophy">
+      <h2>Pipeline Expert</h2>
+      <p>Conçu pour Fanja d'abord. Topbar avec métriques live, vue tableau plutôt que kanban, actions inline ultra-rapides. Traiter 12 dossiers/jour sans friction. Dense, efficace, professionnel. Les autres vues héritent du même registre de densité.</p>
+      <div class="dir-tags">
+        <span class="dir-tag" style="background:#F1F5F9;color:#1E293B;">Ultra dense</span>
+        <span class="dir-tag" style="background:#DBEAFE;color:#1B4B82;">Back-office first</span>
+        <span class="dir-tag" style="background:#DCFCE7;color:#15803D;">Actions inline</span>
+      </div>
+    </div>
+  </div>
+  <div class="screen-tabs" id="tabs-d3">
+    <button class="screen-tab active" onclick="showScreen('d3','backoffice',this)">Back-office</button>
+    <button class="screen-tab" onclick="showScreen('d3','agent',this)">Dashboard Agent</button>
+    <button class="screen-tab" onclick="showScreen('d3','partner',this)">Profil Bailleur</button>
+  </div>
+
+  <!-- D3 — Backoffice (default first) -->
+  <div id="d3-backoffice" class="screen-panel active">
+    <div class="frame-wrap">
+      <div class="frame-label">Pipeline Back-office — Vue Tableau Expert</div>
+      <div class="ui">
+        <div class="d3-topbar">
+          <strong>Paika</strong>
+          <span>Back-office</span>
+          <div class="d3-topbar-stats">
+            <div class="d3-stat"><span class="d3-stat-val">4</span><span class="d3-stat-lbl">Urgents</span></div>
+            <div class="d3-stat"><span class="d3-stat-val">11</span><span class="d3-stat-lbl">File d'attente</span></div>
+            <div class="d3-stat"><span class="d3-stat-val">7</span><span class="d3-stat-lbl">Validés auj.</span></div>
+          </div>
+          <span>Fanja R.</span>
+        </div>
+        <div class="d3-filter-bar">
+          <button class="d3-filter active">Tous (11)</button>
+          <button class="d3-filter">Urgents (4)</button>
+          <button class="d3-filter">En cours (2)</button>
+          <button class="d3-filter">Complément (1)</button>
+          <button class="d3-filter" style="margin-left:auto;">+ Priorité</button>
+        </div>
+        <div style="padding:0 14px 14px;overflow-x:auto;">
+          <table class="d3-table">
+            <thead>
+              <tr>
+                <th>ONG</th><th>Score</th><th>Statut</th><th>Soumis</th><th>Docs</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>ONG Fiantso</strong><div style="font-size:10px;color:#64748B;">Santé · Tana</div></td>
+                <td><span style="font-weight:700;color:#2563EB;">42</span></td>
+                <td><span class="badge-pending" style="font-size:10px;padding:2px 8px;">En révision</span></td>
+                <td><span class="d3-urgent">52h</span></td>
+                <td style="font-size:11px;">3/5 ✓</td>
+                <td style="display:flex;gap:5px;"><button class="d3-action-btn d3-validate">Valider</button><button class="d3-action-btn d3-ask">Complément</button></td>
+              </tr>
+              <tr>
+                <td><strong>CRAM Antananarivo</strong><div style="font-size:10px;color:#64748B;">Éducation · Tana</div></td>
+                <td><span style="font-weight:700;color:#2563EB;">55</span></td>
+                <td><span class="badge-pending" style="font-size:10px;padding:2px 8px;">En révision</span></td>
+                <td><span class="d3-urgent">49h</span></td>
+                <td style="font-size:11px;">4/5 ✓</td>
+                <td style="display:flex;gap:5px;"><button class="d3-action-btn d3-validate">Valider</button><button class="d3-action-btn d3-ask">Complément</button></td>
+              </tr>
+              <tr>
+                <td><strong>Miara-Mandroso</strong><div style="font-size:10px;color:#64748B;">Agriculture · Fianarantsoa</div></td>
+                <td><span style="font-weight:700;color:#0D9488;">63</span></td>
+                <td><span style="background:#EEF2FF;color:#4F46E5;border-radius:999px;padding:2px 8px;font-size:10px;font-weight:600;">En cours</span></td>
+                <td>18h</td>
+                <td style="font-size:11px;">5/5 ✓</td>
+                <td style="display:flex;gap:5px;"><button class="d3-action-btn d3-validate">Valider</button></td>
+              </tr>
+              <tr>
+                <td><strong>ONG Vonjy</strong><div style="font-size:10px;color:#64748B;">Eau · Diego</div></td>
+                <td><span style="font-weight:700;color:#F59E0B;">38</span></td>
+                <td><span style="background:#FEF3C7;color:#B45309;border-radius:999px;padding:2px 8px;font-size:10px;font-weight:600;">Complément requis</span></td>
+                <td>36h</td>
+                <td style="font-size:11px;color:#DC2626;">2/5 ✗</td>
+                <td style="display:flex;gap:5px;"><button class="d3-action-btn d3-ask">Relancer</button></td>
+              </tr>
+              <tr>
+                <td><strong>ONG Taratra</strong><div style="font-size:10px;color:#64748B;">Environnement · Tana</div></td>
+                <td><span style="font-weight:700;color:#0D9488;">71</span></td>
+                <td><span class="badge-pending" style="font-size:10px;padding:2px 8px;">À vérifier</span></td>
+                <td>6h</td>
+                <td style="font-size:11px;">5/5 ✓</td>
+                <td style="display:flex;gap:5px;"><button class="d3-action-btn d3-validate">Valider</button><button class="d3-action-btn d3-ask">Complément</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="d3-agent" class="screen-panel">
+    <div class="frame-wrap">
+      <div class="frame-label">Dashboard Agent — Densité Pipeline Expert</div>
+      <div class="ui shell">
+        <div class="topbar"><span class="topbar-brand">Paika</span><div class="topbar-right"><span>🔔</span><span>Haingo M.</span></div></div>
+        <div class="shell-body">
+          <div class="sidebar">
+            <div class="si active"><span class="si-icon">🏠</span>Tableau de bord</div>
+            <div class="si"><span class="si-icon">📋</span>Mon dossier</div>
+            <div class="si"><span class="si-icon">📄</span>Documents</div>
+            <div class="si"><span class="si-icon">💳</span>Abonnement</div>
+          </div>
+          <div class="main">
+            <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+              <div class="card" style="flex:1;min-width:140px;"><div style="font-size:10px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Statut</div><span class="badge-verified" style="font-size:11px;">✓ Vérifié</span></div>
+              <div class="card" style="flex:1;min-width:140px;"><div style="font-size:10px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Score</div><div style="font-size:22px;font-weight:800;color:#6B7280;">78<span style="font-size:12px;">/100</span></div></div>
+              <div class="card" style="flex:1;min-width:140px;"><div style="font-size:10px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Points disponibles</div><div style="font-size:22px;font-weight:800;color:#0D9488;">+7</div></div>
+            </div>
+            <div class="card"><div class="section-title">Progrès du dossier</div>
+              <div class="score-bar-track" style="margin-bottom:6px;"><div class="score-bar-fill" style="width:78%;background:linear-gradient(90deg,#F59E0B,#0D9488);"></div></div>
+              <div style="font-size:11px;color:#64748B;">Rapport annuel 2024 manquant · <span style="color:#2563EB;font-weight:600;cursor:pointer;">Ajouter maintenant</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="d3-partner" class="screen-panel">
+    <div class="frame-wrap">
+      <div class="frame-label">Recherche ONGs — Vue Bailleur Dense</div>
+      <div class="ui">
+        <div class="topbar"><span class="topbar-brand">Paika</span><div class="topbar-right"><span>Marc D. · GIZ</span></div></div>
+        <div style="padding:14px;">
+          <div class="d5-search"><input class="d5-search-input" placeholder="Rechercher une ONG par nom, secteur, zone…" value="santé Antananarivo"></div>
+          <table class="d3-table">
+            <thead><tr><th>ONG</th><th>Score</th><th>Statut</th><th>Secteur</th><th>Zone</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><strong>ONG Miray</strong></td><td style="font-weight:700;color:#0D9488;">78</td><td><span class="badge-verified" style="font-size:10px;padding:2px 8px;">✓ Vérifié</span></td><td style="font-size:11px;">Santé</td><td style="font-size:11px;">Antananarivo</td><td><button class="d3-action-btn d3-validate" style="font-size:11px;padding:4px 10px;">Voir profil</button></td></tr>
+              <tr><td><strong>Fitiavana ONG</strong></td><td style="font-weight:700;color:#16A34A;">82</td><td><span class="badge-verified" style="font-size:10px;padding:2px 8px;">✓ Vérifié</span></td><td style="font-size:11px;">Santé</td><td style="font-size:11px;">Antananarivo</td><td><button class="d3-action-btn d3-validate" style="font-size:11px;padding:4px 10px;">Voir profil</button></td></tr>
+              <tr style="opacity:0.5;"><td><strong>ONG Taratra</strong></td><td style="font-weight:700;color:#2563EB;">71</td><td><span class="badge-pending" style="font-size:10px;padding:2px 8px;">En révision</span></td><td style="font-size:11px;">Santé</td><td style="font-size:11px;">Antananarivo</td><td><button class="d3-action-btn" style="font-size:11px;padding:4px 10px;background:#F1F5F9;color:#64748B;">En attente</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DIRECTION 4 — PROGRESSION NARRATIVE
+══════════════════════════════════════════ -->
+<div id="dir4" class="dir-panel">
+  <div class="dir-header">
+    <div class="dir-philosophy">
+      <h2>Progression Narrative</h2>
+      <p>Stepper agent au centre, chaque étape raconte une histoire. La barre de progression est en topbar — toujours visible. Les hints de score sont proactifs. Chaque upload débloque visuellement la prochaine étape. Conçu pour que Haingo ne se sente jamais perdue.</p>
+      <div class="dir-tags">
+        <span class="dir-tag" style="background:#FFFBEB;color:#92400E;">Haingo first</span>
+        <span class="dir-tag" style="background:#DBEAFE;color:#1B4B82;">Guidage continu</span>
+        <span class="dir-tag" style="background:#F1F5F9;color:#475569;">Formulaire central</span>
+      </div>
+    </div>
+  </div>
+  <div class="screen-tabs" id="tabs-d4">
+    <button class="screen-tab active" onclick="showScreen('d4','agent',this)">Formulaire Agent</button>
+    <button class="screen-tab" onclick="showScreen('d4','partner',this)">Profil Bailleur</button>
+    <button class="screen-tab" onclick="showScreen('d4','backoffice',this)">Back-office</button>
+  </div>
+
+  <div id="d4-agent" class="screen-panel active">
+    <div class="frame-wrap">
+      <div class="frame-label">Formulaire Multi-étapes Agent — Progression Narrative</div>
+      <div class="ui">
+        <div class="d4-progress-header">
+          <div class="d4-progress-title">Dossier ONG Miray — Étape 3 : Documents légaux</div>
+          <div class="d4-progress-bar-track"><div class="d4-progress-bar-fill" style="width:44%;"></div></div>
+          <div class="d4-progress-pct">44% complet · Score actuel : 32/100</div>
+        </div>
+        <div style="display:flex;padding:14px 20px 0;gap:0;overflow-x:auto;">
+          <div style="display:flex;align-items:center;gap:0;flex:1;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:50px;">
+              <div class="d4-step-dot done">✓</div>
+              <div style="font-size:9px;color:#16A34A;font-weight:600;text-align:center;">Identité</div>
+            </div>
+            <div style="flex:1;height:2px;background:#16A34A;margin-bottom:16px;"></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:50px;">
+              <div class="d4-step-dot done">✓</div>
+              <div style="font-size:9px;color:#16A34A;font-weight:600;text-align:center;">Mission</div>
+            </div>
+            <div style="flex:1;height:2px;background:#E2E8F0;margin-bottom:16px;"></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:50px;">
+              <div class="d4-step-dot active">3</div>
+              <div style="font-size:9px;color:#1B4B82;font-weight:600;text-align:center;">Documents</div>
+            </div>
+            <div style="flex:1;height:2px;background:#E2E8F0;margin-bottom:16px;"></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:50px;">
+              <div class="d4-step-dot todo">4</div>
+              <div style="font-size:9px;color:#94A3B8;text-align:center;">Projets</div>
+            </div>
+            <div style="flex:1;height:2px;background:#E2E8F0;margin-bottom:16px;"></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:50px;">
+              <div class="d4-step-dot todo">5</div>
+              <div style="font-size:9px;color:#94A3B8;text-align:center;">Contacts</div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:16px 20px;">
+          <div class="d4-hint">
+            <span class="d4-hint-icon">💡</span>
+            <span class="d4-hint-text">Les statuts légaux valent <span class="d4-hint-pts">+15 pts</span> — c'est l'action la plus rapide pour atteindre 40 pts.</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Statuts de l'association *</label>
+            <div class="d4-upload-zone filled">✓ statuts_asbl_2024.pdf · Uploadé avec succès (+15 pts)</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Récépissé d'enregistrement *</label>
+            <div class="d4-upload-zone">📎 Choisir un fichier (PDF, max 10 Mo)</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rapport annuel <span style="font-weight:400;color:#94A3B8;">(facultatif · +7 pts)</span></label>
+            <div class="d4-upload-zone">📎 Choisir un fichier</div>
+          </div>
+        </div>
+        <div class="d4-score-footer">
+          <div class="d4-score-mini">
+            <div><div class="d4-score-mini-lbl">Score actuel</div><div class="d4-score-mini-val">32<span style="font-size:11px;font-weight:400;color:#94A3B8;">/100</span></div></div>
+            <span class="d4-score-tag">Dossier en construction</span>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-ghost">← Précédent</button>
+            <button class="btn btn-primary">Continuer →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="d4-partner" class="screen-panel">
+    <div class="frame-wrap">
+      <div class="frame-label">Profil ONG — Direction 4</div>
+      <div class="ui">
+        <div class="topbar"><span class="topbar-brand">Paika</span><div class="topbar-right"><span>Marc D.</span></div></div>
+        <div style="padding:20px;">
+          <div style="font-size:20px;font-weight:800;margin-bottom:4px;">ONG Miray</div>
+          <div style="font-size:12px;color:#64748B;margin-bottom:12px;">Santé communautaire · Antananarivo · Fondée 2017</div>
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+            <span class="badge-verified">✓ Vérifié Paika</span>
+            <span style="font-size:11px;color:#64748B;">Certifiée le 01/05/2026</span>
+          </div>
+          <div class="card" style="margin-bottom:12px;">
+            <div class="d1-score-row"><div><div class="d1-score-label">Score de Transparence</div><div class="d1-score-big">78<em>/100</em></div></div><span class="d1-score-status">Dossier solide</span></div>
+            <div class="score-bar-track" style="margin-bottom:8px;"><div class="score-bar-fill" style="width:78%;background:linear-gradient(90deg,#F59E0B,#0D9488);"></div></div>
+          </div>
+          <button class="btn btn-primary" style="width:100%;">Télécharger le rapport de vérification (PDF)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="d4-backoffice" class="screen-panel">
+    <div class="frame-wrap">
+      <div class="frame-label">Back-office — Direction 4</div>
+      <div class="ui shell">
+        <div class="topbar"><span class="topbar-brand">Paika · Back-office</span><div class="topbar-right"><span>Fanja R.</span></div></div>
+        <div class="shell-body">
+          <div class="sidebar"><div class="si active"><span class="si-icon">📊</span>Pipeline</div></div>
+          <div class="main">
+            <div class="kanban-wrap">
+              <div class="kcol"><div class="kcol-hdr">À vérifier <span class="kcount">4</span></div><div class="kcard urgent"><div class="kcard-name">ONG Fiantso</div><div class="kcard-meta"><span>42 pts</span><span class="d3-urgent">⚠ 52h</span></div></div><div class="kcard urgent"><div class="kcard-name">CRAM Tana</div><div class="kcard-meta"><span>55 pts</span><span class="d3-urgent">⚠ 49h</span></div></div></div>
+              <div class="kcol"><div class="kcol-hdr">En cours <span class="kcount">2</span></div><div class="kcard wip"><div class="kcard-name">Miara-Mandroso</div><div class="kcard-meta"><span>63 pts</span><span style="color:#2563EB;">Vous</span></div></div></div>
+              <div class="kcol"><div class="kcol-hdr">Validé <span class="kcount">7</span></div><div class="kcard done"><div class="kcard-name">ONG Miray</div><div class="kcard-meta"><span>78 pts</span><span style="color:#16A34A;">✓</span></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DIRECTION 5 — CONFIANCE 3 SECONDES
+══════════════════════════════════════════ -->
+<div id="dir5" class="dir-panel">
+  <div class="dir-header">
+    <div class="dir-philosophy">
+      <h2>Confiance 3 Secondes</h2>
+      <p>Profil ONG conçu pour que Marc prenne sa décision en une glance. Badge au-dessus de la fold en position hero, Score avec détail des critères immédiatement visible, CTA PDF en premier rang. Recherche avec filtres rapides. Aucune information nécessaire hors de la vue initiale.</p>
+      <div class="dir-tags">
+        <span class="dir-tag" style="background:#DBEAFE;color:#1B4B82;">Bailleur first</span>
+        <span class="dir-tag" style="background:#DCFCE7;color:#15803D;">Trust signals</span>
+        <span class="dir-tag" style="background:#CCFBF1;color:#0D9488;">Décision rapide</span>
+      </div>
+    </div>
+  </div>
+  <div class="screen-tabs" id="tabs-d5">
+    <button class="screen-tab active" onclick="showScreen('d5','partner',this)">Profil Bailleur</button>
+    <button class="screen-tab" onclick="showScreen('d5','agent',this)">Dashboard Agent</button>
+    <button class="screen-tab" onclick="showScreen('d5','backoffice',this)">Back-office</button>
+  </div>
+
+  <div id="d5-partner" class="screen-panel active">
+    <div class="frame-wrap">
+      <div class="frame-label">Profil ONG + Recherche — Confiance 3 Secondes (Marc)</div>
+      <div class="ui">
+        <div class="topbar"><span class="topbar-brand">Paika</span><div class="topbar-right"><span>Recherche</span><span>Marc D. · GIZ</span></div></div>
+        <div style="padding:16px 20px;">
+          <div class="d5-search">
+            <input class="d5-search-input" placeholder="Rechercher une ONG…" value="santé Antananarivo">
+            <button class="btn btn-primary" style="padding:9px 16px;">Rechercher</button>
+          </div>
+          <div class="d5-filter-chips">
+            <button class="d5-chip active">✓ Vérifiées uniquement</button>
+            <button class="d5-chip">Santé</button>
+            <button class="d5-chip">Éducation</button>
+            <button class="d5-chip">Antananarivo</button>
+            <button class="d5-chip">Score ≥ 70</button>
+          </div>
+          <div class="d5-ong-card">
+            <div class="d5-card-top">
+              <div class="d5-avatar">OM</div>
+              <div class="d5-card-info">
+                <div class="d5-card-name">ONG Miray</div>
+                <div class="d5-card-sector">Santé communautaire · Antananarivo, Madagascar · Fondée 2017</div>
+                <div class="d5-card-badges">
+                  <span class="badge-verified" style="font-size:13px;padding:5px 14px;">✓ Vérifié Paika</span>
+                  <span style="background:#F1F5F9;color:#64748B;border-radius:999px;padding:5px 12px;font-size:11px;font-weight:600;">8 ans d'activité</span>
+                  <span style="background:#EEF2FF;color:#4F46E5;border-radius:999px;padding:5px 12px;font-size:11px;font-weight:600;">12 projets</span>
+                </div>
+              </div>
+            </div>
+            <div class="d5-score-strip">
+              <div class="d5-score-big">78</div>
+              <div class="d5-score-detail">
+                <div class="d5-score-status-lbl">Dossier solide</div>
+                <div class="d5-criteria-row">
+                  <span class="d5-crit-pill" style="background:#DCFCE7;color:#15803D;">✓ Légal</span>
+                  <span class="d5-crit-pill" style="background:#DCFCE7;color:#15803D;">✓ Gouvernance</span>
+                  <span class="d5-crit-pill" style="background:#DCFCE7;color:#15803D;">✓ Projets</span>
+                  <span class="d5-crit-pill" style="background:#FEF3C7;color:#B45309;">— Financier</span>
+                  <span class="d5-crit-pill" style="background:#F1F5F9;color:#64748B;">— Audit</span>
+                </div>
+              </div>
+            </div>
+            <div class="d5-card-actions">
+              <button class="btn btn-primary" style="flex:1;">📄 Télécharger rapport de vérification (PDF)</button>
+              <button class="btn btn-ghost">Voir le profil complet</button>
+              <button class="btn btn-ghost">Contacter</button>
+            </div>
+          </div>
+          <div class="d5-ong-card" style="margin-top:10px;opacity:0.7;">
+            <div class="d5-card-top">
+              <div class="d5-avatar" style="background:#DCFCE7;color:#15803D;">FA</div>
+              <div class="d5-card-info">
+                <div class="d5-card-name">Fitiavana ONG</div>
+                <div class="d5-card-sector">Santé maternelle · Antananarivo · Fondée 2015</div>
+                <div class="d5-card-badges"><span class="badge-verified">✓ Vérifié Paika</span></div>
+              </div>
+              <div style="text-align:right;"><div style="font-size:28px;font-weight:800;color:#6B7280;">82</div><div style="font-size:11px;color:#16A34A;font-weight:600;">Certifié</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="d5-agent" class="screen-panel">
+    <div class="frame-wrap">
+      <div class="frame-label">Dashboard Agent — Direction 5</div>
+      <div class="ui shell">
+        <div class="topbar"><span class="topbar-brand">Paika</span><div class="topbar-right"><span>🔔</span><span>Haingo M.</span></div></div>
+        <div class="shell-body">
+          <div class="sidebar"><div class="si active"><span class="si-icon">🏠</span>Tableau de bord</div><div class="si"><span class="si-icon">📋</span>Mon dossier</div><div class="si"><span class="si-icon">📄</span>Documents</div><div class="si"><span class="si-icon">💳</span>Abonnement</div></div>
+          <div class="main">
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;">
+              <span class="badge-verified">✓ Vérifié Paika</span>
+              <span style="font-size:11px;color:#64748B;">Certifiée le 01/05/2026</span>
+            </div>
+            <div class="card"><div style="display:flex;align-items:flex-end;gap:10px;margin-bottom:8px;"><div class="score-num">78<span>/100</span></div><span style="background:#CCFBF1;color:#0D9488;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:600;margin-bottom:4px;">Dossier solide</span></div><div class="score-bar-track" style="margin-bottom:6px;"><div class="score-bar-fill" style="width:78%;background:linear-gradient(90deg,#F59E0B,#0D9488);"></div></div><div style="font-size:11px;color:#64748B;"><span style="color:#2563EB;font-weight:600;">+7 pts</span> · Rapport annuel 2024</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="d5-backoffice" class="screen-panel">
+    <div class="frame-wrap">
+      <div class="frame-label">Back-office — Direction 5</div>
+      <div class="ui shell">
+        <div class="topbar"><span class="topbar-brand">Paika · Back-office</span><div class="topbar-right"><span>Fanja R.</span></div></div>
+        <div class="shell-body">
+          <div class="sidebar"><div class="si active"><span class="si-icon">📊</span>Pipeline</div><div class="si"><span class="si-icon">✅</span>Traités</div></div>
+          <div class="main"><div class="kanban-wrap"><div class="kcol"><div class="kcol-hdr">À vérifier <span class="kcount">4</span></div><div class="kcard urgent"><div class="kcard-name">ONG Fiantso</div><div class="kcard-meta"><span>42</span><span class="d3-urgent">⚠ 52h</span></div></div><div class="kcard"><div class="kcard-name">ONG Taratra</div><div class="kcard-meta"><span>71</span><span>6h</span></div></div></div><div class="kcol"><div class="kcol-hdr">En cours <span class="kcount">2</span></div><div class="kcard wip"><div class="kcard-name">Miara-Mandroso</div><div class="kcard-meta"><span>63</span><span style="color:#2563EB;">Vous</span></div></div></div><div class="kcol"><div class="kcol-hdr">Validé <span class="kcount">7</span></div><div class="kcard done"><div class="kcard-name">ONG Miray</div><div class="kcard-meta"><span>78</span><span style="color:#16A34A;">✓</span></div></div></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DIRECTION 6 — MOBILE FIRST
+══════════════════════════════════════════ -->
+<div id="dir6" class="dir-panel">
+  <div class="dir-header">
+    <div class="dir-philosophy">
+      <h2>Mobile First</h2>
+      <p>Conçue pour le téléphone de Haingo avant tout. Navigation en bottom-bar, thumb-friendly. Cards stackées, score en hero card, prochaine action toujours visible. Bottom-nav évite le menu hamburger — navigation à une main. Desktop hérite d'une version agrandie de la même logique.</p>
+      <div class="dir-tags">
+        <span class="dir-tag" style="background:#FFFBEB;color:#92400E;">Mobile priorité</span>
+        <span class="dir-tag" style="background:#DBEAFE;color:#1B4B82;">Thumb zone</span>
+        <span class="dir-tag" style="background:#F1F5F9;color:#475569;">Cards stackées</span>
+      </div>
+    </div>
+  </div>
+  <div class="screen-tabs" id="tabs-d6">
+    <button class="screen-tab active" onclick="showScreen('d6','agent',this)">Mobile Agent</button>
+    <button class="screen-tab" onclick="showScreen('d6','partner',this)">Profil Bailleur</button>
+    <button class="screen-tab" onclick="showScreen('d6','backoffice',this)">Back-office</button>
+  </div>
+
+  <div id="d6-agent" class="screen-panel active">
+    <div class="frame-wrap">
+      <div class="frame-label">Vue Mobile Agent — Haingo (Galaxy A22, Chrome)</div>
+      <div style="padding:20px;background:#0F172A;display:flex;justify-content:center;">
+        <div class="d6-mobile-frame">
+          <div class="d6-status-bar"><span>9:41</span><span>📶 3G 🔋</span></div>
+          <div class="d6-header">
+            <div class="d6-header-greeting">Bonjour,</div>
+            <div class="d6-header-name">Haingo Miray</div>
+            <div class="d6-header-org">ONG Miray · Antananarivo</div>
+          </div>
+          <div class="d6-hero-card">
+            <div class="d6-hero-top">
+              <div><div class="d6-hero-label">Votre Score</div><span class="badge-building" style="font-size:11px;margin-top:4px;display:inline-flex;">🔶 Dossier en construction</span></div>
+              <div style="text-align:right;"><div class="d6-hero-score">32<sub>/100</sub></div></div>
+            </div>
+            <div class="d6-score-bar"><div class="d6-score-fill" style="width:32%;background:#F59E0B;"></div></div>
+            <div class="d6-next-action">
+              <span class="d6-next-icon">📄</span>
+              <span class="d6-next-text">Uploadez votre récépissé d'enregistrement</span>
+              <span class="d6-next-pts">+10 pts</span>
+            </div>
+          </div>
+          <div class="d6-cards">
+            <div class="d6-card">
+              <div class="d6-card-hdr">
+                <span class="d6-card-title">Documents légaux</span>
+                <span class="d6-card-status" style="color:#F59E0B;background:#FFFBEB;padding:3px 8px;border-radius:999px;">1/3</span>
+              </div>
+              <div class="d6-doc-row"><span class="d6-doc-icon">📋</span><span class="d6-doc-name">Statuts de l'association</span><span class="d6-doc-status" style="color:#16A34A;">✓</span></div>
+              <div class="d6-doc-row"><span class="d6-doc-icon">📋</span><span class="d6-doc-name">Récépissé d'enregistrement</span><span class="d6-doc-status" style="color:#F59E0B;">→</span></div>
+              <div class="d6-doc-row"><span class="d6-doc-icon">📊</span><span class="d6-doc-name">Rapport annuel 2024</span><span class="d6-doc-status" style="color:#94A3B8;">—</span></div>
+            </div>
+          </div>
+          <div style="padding:8px 12px;"><button class="btn btn-primary" style="width:100%;padding:12px;">Continuer mon dossier →</button></div>
+          <div class="d6-bottom-nav">
+            <div class="d6-nav-item active"><span class="d6-nav-icon">🏠</span><span class="d6-nav-label">Accueil</span><div class="d6-nav-dot"></div></div>
+            <div class="d6-nav-item"><span class="d6-nav-icon">📋</span><span class="d6-nav-label">Dossier</span></div>
+            <div class="d6-nav-item"><span class="d6-nav-icon">📄</span><span class="d6-nav-label">Docs</span></div>
+            <div class="d6-nav-item"><span class="d6-nav-icon">💳</span><span class="d6-nav-label">Abonnement</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="d6-partner" class="screen-panel">
+    <div class="frame-wrap">
+      <div class="frame-label">Profil ONG — Direction 6 (Desktop Bailleur)</div>
+      <div class="ui">
+        <div class="topbar"><span class="topbar-brand">Paika</span><div class="topbar-right"><span>Marc D.</span></div></div>
+        <div style="padding:20px;">
+          <div class="d5-ong-card"><div class="d5-card-top"><div class="d5-avatar">OM</div><div class="d5-card-info"><div class="d5-card-name">ONG Miray</div><div class="d5-card-sector">Santé · Antananarivo</div><div class="d5-card-badges"><span class="badge-verified">✓ Vérifié Paika</span></div></div></div><div class="d5-score-strip"><div class="d5-score-big">78</div><div class="d5-score-detail"><div class="d5-score-status-lbl">Dossier solide</div><div class="d5-criteria-row"><span class="d5-crit-pill" style="background:#DCFCE7;color:#15803D;">✓ Légal</span><span class="d5-crit-pill" style="background:#DCFCE7;color:#15803D;">✓ Gouvernance</span><span class="d5-crit-pill" style="background:#DCFCE7;color:#15803D;">✓ Projets</span><span class="d5-crit-pill" style="background:#FEF3C7;color:#B45309;">— Financier</span></div></div></div><div class="d5-card-actions"><button class="btn btn-primary" style="flex:1;">Télécharger rapport PDF</button><button class="btn btn-ghost">Contacter</button></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="d6-backoffice" class="screen-panel">
+    <div class="frame-wrap">
+      <div class="frame-label">Back-office — Direction 6</div>
+      <div class="ui shell">
+        <div class="topbar"><span class="topbar-brand">Paika · Back-office</span><div class="topbar-right"><span>Fanja R.</span></div></div>
+        <div class="shell-body"><div class="sidebar"><div class="si active"><span class="si-icon">📊</span>Pipeline</div></div><div class="main"><div class="kanban-wrap"><div class="kcol"><div class="kcol-hdr">À vérifier <span class="kcount">4</span></div><div class="kcard urgent"><div class="kcard-name">ONG Fiantso</div><div class="kcard-meta"><span>42</span><span class="d3-urgent">⚠ 52h</span></div></div></div><div class="kcol"><div class="kcol-hdr">En cours <span class="kcount">2</span></div><div class="kcard wip"><div class="kcard-name">Miara-Mandroso</div><div class="kcard-meta"><span>63</span><span style="color:#2563EB;">Vous</span></div></div></div><div class="kcol"><div class="kcol-hdr">Validé <span class="kcount">7</span></div><div class="kcard done"><div class="kcard-name">ONG Miray</div><div class="kcard-meta"><span>78</span><span style="color:#16A34A;">✓</span></div></div></div></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showDir(n, btn) {
+  document.querySelectorAll('.dir-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.dir-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('dir'+n).classList.add('active');
+  btn.classList.add('active');
+}
+function showScreen(dir, screen, btn) {
+  const panel = document.getElementById('dir' + dir.replace('d',''));
+  panel.querySelectorAll('.screen-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#tabs-'+dir+' .screen-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(dir+'-'+screen).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
