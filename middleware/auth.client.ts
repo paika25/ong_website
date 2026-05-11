@@ -9,6 +9,8 @@
  * })
  */
 export default defineNuxtRouteMiddleware(async (to, from) => {
+  if (import.meta.server) return
+
   // Pages publiques - pas besoin d'authentification
   const publicPages = [
     '/',

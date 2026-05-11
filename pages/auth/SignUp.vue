@@ -32,19 +32,16 @@
 
 <script setup lang="ts">
 import AuthSignup from '~/features/auth/components/Signup.client.vue'
-import { useAuthStore } from '~/features/auth/stores/auth.client'
 import type { User } from '~/features/auth/types/auth.types'
 
-// Rediriger vers dashboard si déjà connecté
 definePageMeta({
   layout: false,
   middleware: ['guest-client']
 })
 
-const authStore = useAuthStore()
-
 const onSignupSuccess = async (user: User) => {
-  // Persister l'utilisateur dans le store
+  const { useAuthStore } = await import('~/features/auth/stores/auth.client')
+  const authStore = useAuthStore()
   authStore.setUser(user)
   console.log('✅ Utilisateur inscrit:', user.email)
   

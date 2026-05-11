@@ -114,6 +114,11 @@ export const useAuthService = () => {
         return { user: null, error: 'Erreur lors de la création du compte' }
       }
 
+      // Supabase retourne identities: [] quand l'e-mail est déjà enregistré
+      if (authData.user.identities?.length === 0) {
+        return { user: null, error: 'Cet email est déjà utilisé. Connectez-vous ou réinitialisez votre mot de passe.' }
+      }
+
       console.log('✅ Utilisateur créé dans auth.users:', authData.user.id)
 
       // Attendre que le trigger s'exécute (si configuré)

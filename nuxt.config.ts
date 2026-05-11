@@ -17,7 +17,7 @@ export default defineNuxtConfig({
     stripeWebhookSecret: '',    // NUXT_STRIPE_WEBHOOK_SECRET
     public: {
       supabaseUrl: '',
-      supabaseKey: '',
+      supabaseAnonKey: '',
       appUrl: '',               // NUXT_PUBLIC_APP_URL (ex: https://paika.mg)
     }
   },
