@@ -1,5 +1,8 @@
 <template>
-  <div class="bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
+  <div
+    class="bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full cursor-pointer"
+    @click="onViewDetails"
+  >
     <!-- Image de l'ONG -->
     <div class="relative h-48 bg-muted">
       <img
@@ -76,7 +79,7 @@
       </div>
 
       <!-- Contact rapide -->
-      <div class="flex items-center justify-center gap-3 mt-4 pt-4 border-t border-border">
+      <div class="flex items-center justify-center gap-3 mt-4 pt-4 border-t border-border" @click.stop>
         <UButton
           v-if="ong.email"
           variant="ghost"
