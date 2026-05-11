@@ -167,7 +167,7 @@
           />
         </div>
         <p class="text-xs text-muted-foreground">
-          Force: {{ passwordStrengthLabels[passwordStrengthLevel - 1] || 'Très faible' }}
+          Mot de passe {{ passwordStrengthLabels[passwordStrengthLevel - 1] || 'Très faible' }}
         </p>
       </div>
 
