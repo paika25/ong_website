@@ -101,7 +101,6 @@ async function saveChanges(formData: OngFormData) {
     ong.value = result.data
     formRef.value?.onSaved()
 
-    // Score recalculation — déféré à Story 4.1 (score.service.ts stub)
     toast.add({ title: 'Modifications enregistrées', color: 'green', timeout: 4000 })
   } catch (err: any) {
     toast.add({ title: 'Erreur inattendue', description: err.message, color: 'red', timeout: 5000 })
