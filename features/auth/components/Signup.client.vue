@@ -306,6 +306,7 @@ const isLoading = ref(false)
 const showSuccessModal = ref(false)
 const globalError = ref<string | null>(null)
 const errors = ref<Record<string, string>>({})
+const hasSubmitted = ref(false)
 
 // Password strength
 const passwordStrengthLabels = ['Faible', 'Moyen', 'Bon', 'Excellent']
@@ -370,14 +371,17 @@ const isFormValid = computed(() => {
          Object.keys(errors.value).length === 0
 })
 
-// Watch for validation
+// Watch for validation — uniquement après une première tentative de soumission
 watch(form, () => {
-  errors.value = validateForm()
+  if (hasSubmitted.value) {
+    errors.value = validateForm()
+  }
   globalError.value = null
 }, { deep: true })
 
 // Handle signup
 const handleSignup = async () => {
+  hasSubmitted.value = true
   const validationErrors = validateForm()
   if (Object.keys(validationErrors).length > 0) {
     errors.value = validationErrors
