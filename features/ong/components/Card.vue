@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow duration-300">
+  <div class="bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
     <!-- Image de l'ONG -->
     <div class="relative h-48 bg-muted">
       <img
@@ -27,7 +27,7 @@
     </div>
 
     <!-- Contenu de la card -->
-    <div class="p-6">
+    <div class="p-6 flex flex-col flex-1">
       <!-- Header avec nom et localisation -->
       <div class="mb-3">
         <h3 class="font-semibold text-lg mb-1 line-clamp-1">{{ ong.name }}</h3>
@@ -55,7 +55,7 @@
       </div>
 
       <!-- Actions -->
-      <div class="flex gap-2">
+      <div class="flex gap-2 mt-auto">
         <UButton
           variant="outline"
           size="sm"
