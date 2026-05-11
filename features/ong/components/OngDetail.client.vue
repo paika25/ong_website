@@ -7,7 +7,7 @@
       :project-count="getProjectCount(ong)"
       :active-projects-count="getActiveProjectsCount(ong)"
       :years-since-creation="getYearsSinceCreation(ong)"
-      @join="handleJoin"
+      :share-copied="shareCopied"
       @donate="handleDonate"
       @shareDonation="handleShare"
     />
@@ -69,6 +69,22 @@
         />
       </template>
     </UTabs>
+
+    <Teleport to="body">
+      <OngDonationModal
+        v-if="showDonationModal"
+        :ong="ong"
+        :amount="selectedAmount"
+        :custom-amount="customAmount"
+        @close="showDonationModal = false"
+      />
+
+      <OngVolunteerModal
+        v-if="showVolunteerModal"
+        :ong="ong"
+        @close="showVolunteerModal = false"
+      />
+    </Teleport>
   </div>
 </template>
 
@@ -84,6 +100,8 @@ import OngDetailTabDonation from './OngDetailTabDonation.vue'
 import OngDetailTabTransparency from './OngDetailTabTransparency.vue'
 import OngDetailTabDocuments from './OngDetailTabDocuments.vue'
 import OngDetailTabVolunteers from './OngDetailTabVolunteers.vue'
+import OngDonationModal from './OngDonationModal.vue'
+import OngVolunteerModal from './OngVolunteerModal.vue'
 
 const props = defineProps<{ ong: ONG }>()
 
@@ -99,6 +117,9 @@ const {
   activeTab,
   documents,
   tabs,
+  showDonationModal,
+  showVolunteerModal,
+  shareCopied,
   getStatusLabel,
   getCategoryLabel,
   getProjectStatusColor,

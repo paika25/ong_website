@@ -6,6 +6,9 @@ export function useOngDetail(ong: () => ONG) {
   // État
   const activeTab = ref(0)
   const documents = ref<OngDocument[]>([])
+  const showDonationModal = ref(false)
+  const showVolunteerModal = ref(false)
+  const shareCopied = ref(false)
 
   // Charger les documents
   const loadDocuments = async () => {
@@ -145,26 +148,22 @@ export function useOngDetail(ong: () => ONG) {
   // ── Actions ──
 
   const handleJoin = () => {
-    console.log('Rejoindre ONG:', ong().name)
-    // TODO: Implémenter la logique d'adhésion
+    showVolunteerModal.value = true
   }
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const o = ong()
     if (navigator.share) {
-      navigator.share({
-        title: o.name,
-        text: o.description,
-        url: window.location.href
-      })
+      await navigator.share({ title: o.name, text: o.description, url: window.location.href })
     } else {
-      navigator.clipboard.writeText(window.location.href)
+      await navigator.clipboard.writeText(window.location.href)
+      shareCopied.value = true
+      setTimeout(() => { shareCopied.value = false }, 2000)
     }
   }
 
-  const handleDonate = () => {
-    const idx = tabs.value.findIndex(t => t.key === 'donation')
-    if (idx !== -1) activeTab.value = idx
+  const handleDonate = (_opportunity?: any) => {
+    showDonationModal.value = true
   }
 
   return {
@@ -172,6 +171,9 @@ export function useOngDetail(ong: () => ONG) {
     activeTab,
     documents,
     tabs,
+    showDonationModal,
+    showVolunteerModal,
+    shareCopied,
     // Labels
     getStatusLabel,
     getCategoryLabel,
