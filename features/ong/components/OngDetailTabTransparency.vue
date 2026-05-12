@@ -1,5 +1,11 @@
 <template>
   <div class="space-y-6">
+    <!-- Score de Transparence (Story 4.2) -->
+    <div v-if="score !== undefined" class="bg-card rounded-xl border border-border p-6">
+      <h2 class="text-lg font-semibold mb-4">Score de Transparence</h2>
+      <ScoreTransparenceWidget :score="score" :criteria="criteria" />
+    </div>
+
     <!-- Informations légales -->
     <div v-if="legal" class="bg-card rounded-xl border border-border p-6">
       <h2 class="text-2xl font-semibold mb-6">Informations légales</h2>
@@ -78,9 +84,14 @@
 <script setup lang="ts">
 import type { ONG } from '../type'
 
+import ScoreTransparenceWidget from '~/features/verification/components/ScoreTransparenceWidget.vue'
+import type { ScoreCriterion } from '~/features/verification/components/ScoreTransparenceWidget.vue'
+
 defineProps<{
-  legal: ONG['legal']
-  monitoring: ONG['monitoring']
-  formatDate: (date: string) => string
+  legal:       ONG['legal']
+  monitoring:  ONG['monitoring']
+  formatDate:  (date: string) => string
+  score?:      number
+  criteria?:   ScoreCriterion[]
 }>()
 </script>

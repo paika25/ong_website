@@ -11,10 +11,7 @@
       </div>
 
       <!-- Section selon le type de compte -->
-      <DashboardAgentOng
-        v-if="user?.accountType === 'user_agent'"
-        :ong="userOng"
-      />
+      <DashboardAgentOng v-if="user?.accountType === 'user_agent'" />
       <DashboardPartnerDonations
         v-else
         :donations="donations"
@@ -26,8 +23,6 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '~/features/auth/stores/auth.client'
-import { getOwnerOng } from '~/features/ong/services/ongService'
-import type { ONG } from '~/features/ong/type'
 import { useStats } from '~/features/user/composables/useStats'
 import DashboardWelcome from '~/features/user/components/DashboardWelcome.vue'
 import DashboardCardProfil from '~/features/user/components/DashboardCardProfil.vue'
@@ -36,22 +31,17 @@ import DashboardAgentOng from '~/features/ong/components/DashboardAgentOng.vue'
 import DashboardPartnerDonations from '~/features/user/components/DashboardPartnerDonations.vue'
 
 definePageMeta({
-  middleware: ['auth-client']
+  middleware: ['auth']
 })
 
 const authStore = useAuthStore()
 const user = computed(() => authStore.currentUser)
 
-const userOng = ref<ONG | null>(null)
 const { donations, stats, isLoading: loading, load: loadStats } = useStats()
 
 onMounted(async () => {
   try {
     await loadStats()
-
-    if (user.value?.accountType === 'user_agent') {
-      userOng.value = await getOwnerOng()
-    }
   } catch (error) {
     console.error('Erreur lors du chargement des données:', error)
   }

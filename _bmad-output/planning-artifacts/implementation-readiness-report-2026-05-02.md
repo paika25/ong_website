@@ -451,3 +451,60 @@ Cette évaluation a identifié **1 problème critique, 3 problèmes majeurs et 5
 ---
 
 *Rapport généré le 2026-05-02 — Paika ONG Platform*
+
+---
+
+## Supplément — Audit d'implémentation du code brownfield (2026-05-09)
+
+> Ce supplément documente l'état réel du code au 2026-05-09, après analyse du dépôt.
+> Il complète la readiness assessment initiale avec le delta "ce qui était prévu vs ce qui existe".
+
+### État d'avancement global
+
+| Epic | Statut | Stories terminées | Stories en cours | Stories non démarrées |
+|---|---|---|---|---|
+| Epic 1 — Fondation & Auth | 🔄 En cours | 1.7 ✅, 1.8 ✅ | 1.1, 1.4, 1.9, 1.10 | 1.2, 1.3, 1.5, 1.6, 1.11 |
+| Epic 2 — Profil ONG | 🔄 En cours | — | 2.1, 2.3, 2.4, 2.5, 2.6 | 2.2 (StepperForm) |
+| Epic 3 — Vérification BO | ⬜ Non démarré | — | — | 3.1, 3.2, 3.3, 3.4, 3.5 |
+| Epic 4 — Score | ⬜ Non démarré | — | — | 4.1, 4.2, 4.3 |
+| Epic 5 — Abonnement | ⬜ Non démarré | — | — | 5.1, 5.2, 5.3 |
+| Epic 6 — Marketplace | 🔄 En cours | — | 6.2, 6.3 | 6.1, 6.4 |
+| Epic 7 — Virements & Analytics | ⬜ Non démarré | — | — | 7.1, 7.2, 7.3, 7.4 |
+
+### Ce qui existe dans le brownfield
+
+**Fonctionnalités implémentées et opérationnelles :**
+- Inscription utilisateur (email, mot de passe, rôle user_agent/user_partner) — `features/auth/`
+- Connexion / déconnexion — session JWT Supabase, localStorage rememberMe
+- Architecture feature-based partielle — `features/auth/`, `features/ong/`, `features/user/`
+- Middleware de routage par rôle (client-side) — auth, agent-only, partner-only, guest
+- Service `resetPassword()` — Supabase `resetPasswordForEmail` (pas les pages UI)
+- CRUD ONG complet — `createOng()`, `updateOng()`, `deleteOng()`, `getOngById()`
+- Upload documents ONG — Supabase Storage bucket `ong-documents`, table `ong_documents`
+- Liste ONG avec filtres — recherche texte, catégorie, statut, localisation
+- Détail ONG public — tabs About/Projects/Financials/Transparency/Documents/Donation
+- Dashboard agent (ONG de l'agent) et partner (donations)
+- Gestion du profil utilisateur basique — `ProfilEditForm.client.vue`
+
+**Ce qui n'existe pas du tout :**
+- `server/services/` (audit, score, payment, email) — aucun fichier
+- `server/utils/errors.ts`, `types/pagination.ts`, `types/schemas/`
+- `server/api/webhooks/vanilla-pay.post.ts`
+- Migrations Supabase (`supabase/migrations/`)
+- Tests E2E (`tests/e2e/`)
+- `StepperForm`, `DocumentUploadZone`, `BadgeVerifie`, `PipelineKanban`, `ScoreTransparenceWidget`, `TransactionStatusBadge`
+- `features/verification/`, `features/marketplace/`, `features/back-office/`
+- Sentry, feature flags `NUXT_PUBLIC_FEATURE_*`
+- Pages `/auth/forgot`, `/auth/reset-password`, `/account/settings`, `/dashboard/agent/ong/visibility`
+
+### Prochaines priorités recommandées
+
+Pour débloquer le chemin critique, l'ordre recommandé est :
+
+1. **Story 1.2** — Migrations Supabase (bloque les tests et tout le back-end)
+2. **Story 1.5** — Stubs de services (bloque Epics 3, 4, 5 qui en dépendent)
+3. **Story 1.9** — Pages reset mot de passe (quick win, service déjà fait)
+4. **Story 2.2** — StepperForm (bloque stories 2.3 et 2.4 pour atteindre la spec)
+5. **Story 1.1** — Finaliser migration brownfield + gardes ESLint/TypeScript strict
+
+*Supplément ajouté le 2026-05-09 — Paika ONG Platform*

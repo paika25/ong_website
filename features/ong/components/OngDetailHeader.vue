@@ -12,9 +12,17 @@
         <Icon name="i-heroicons-building-office-2" class="w-24 h-24 text-muted-foreground" />
       </div>
 
-      <div class="absolute top-4 right-4 flex gap-2">
+      <div class="absolute top-4 right-4 flex gap-2 items-center">
+        <!-- Badge vérifié (certifié) -->
+        <BadgeVerifie
+          v-if="ong.status === 'verified' || ong.status === 'active'"
+          status="verified"
+          :certification-date="ong.updatedAt"
+          size="md"
+        />
         <UBadge
-          :color="ong.status === 'active' ? 'green' : ong.status === 'pending' ? 'yellow' : 'red'"
+          v-else
+          :color="ong.status === 'pending' ? 'yellow' : ong.status === 'submitted' || ong.status === 'under_review' ? 'blue' : 'red'"
           variant="solid"
           size="lg"
         >
@@ -87,6 +95,7 @@
 
 <script setup lang="ts">
 import type { ONG } from '../type'
+import BadgeVerifie from '~/features/verification/components/BadgeVerifie.vue'
 
 const props = defineProps<{
   ong: ONG

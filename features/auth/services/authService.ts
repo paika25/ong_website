@@ -283,15 +283,16 @@ export const useAuthService = () => {
   /**
    * Déconnexion
    */
-  const signOut = async (): Promise<{ error: string | null }> => {
+  const signOut = async (global = false): Promise<{ error: string | null }> => {
     if (!supabase) {
       return { error: null }
     }
 
     try {
-      const { error } = await supabase.auth.signOut()
-      
-      // Nettoyer le localStorage
+      const { error } = await supabase.auth.signOut(
+        global ? { scope: 'global' } : undefined
+      )
+
       if (typeof window !== 'undefined') {
         localStorage.removeItem('auth-token')
         localStorage.removeItem('refresh-token')
@@ -301,11 +302,59 @@ export const useAuthService = () => {
       }
 
       if (error) {
-        console.error('❌ Erreur déconnexion:', error)
         return { error: error.message }
       }
 
-      console.log('✅ Déconnexion réussie')
+      return { error: null }
+    } catch (err: any) {
+      return { error: err.message }
+    }
+  }
+
+  /**
+   * Mettre à jour l'email (envoie confirmation à la nouvelle adresse)
+   */
+  const updateEmail = async (newEmail: string): Promise<{ error: string | null }> => {
+    if (!supabase) return { error: 'Service non disponible' }
+
+    try {
+      const { error } = await supabase.auth.updateUser(
+        { email: newEmail },
+        { emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined }
+      )
+      if (error) return { error: getReadableError(error.message) }
+      return { error: null }
+    } catch (err: any) {
+      return { error: err.message }
+    }
+  }
+
+  /**
+   * Changer le mot de passe après vérification de l'ancien
+   */
+  const verifyAndUpdatePassword = async (
+    currentEmail: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<{ error: string | null }> => {
+    if (!supabase) return { error: 'Service non disponible' }
+
+    if (newPassword.length < 8) {
+      return { error: 'Le nouveau mot de passe doit contenir au moins 8 caractères' }
+    }
+
+    try {
+      // Vérifier l'ancien mot de passe via re-authentification
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: currentEmail,
+        password: currentPassword,
+      })
+      if (signInError) return { error: 'Mot de passe actuel incorrect' }
+
+      // Mettre à jour avec le nouveau
+      const { error } = await supabase.auth.updateUser({ password: newPassword })
+      if (error) return { error: getReadableError(error.message) }
+
       return { error: null }
     } catch (err: any) {
       return { error: err.message }
@@ -370,6 +419,31 @@ export const useAuthService = () => {
   }
 
   /**
+   * Mettre à jour le mot de passe (appelé depuis la page reset-password)
+   */
+  const updatePassword = async (newPassword: string): Promise<{ error: string | null }> => {
+    if (!supabase) {
+      return { error: 'Service non disponible' }
+    }
+
+    try {
+      if (newPassword.length < 8) {
+        return { error: 'Le mot de passe doit contenir au moins 8 caractères' }
+      }
+
+      const { error } = await supabase.auth.updateUser({ password: newPassword })
+
+      if (error) {
+        return { error: getReadableError(error.message) }
+      }
+
+      return { error: null }
+    } catch (err: any) {
+      return { error: err.message }
+    }
+  }
+
+  /**
    * Vérifier si l'utilisateur est connecté
    */
   const isAuthenticated = async (): Promise<boolean> => {
@@ -389,6 +463,9 @@ export const useAuthService = () => {
     signOut,
     getCurrentUser,
     resetPassword,
+    updatePassword,
+    updateEmail,
+    verifyAndUpdatePassword,
     isAuthenticated
   }
 }

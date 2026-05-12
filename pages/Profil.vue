@@ -16,7 +16,7 @@ import Footer from "../components/Footer.client.vue"
 
 
 definePageMeta({
-  middleware: ['auth-client']
+  middleware: ['auth']
 })
 
 </script>

@@ -4,6 +4,7 @@
  */
 
 import type { OngFormPayload, OngServiceResult, DeleteOngResult } from './ong.types'
+import type { SectionVisibility } from '../type'
 import { isClient } from './ong.helpers'
 import { toSupabasePayload, fromSupabaseRow } from './ong.mapper'
 
@@ -147,6 +148,28 @@ export const createOng = async (
     console.error('❌ [createOng] Exception:', err)
     return { success: false, data: null, error: err.message || 'Erreur inconnue' }
   }
+}
+
+// ============================================
+// UPDATE ONG VISIBILITY
+// ============================================
+
+export const updateOngVisibility = async (
+  ongId: string,
+  visibility: SectionVisibility
+): Promise<{ success: boolean; error: string | null }> => {
+  if (!isClient()) return { success: false, error: 'Opération client-only' }
+
+  const supabase = useSupabase()
+  if (!supabase) return { success: false, error: 'Supabase non disponible' }
+
+  const { error } = await supabase
+    .from('ongs')
+    .update({ section_visibility: visibility, updated_at: new Date().toISOString() })
+    .eq('id', ongId)
+
+  if (error) return { success: false, error: error.message }
+  return { success: true, error: null }
 }
 
 // ============================================

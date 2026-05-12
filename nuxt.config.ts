@@ -8,6 +8,7 @@ export default defineNuxtConfig({
   },
   
   runtimeConfig: {
+    supabaseServiceRoleKey: '', // NUXT_SUPABASE_SERVICE_ROLE_KEY — jamais exposé client
     public: {
       supabaseUrl: '',
       supabaseKey: '',

@@ -32,6 +32,7 @@ export {
 export {
   createOng,
   updateOng,
+  updateOngVisibility,
   deleteOng,
 } from './ong.mutations'
 

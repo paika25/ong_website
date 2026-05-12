@@ -16,13 +16,21 @@ export function useOngDetail(ong: () => ONG) {
 
   onMounted(loadDocuments)
 
-  // Onglets dynamiques
+  // Onglets dynamiques — filtrés selon sectionVisibility
   const tabs = computed(() => {
     const o = ong()
-    const baseTabs = [
-      { label: 'À propos', key: 'about' },
-      { label: 'Projets', key: 'projects' }
-    ]
+    const vis = o.sectionVisibility
+
+    const baseTabs: Array<{ label: string; key: string }> = []
+
+    // À propos = identite + mission
+    if (!vis || vis.identite !== false || vis.mission !== false) {
+      baseTabs.push({ label: 'À propos', key: 'about' })
+    }
+
+    if (!vis || vis.projets !== false) {
+      baseTabs.push({ label: 'Projets', key: 'projects' })
+    }
 
     if (o.financials) {
       baseTabs.push({ label: 'Finances', key: 'financials' })
@@ -36,11 +44,9 @@ export function useOngDetail(ong: () => ONG) {
     if (o.legal || o.monitoring) {
       baseTabs.push({ label: 'Administratif', key: 'transparency' })
     }
-    if (documents.value.length > 0) {
+    if (documents.value.length > 0 && (!vis || vis.documents !== false)) {
       baseTabs.push({ label: 'Documents', key: 'documents' })
     }
-
-    baseTabs.push({ label: 'Bénévoles', key: 'volunteers' })
 
     return baseTabs
   })

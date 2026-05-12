@@ -3,6 +3,72 @@ import type { Serialize, Simplify } from "nitropack/types";
 declare module "nitropack/types" {
   type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T
   interface InternalApi {
+    '/api/admin/dossiers': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/dossiers.get').default>>>>
+    }
+    '/api/admin/dossiers/:id/audit': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/dossiers/[id]/audit.get').default>>>>
+    }
+    '/api/admin/dossiers/:id/complement': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/dossiers/[id]/complement.post').default>>>>
+    }
+    '/api/admin/dossiers/:id': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/dossiers/[id]/index.get').default>>>>
+    }
+    '/api/admin/dossiers/:id/reject': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/dossiers/[id]/reject.post').default>>>>
+    }
+    '/api/admin/dossiers/:id/start-review': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/dossiers/[id]/start-review.post').default>>>>
+    }
+    '/api/admin/dossiers/:id/suspend': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/dossiers/[id]/suspend.post').default>>>>
+    }
+    '/api/admin/dossiers/:id/validate': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/dossiers/[id]/validate.post').default>>>>
+    }
+    '/api/admin/historique': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/historique.get').default>>>>
+    }
+    '/api/back-office/dossiers': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/back-office/dossiers.get').default>>>>
+    }
+    '/api/back-office/dossiers/:id/audit': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/back-office/dossiers/[id]/audit.get').default>>>>
+    }
+    '/api/back-office/dossiers/:id/complement': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/back-office/dossiers/[id]/complement.post').default>>>>
+    }
+    '/api/back-office/dossiers/:id': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/back-office/dossiers/[id]/index.get').default>>>>
+    }
+    '/api/back-office/dossiers/:id/reject': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/back-office/dossiers/[id]/reject.post').default>>>>
+    }
+    '/api/back-office/dossiers/:id/start-review': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/back-office/dossiers/[id]/start-review.post').default>>>>
+    }
+    '/api/back-office/dossiers/:id/suspend': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/back-office/dossiers/[id]/suspend.post').default>>>>
+    }
+    '/api/back-office/dossiers/:id/validate': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/back-office/dossiers/[id]/validate.post').default>>>>
+    }
+    '/api/ongs/:id/resubmit': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/ongs/[id]/resubmit.post').default>>>>
+    }
+    '/api/ongs/:id/submit': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/ongs/[id]/submit.post').default>>>>
+    }
+    '/api/score/criteria': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/score/criteria.get').default>>>>
+    }
+    '/api/score/ong/:id': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/score/ong/[id].get').default>>>>
+    }
+    '/api/webhooks/vanilla-pay': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/webhooks/vanilla-pay.post').default>>>>
+    }
     '/__nuxt_error': {
       'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../node_modules/nuxt/dist/core/runtime/nitro/handlers/renderer').default>>>>
     }

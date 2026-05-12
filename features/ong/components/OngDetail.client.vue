@@ -53,6 +53,7 @@
           :legal="ong.legal"
           :monitoring="ong.monitoring"
           :format-date="formatDate"
+          :score="ongScore"
         />
 
         <OngDetailTabDocuments
@@ -109,4 +110,13 @@ const {
   handleShare,
   handleDonate
 } = useOngDetail(() => props.ong)
+
+// Score depuis ong_current_scores (vue matérialisée)
+const ongScore = ref(0)
+onMounted(async () => {
+  try {
+    const res = await $fetch<{ score: number }>(`/api/score/ong/${props.ong.id}`)
+    ongScore.value = res.score
+  } catch { /* score reste 0 si non disponible */ }
+})
 </script>
