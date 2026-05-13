@@ -1376,16 +1376,16 @@ _ErdtmwJcqqpQ5PD4b4UyI856ixhiUzsheifQwM0kEwY
 const assets = {
   "/index.mjs": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"222c7-VEggizibFf08xYB+y3BeFwavNtw\"",
-    "mtime": "2026-05-13T16:23:36.700Z",
-    "size": 139975,
+    "etag": "\"22377-dYz4itd1km/jVC1bc/I7Kn0xark\"",
+    "mtime": "2026-05-13T18:29:31.094Z",
+    "size": 140151,
     "path": "index.mjs"
   },
   "/index.mjs.map": {
     "type": "application/json",
-    "etag": "\"74a8b-gxuE3nepTfovc4jAihnveugZJ1I\"",
-    "mtime": "2026-05-13T16:23:36.700Z",
-    "size": 477835,
+    "etag": "\"74f9e-VZUdDU1WF/4Ezs3JWpT0cvqMyeM\"",
+    "mtime": "2026-05-13T18:29:31.094Z",
+    "size": 479134,
     "path": "index.mjs.map"
   }
 };
@@ -2398,34 +2398,24 @@ const audit_get$3 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePropert
 async function insertAuditEntry(entry) {
   var _a, _b, _c;
   const config = useRuntimeConfig();
-  const serviceRoleKey = config.supabaseServiceRoleKey;
-  const anonKey = config.public.supabaseKey;
   const supabaseUrl = config.public.supabaseUrl;
-  let supabaseKey;
-  let extraHeaders = {};
-  if (serviceRoleKey) {
-    supabaseKey = serviceRoleKey;
-  } else if (entry.operatorToken) {
-    supabaseKey = anonKey;
-    extraHeaders = { Authorization: `Bearer ${entry.operatorToken}` };
-  } else {
-    console.warn("[audit.service] impossible d'ins\xE9rer : ni service_role ni token op\xE9rateur fourni");
-    return;
-  }
-  const supabase = createClient(supabaseUrl, supabaseKey, {
+  const anonKey = config.public.supabaseKey;
+  const supabase = createClient(supabaseUrl, anonKey, {
     auth: { autoRefreshToken: false, persistSession: false },
-    global: { headers: extraHeaders }
+    global: { headers: { Authorization: `Bearer ${entry.operatorToken}` } }
   });
-  const { error } = await supabase.from("audit_trail").insert({
-    entity_type: entry.entityType,
-    entity_id: entry.entityId,
-    action: entry.action,
-    performed_by: (_a = entry.operatorId) != null ? _a : null,
-    ong_id: (_b = entry.ongId) != null ? _b : entry.entityType === "ong" ? entry.entityId : null,
-    details_json: (_c = entry.metadata) != null ? _c : null,
-    pre_merkle: true
+  const ongId = (_a = entry.ongId) != null ? _a : entry.entityType === "ong" ? entry.entityId : null;
+  const { error } = await supabase.rpc("insert_audit_entry", {
+    p_entity_type: entry.entityType,
+    p_entity_id: entry.entityId,
+    p_action: entry.action,
+    p_performed_by: (_b = entry.operatorId) != null ? _b : null,
+    p_ong_id: ongId != null ? ongId : null,
+    p_details_json: (_c = entry.metadata) != null ? _c : null
   });
-  if (error) console.error("[audit.service] insertAuditEntry:", error.message);
+  if (error) {
+    throw new Error(`[audit.service] insert_audit_entry failed: ${error.message}`);
+  }
 }
 
 async function sendTransactionalEmail(_template, _to, _data) {
@@ -2532,20 +2522,24 @@ async function applyStatusTransition(ongId, action, token, operatorId, options) 
       error: `Mise \xE0 jour bloqu\xE9e (RLS ou ONG introuvable). V\xE9rifiez les policies Supabase sur la table ongs.`
     };
   }
-  insertAuditEntry({
-    entityType: "ong",
-    entityId: ongId,
-    action: transition.auditAction,
-    operatorId,
-    operatorToken: token,
-    metadata: { comment, previousStatus: ong.status, newStatus: transition.to }
-  }).catch(() => {
-  });
+  try {
+    await insertAuditEntry({
+      entityType: "ong",
+      entityId: ongId,
+      action: transition.auditAction,
+      operatorId,
+      operatorToken: token,
+      metadata: { comment, previousStatus: ong.status, newStatus: transition.to }
+    });
+  } catch (auditErr) {
+    console.error(`[ong-status] audit trail failed for action ${action} on ong ${ongId}:`, auditErr.message);
+  }
   if (transition.emailTemplate && ong.email) {
     sendTransactionalEmail(transition.emailTemplate, ong.email, {
       ongName: ong.name,
       newStatus: transition.to
-    }).catch(() => {
+    }).catch((emailErr) => {
+      console.error(`[ong-status] email failed for action ${action}:`, emailErr.message);
     });
   }
   return { success: true, newStatus: transition.to };
@@ -2749,7 +2743,8 @@ const historique_get = defineEventHandler(async (event) => {
       ong_id,
       details_json,
       created_at,
-      ongs ( name )
+      ongs ( name ),
+      operator:accounts!audit_trail_performed_by_fkey ( id, first_name, last_name, email )
     `).order("created_at", { ascending: false }).limit(limit + 1);
   if (cursor) q = q.lt("created_at", cursor);
   if (filter) q = q.eq("action", filter);

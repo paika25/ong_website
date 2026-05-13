@@ -2,13 +2,13 @@
   <div v-if="financials" class="space-y-6">
     <!-- Budget -->
     <div class="bg-card rounded-xl border border-border p-6">
-      <h2 class="text-2xl font-semibold mb-4">Budget 2023</h2>
+      <h2 class="text-lg font-semibold mb-4">Budget 2023</h2>
       <div class="text-4xl font-bold text-primary mb-6">
         {{ formatCurrency(financials.totalBudget2023) }}
       </div>
 
       <!-- Sources de financement -->
-      <h3 class="text-lg font-semibold mb-3">Sources de financement</h3>
+      <h3 class="text-base font-semibold mb-3">Sources de financement</h3>
       <div class="space-y-3">
         <div v-for="source in financials.fundingSources" :key="source.source" class="space-y-2">
           <div class="flex justify-between text-sm">
@@ -27,7 +27,7 @@
 
     <!-- Allocation des ressources -->
     <div class="bg-card rounded-xl border border-border p-6">
-      <h3 class="text-lg font-semibold mb-4">Allocation des ressources</h3>
+      <h3 class="text-base font-semibold mb-4">Allocation des ressources</h3>
       <div class="grid grid-cols-3 gap-4">
         <div class="text-center p-4 bg-muted/50 rounded-lg">
           <div class="text-3xl font-bold text-green-600">{{ financials.allocation.programs }}%</div>
@@ -46,7 +46,7 @@
 
     <!-- Rapports financiers -->
     <div v-if="financials.financialReports && financials.financialReports.length > 0" class="bg-card rounded-xl border border-border p-6">
-      <h3 class="text-lg font-semibold mb-4">Rapports financiers</h3>
+      <h3 class="text-base font-semibold mb-4">Rapports financiers</h3>
       <div class="space-y-2">
         <a
           v-for="report in financials.financialReports"

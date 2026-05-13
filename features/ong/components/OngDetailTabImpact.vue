@@ -30,7 +30,7 @@
 
     <!-- KPIs -->
     <div v-if="impact.kpis && impact.kpis.length > 0" class="bg-card rounded-xl border border-border p-6">
-      <h2 class="text-2xl font-semibold mb-4">Indicateurs de performance</h2>
+      <h2 class="text-lg font-semibold mb-4">Indicateurs de performance</h2>
       <div class="space-y-4">
         <div v-for="kpi in impact.kpis" :key="kpi.metric" class="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
           <Icon name="i-heroicons-chart-bar" class="w-6 h-6 text-primary flex-shrink-0 mt-1" />

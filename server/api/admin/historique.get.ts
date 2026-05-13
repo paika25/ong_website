@@ -3,8 +3,8 @@ import { createClient } from '@supabase/supabase-js'
 export default defineEventHandler(async (event) => {
   const query  = getQuery(event)
   const cursor = query.cursor as string | undefined
-  const filter = query.action as string | undefined   // filtrer par type d'action
-  const ongId  = query.ong_id as string | undefined   // filtrer par ONG
+  const filter = query.action as string | undefined
+  const ongId  = query.ong_id as string | undefined
   const limit  = 30
   const token  = getRequestHeader(event, 'authorization')?.replace('Bearer ', '')
 
@@ -27,14 +27,15 @@ export default defineEventHandler(async (event) => {
       ong_id,
       details_json,
       created_at,
-      ongs ( name )
+      ongs ( name ),
+      operator:accounts!audit_trail_performed_by_fkey ( id, first_name, last_name, email )
     `)
     .order('created_at', { ascending: false })
     .limit(limit + 1)
 
-  if (cursor)  q = q.lt('created_at', cursor)
-  if (filter)  q = q.eq('action', filter)
-  if (ongId)   q = q.eq('ong_id', ongId)
+  if (cursor) q = q.lt('created_at', cursor)
+  if (filter) q = q.eq('action', filter)
+  if (ongId)  q = q.eq('ong_id', ongId)
 
   const { data, error } = await q
   if (error) throw createError({ statusCode: 500, statusMessage: error.message })

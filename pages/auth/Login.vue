@@ -36,7 +36,8 @@ import type { User } from '~/features/auth/types/auth.types'
 import { onMounted } from 'vue'
 
 definePageMeta({
-	middleware: ['guest-client']
+  layout: false,
+  middleware: ['guest-client']
 })
 
 const route = useRoute()

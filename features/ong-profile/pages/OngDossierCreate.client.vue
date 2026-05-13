@@ -7,7 +7,7 @@
   <div class="max-w-2xl mx-auto space-y-6">
     <!-- En-tête -->
     <div>
-      <h1 class="text-2xl font-bold">Constituer mon dossier ONG</h1>
+      <h1 class="text-2xl font-bold tracking-tight">Constituer mon dossier ONG</h1>
       <p class="text-sm text-muted-foreground mt-1">
         Étapes 1 à 3 sur 5 — Identité, Mission, Documents
       </p>

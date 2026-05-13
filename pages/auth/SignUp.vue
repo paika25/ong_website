@@ -37,6 +37,7 @@ import type { User } from '~/features/auth/types/auth.types'
 
 // Rediriger vers dashboard si déjà connecté
 definePageMeta({
+  layout: false,
   middleware: ['guest-client']
 })
 

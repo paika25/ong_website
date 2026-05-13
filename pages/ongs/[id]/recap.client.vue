@@ -104,6 +104,7 @@ import type { ONG } from '~/features/ong/type'
 import { getOngById } from '~/features/ong/services'
 
 definePageMeta({
+  layout: false,
   middleware: ['auth']
 })
 

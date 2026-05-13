@@ -3,8 +3,8 @@
     <!-- Header avec titre -->
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-2xl font-bold">Mon ONG</h2>
-        <p class="text-muted-foreground">Gérez votre organisation</p>
+        <h2 class="text-lg font-semibold">Mon ONG</h2>
+        <p class="text-sm text-muted-foreground">Gérez votre organisation</p>
       </div>
       <NuxtLink v-if="!loading && !ong" to="/ongs/new">
         <UButton variant="default">
@@ -95,34 +95,8 @@
         </div>
       </div>
 
-      <!-- Messagerie back-office — toujours visible dès qu'une ONG existe -->
-      <div
-        ref="messagesSection"
-        data-messages-section
-        class="bg-card border rounded-xl overflow-hidden transition-colors"
-        :class="unreadMessages > 0 ? 'border-primary/50 ring-1 ring-primary/20' : 'border-border'"
-        style="height: 380px; display: flex; flex-direction: column;"
-      >
-        <div class="flex items-center justify-between px-4 py-2.5 border-b border-border bg-muted/30 shrink-0">
-          <div class="flex items-center gap-2">
-            <Icon name="i-heroicons-chat-bubble-left-right" class="w-4 h-4 text-primary" />
-            <span class="text-sm font-semibold">Messages back-office</span>
-          </div>
-          <span
-            v-if="unreadMessages > 0"
-            class="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1 rounded-full bg-primary text-primary-foreground text-xs font-bold"
-          >
-            {{ unreadMessages }}
-          </span>
-        </div>
-        <DossierMessagerie
-          :ong-id="ong.id"
-          viewer-role="agent"
-          api-base="/api/ongs"
-          class="flex-1 min-h-0"
-          @unread-count="unreadMessages = $event"
-        />
-      </div>
+      <!-- Widget messagerie flottant -->
+      <DashboardFloatingChat :ong-id="ong.id" />
 
       <!-- Carte ONG principale -->
       <OwnOng :ong="ong" />
@@ -135,8 +109,8 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
         </svg>
       </div>
-      <h3 class="text-xl font-semibold mb-2">Vous n'avez pas encore d'ONG</h3>
-      <p class="text-muted-foreground mb-6">Créez votre organisation pour commencer à faire la différence</p>
+      <h3 class="text-base font-semibold mb-2">Vous n'avez pas encore d'ONG</h3>
+      <p class="text-sm text-muted-foreground mb-6">Créez votre organisation pour commencer à faire la différence</p>
       <NuxtLink to="/ongs/new">
         <UButton variant="default">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -154,14 +128,12 @@ import type { ONG } from '~/features/ong/type'
 import { getOwnerOng } from '~/features/ong/services'
 import { resubmitDossier } from '~/features/ong/services/ong-agent.service'
 import OwnOng from './OwnOng.vue'
-import DossierMessagerie from '~/features/verification/components/DossierMessagerie.vue'
+import DashboardFloatingChat from './DashboardFloatingChat.vue'
 
-const loading        = ref(true)
-const resubmitting   = ref(false)
-const ong            = ref<ONG | null>(null)
-const unreadMessages = ref(0)
-const messagesSection = ref<HTMLElement | null>(null)
-const toast = useToast()
+const loading      = ref(true)
+const resubmitting = ref(false)
+const ong          = ref<ONG | null>(null)
+const toast        = useToast()
 let realtimeChannel: ReturnType<NonNullable<ReturnType<typeof useSupabase>>['channel']> | null = null
 
 
@@ -227,10 +199,4 @@ async function resubmit() {
   }
 }
 
-onUnmounted(() => {
-  const supabase = useSupabase()
-  if (realtimeChannel && supabase) {
-    supabase.removeChannel(realtimeChannel)
-  }
-})
 </script>

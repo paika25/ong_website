@@ -1,8 +1,5 @@
 <template>
-  <div class="min-h-screen bg-background">
-    <Header />
-
-    <main class="container mx-auto px-4 py-8 max-w-4xl">
+  <main class="container mx-auto px-4 py-8 max-w-4xl">
       <NuxtLink to="/dashboard" class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6 group">
         <svg class="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -27,8 +24,8 @@
       <div v-else-if="ong">
         <div class="flex items-center justify-between mb-8">
           <div>
-            <h1 class="text-3xl font-bold mb-1">Gérer mon ONG</h1>
-            <p class="text-muted-foreground">
+            <h1 class="text-2xl font-bold tracking-tight mb-1">Gérer mon ONG</h1>
+            <p class="text-sm text-muted-foreground">
               Modifiez les informations de <span class="font-medium text-foreground">{{ ong.name }}</span>
             </p>
           </div>
@@ -59,8 +56,7 @@
           @submit="saveChanges"
         />
       </div>
-    </main>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">

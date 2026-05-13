@@ -17,7 +17,7 @@
           <div class="p-6">
             <div class="flex items-start justify-between mb-6">
               <div class="flex-1">
-                <h3 class="text-2xl font-bold mb-2">{{ props.ong.name }}</h3>
+                <h3 class="text-lg font-semibold mb-2">{{ props.ong.name }}</h3>
                 <p class="text-muted-foreground mb-4">{{ props.ong.description }}</p>
                 <div class="flex flex-wrap gap-2">
                   <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">

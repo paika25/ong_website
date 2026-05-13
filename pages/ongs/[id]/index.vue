@@ -12,7 +12,7 @@
         
         <div v-else-if="error" class="text-center py-12">
           <Icon name="i-heroicons-exclamation-triangle" class="w-16 h-16 text-destructive mx-auto mb-4" />
-          <h2 class="text-2xl font-bold mb-2">ONG introuvable</h2>
+          <h2 class="text-lg font-semibold mb-2">ONG introuvable</h2>
           <p class="text-muted-foreground mb-6">{{ error }}</p>
           <UButton @click="handleBack">
             Retour à la liste
@@ -41,6 +41,8 @@
 import OngDetail from '~/features/ong/components/OngDetail.client.vue'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.client.vue'
+
+definePageMeta({ layout: false })
 import { getOngById } from '@/features/ong/services/ongService'
 import { onMounted, ref } from 'vue'
 import type { ONG } from '@/features/ong/type'

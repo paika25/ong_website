@@ -6,8 +6,8 @@
         <div class="w-7 h-7 bg-primary rounded-md flex items-center justify-center">
           <Icon name="i-heroicons-shield-check" class="w-4 h-4 text-primary-foreground" />
         </div>
-        <span class="font-bold text-base">Paika Admin</span>
-        <UBadge color="orange" variant="soft" size="xs">Back-office</UBadge>
+        <span class="font-bold text-base">ONG Admin</span>
+        <!-- <UBadge color="orange" variant="soft" size="xs">Back-office</UBadge> -->
       </div>
 
       <div class="flex-1" />

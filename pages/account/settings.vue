@@ -1,7 +1,5 @@
 <template>
-  <div class="min-h-screen bg-background">
-    <Header />
-    <main class="container mx-auto px-4 py-8 max-w-3xl">
+  <main class="container mx-auto px-4 py-8 max-w-2xl">
       <div class="mb-6">
         <NuxtLink
           to="/dashboard"
@@ -17,8 +15,7 @@
       <ClientOnly>
         <AuthAccountSettings />
       </ClientOnly>
-    </main>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">

@@ -32,20 +32,21 @@
               <th class="px-4 py-3 text-left">Statut</th>
               <th class="px-4 py-3 text-left">Donateur</th>
               <th class="px-4 py-3 text-left">ONG</th>
-              <th class="px-4 py-3 text-left">Réf. Stripe</th>
+              <th class="px-4 py-3 text-left">Mode de paiement</th>
+              <th class="px-4 py-3 text-left">Référence</th>
             </tr>
           </thead>
           <tbody>
             <template v-if="loading">
               <tr v-for="i in 8" :key="i" class="border-t border-border animate-pulse">
-                <td v-for="j in 6" :key="j" class="px-4 py-3">
+                <td v-for="j in 7" :key="j" class="px-4 py-3">
                   <div class="h-4 bg-muted rounded w-3/4" />
                 </td>
               </tr>
             </template>
 
             <tr v-else-if="!donations.length">
-              <td colspan="6" class="px-4 py-16 text-center text-muted-foreground">
+              <td colspan="7" class="px-4 py-16 text-center text-muted-foreground">
                 <Icon name="i-heroicons-heart" class="w-10 h-10 mx-auto mb-3 opacity-30" />
                 <p>Aucun don enregistré pour l'instant</p>
               </td>
@@ -73,8 +74,18 @@
               <td class="px-4 py-3 text-xs text-muted-foreground font-mono">
                 {{ d.ong_id?.slice(0, 8) }}…
               </td>
+              <td class="px-4 py-3">
+                <span
+                  v-if="d.provider"
+                  class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300 capitalize"
+                >
+                  <Icon name="i-heroicons-credit-card" class="w-3 h-3" />
+                  {{ d.provider }}
+                </span>
+                <span v-else class="text-xs text-muted-foreground">—</span>
+              </td>
               <td class="px-4 py-3 text-xs font-mono text-muted-foreground">
-                {{ d.stripe_payment_intent_id?.slice(0, 18) ?? '—' }}
+                {{ d.stripe_payment_intent_id ?? '—' }}
               </td>
             </tr>
           </tbody>

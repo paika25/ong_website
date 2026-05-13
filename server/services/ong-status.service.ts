@@ -188,15 +188,19 @@ export async function applyStatusTransition(
     }
   }
 
-  // 5. Audit trail (fire & forget — service role ou JWT opérateur en fallback)
-  insertAuditEntry({
-    entityType:    'ong',
-    entityId:      ongId,
-    action:        transition.auditAction,
-    operatorId,
-    operatorToken: token,
-    metadata:      { comment, previousStatus: ong.status, newStatus: transition.to },
-  }).catch(() => {})
+  // 5. Audit trail — attendu, erreur propagée dans les logs mais ne bloque pas la réponse
+  try {
+    await insertAuditEntry({
+      entityType:    'ong',
+      entityId:      ongId,
+      action:        transition.auditAction,
+      operatorId,
+      operatorToken: token,
+      metadata:      { comment, previousStatus: ong.status, newStatus: transition.to },
+    })
+  } catch (auditErr: any) {
+    console.error(`[ong-status] audit trail failed for action ${action} on ong ${ongId}:`, auditErr.message)
+  }
 
   // 6. Email transactionnel (fire & forget — stub pour l'instant)
   if (transition.emailTemplate && ong.email) {
@@ -205,7 +209,9 @@ export async function applyStatusTransition(
       ongName: ong.name,
       comment,
       newStatus: transition.to,
-    }).catch(() => {})
+    }).catch((emailErr: any) => {
+      console.error(`[ong-status] email failed for action ${action}:`, emailErr.message)
+    })
   }
 
   return { success: true, newStatus: transition.to }

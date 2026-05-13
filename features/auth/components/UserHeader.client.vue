@@ -1,84 +1,81 @@
 <template>
-    <template v-if="user">
-      <!-- Navigation -->
-      <nav class="flex items-center gap-2 lg:ml-4 ml-0">
-        <NuxtLink to="/" class="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-          Accueil
-        </NuxtLink>
-        <NuxtLink
-          to="/dashboard"
-          class="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-        >
-          Dashboard
-        </NuxtLink>
-        <!-- Lien Messages — agents ONG uniquement -->
-        <NuxtLink
-          v-if="user?.accountType === 'user_agent'"
-          to="/dashboard"
-          class="relative px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
-          @click.prevent="scrollToMessages"
-        >
-          <Icon name="i-heroicons-chat-bubble-left-right" class="w-4 h-4" />
-          <span class="hidden sm:inline">Messages</span>
-          <span
-            v-if="unreadCount > 0"
-            class="absolute -top-0.5 -right-0.5 min-w-[1rem] h-4 px-0.5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center"
-          >
-            {{ unreadCount }}
-          </span>
-        </NuxtLink>
-      </nav>
+  <template v-if="user">
+    <!-- Navigation -->
+    <nav class="hidden md:flex items-center gap-0.5 mr-2">
+      <NuxtLink
+        to="/"
+        class="px-3 py-1.5 rounded-md text-sm font-medium hover:text-green-500 transition-colors"
+        inactive-class="text-muted-foreground "
+        active-class="text-green-500"
+      >
+        Accueil
+      </NuxtLink>
+      <NuxtLink
+        to="/dashboard"
+        class="px-3 py-1.5 rounded-md text-sm font-medium hover:text-green-500 transition-colors"
+        inactive-class="text-muted-foreground "
+        active-class="text-green-500"
+      >
+        Dashboard
+      </NuxtLink>
       
-      <!-- Bouton admin -->
-      <NuxtLink v-if="isAdmin" to="/admin/verification">
-        <UButton size="sm" color="orange" variant="soft" class="gap-1.5">
-          <Icon name="i-heroicons-shield-check" class="w-3.5 h-3.5" />
-          Admin
-        </UButton>
-      </NuxtLink>
+    </nav>
 
-      <div class="flex justify-between ml-2">
-        <div class="flex items-center gap-3">
-          <NuxtLink to="/profil" class="flex items-center space-x-1 text-gray-600 hover:text-red-600" aria-label="Profil" title="Profil">
-            <div class="text-right hidden sm:block max-w-[120px]">
-              <p class="font-medium truncate">{{ user.fullName?.split(' ')[0] }}</p>
-              <p class="text-xs text-muted-foreground truncate">
-                {{ user.accountType === 'user_agent' ? 'Agent ONG' : 'Partenaire' }}
-              </p>
-            </div>
-          
-            <!-- Avatar -->
+    <!-- Séparateur -->
+    <div class="hidden md:block h-5 w-px bg-border mr-2" />
 
-            <div class="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
-              {{ userInitials }}
-            </div>
-          </NuxtLink>
+    <!-- Admin badge -->
+    <NuxtLink v-if="isAdmin" to="/admin/verification" class="mr-2">
+      <UButton size="xs" color="orange" variant="soft" class="gap-1">
+        <Icon name="i-heroicons-shield-check" class="w-3 h-3" />
+        Admin
+      </UButton>
+    </NuxtLink>
+
+    <!-- Profil + Déconnexion -->
+    <div class="flex items-center gap-1">
+      <NuxtLink
+        to="/profil"
+        class="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-accent transition-colors group"
+        aria-label="Mon profil"
+      >
+        <div class="hidden sm:block text-right leading-tight">
+          <p class="text-sm font-medium group-hover:text-primary transition-colors">
+            {{ user.fullName?.split(' ')[0] }}
+          </p>
+          <p class="text-[11px] text-muted-foreground">
+            {{ user.accountType === 'user_agent' ? 'Agent ONG' : 'Partenaire' }}
+          </p>
         </div>
-
-        <!-- Bouton déconnexion -->
-        <UButton 
-          variant="ghost" 
-          color="red" 
-          @click="handleLogout"
-          :loading="loggingOut"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-          </svg>
-          <span class="hidden sm:inline ml-0">Déconnexion</span>
-        </UButton>
-      </div>
-    </template>
-
-    <div v-else>
-      <NuxtLink to="/auth/login">
-        <UButton color="primary">
-          Se connecter
-        </UButton>
+        <div class="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold shrink-0">
+          {{ userInitials }}
+        </div>
       </NuxtLink>
+
+      <UButton
+        variant="ghost"
+        size="sm"
+        color="red"
+        :loading="loggingOut"
+        aria-label="Déconnexion"
+        title="Déconnexion"
+        @click="handleLogout"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+      </UButton>
     </div>
   </template>
 
+  <div v-else>
+    <NuxtLink to="/auth/login">
+      <UButton color="primary" size="sm">
+        Se connecter
+      </UButton>
+    </NuxtLink>
+  </div>
+</template>
 
 <script setup lang="ts">
 import { useAuthStore } from '~/features/auth/stores/auth.client'
@@ -102,7 +99,6 @@ onMounted(async () => {
     isAdmin.value = role === 'admin' || role === 'back_office'
   } catch {}
 
-  // Compte des messages non lus pour les agents ONG
   if (user.value?.accountType === 'user_agent') {
     watchUnreadMessages(supabase, session.access_token)
   }
@@ -110,7 +106,6 @@ onMounted(async () => {
 
 async function watchUnreadMessages(supabase: any, token: string) {
   try {
-    // Récupère l'ONG de l'agent pour s'abonner aux messages non lus
     const { data: ong } = await supabase
       .from('ongs')
       .select('id')
@@ -146,8 +141,8 @@ function scrollToMessages() {
     navigateTo('/dashboard')
     return
   }
-  const el = document.querySelector('[data-messages-section]')
-  el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  // Déclenche l'ouverture du widget flottant via un event custom
+  window.dispatchEvent(new CustomEvent('open-floating-chat'))
 }
 
 const supabase = useSupabase()
@@ -165,5 +160,4 @@ const handleLogout = async () => {
     loggingOut.value = false
   }
 }
-
 </script>

@@ -1,8 +1,5 @@
 <template>
-  <div class="min-h-screen bg-background">
-    <Header />
-
-    <main class="container mx-auto px-4 py-8 max-w-4xl">
+  <main class="container mx-auto px-4 py-8 max-w-4xl">
       <NuxtLink
         to="/dashboard"
         class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6 group"
@@ -14,8 +11,8 @@
       </NuxtLink>
 
       <div class="mb-8">
-        <h1 class="text-3xl font-bold mb-1">Constituer mon dossier ONG</h1>
-        <p class="text-muted-foreground">Complétez les 5 étapes pour soumettre votre dossier à validation</p>
+        <h1 class="text-2xl font-bold tracking-tight mb-1">Constituer mon dossier ONG</h1>
+        <p class="text-sm text-muted-foreground">Complétez les 5 étapes pour soumettre votre dossier à validation</p>
       </div>
 
       <!-- Skeleton loader pendant la restauration Supabase -->
@@ -31,8 +28,7 @@
         @step-change="onStepChange"
         @completed="onCompleted"
       />
-    </main>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">

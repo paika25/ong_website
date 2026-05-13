@@ -74,8 +74,15 @@
                   <span class="font-medium">{{ entry.ongs?.name ?? '—' }}</span>
                   <span class="text-xs text-muted-foreground block">{{ entry.ong_id?.slice(0,8) }}…</span>
                 </td>
-                <td class="px-4 py-3 text-xs text-muted-foreground">
-                  {{ entry.performed_by ? entry.performed_by.slice(0,8) + '…' : 'système' }}
+                <td class="px-4 py-3">
+                  <template v-if="entry.operator">
+                    <span class="text-sm font-medium block">
+                      {{ [entry.operator.first_name, entry.operator.last_name].filter(Boolean).join(' ') || '—' }}
+                    </span>
+                    <span class="text-xs text-muted-foreground block">{{ entry.operator.email }}</span>
+                    <span class="text-[10px] text-muted-foreground/60 font-mono">{{ entry.performed_by?.slice(0,8) }}…</span>
+                  </template>
+                  <span v-else class="text-xs text-muted-foreground italic">système</span>
                 </td>
                 <td class="px-4 py-3 text-xs text-muted-foreground max-w-xs truncate">
                   {{ entry.details_json?.comment ?? entry.details_json?.message ?? '—' }}

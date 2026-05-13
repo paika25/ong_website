@@ -1,8 +1,5 @@
 <template>
-  <div class="min-h-screen bg-background">
-    <Header />
-
-    <main class="container mx-auto px-4 py-8 max-w-2xl">
+  <main class="container mx-auto px-4 py-8 max-w-2xl">
       <NuxtLink
         :to="ong ? `/ongs/${ong.id}/edit` : '/dashboard'"
         class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6 group"
@@ -14,7 +11,7 @@
       </NuxtLink>
 
       <div class="mb-8">
-        <h1 class="text-2xl font-bold mb-1">Visibilité publique</h1>
+        <h1 class="text-2xl font-bold tracking-tight mb-1">Visibilité publique</h1>
         <p class="text-sm text-muted-foreground">
           Choisissez les sections visibles par les bailleurs sur votre profil public.
         </p>
@@ -46,8 +43,7 @@
           <UButton :loading="saving" @click="save">Enregistrer</UButton>
         </div>
       </div>
-    </main>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">

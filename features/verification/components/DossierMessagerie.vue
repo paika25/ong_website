@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col h-full">
     <!-- Header -->
-    <div class="flex items-center justify-between px-4 py-2.5 border-b border-border shrink-0">
+    <div v-if="!hideHeader" class="flex items-center justify-between px-4 py-2.5 border-b border-border shrink-0">
       <div class="flex items-center gap-2">
         <Icon name="i-heroicons-chat-bubble-left-right" class="w-4 h-4 text-primary" />
         <span class="text-sm font-semibold">Messages</span>
@@ -116,6 +116,7 @@ const props = defineProps<{
   ongId: string
   viewerRole: 'back_office' | 'agent'
   apiBase: string
+  hideHeader?: boolean
 }>()
 
 const emit = defineEmits<{

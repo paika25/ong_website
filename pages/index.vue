@@ -3,8 +3,8 @@
     <Header />
     <main class="flex-grow container mx-auto px-4 py-8">
       <div class="mb-2 md:mb-8 md:block hidden">
-        <h1 class="text-xl md:text-4xl font-bold mb-2">Liste des ONGs</h1>
-        <p class="text-muted-foreground text-sm md:text-lg">Découvrez et rejoignez les organisations à but non lucratif</p>
+        <h1 class="text-2xl font-bold tracking-tight mb-1">Liste des ONGs</h1>
+        <p class="text-sm text-muted-foreground">Découvrez et rejoignez les organisations à but non lucratif</p>
       </div>
       <ClientOnly>
         <OngList />
@@ -27,6 +27,8 @@ import { onMounted } from 'vue'
 import OngList  from "../features/ong/components/OngList.client.vue"
 import Header from "../components/Header.vue"
 import Footer from "../components/Footer.client.vue"
+
+definePageMeta({ layout: false })
 
 // Meta tags pour SEO
 useHead({

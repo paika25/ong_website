@@ -7,46 +7,38 @@ export interface AuditEntry {
   operatorId?: string
   ongId?:      string
   metadata?:   Record<string, unknown>
-  /** JWT opérateur — utilisé comme fallback quand service_role key est absent */
-  operatorToken?: string
+  /** JWT de l'opérateur — nécessaire pour que Supabase authentifie l'appel RPC */
+  operatorToken: string
 }
 
+/**
+ * Insère une entrée dans audit_trail via la fonction RPC `insert_audit_entry`
+ * (SECURITY DEFINER — bypass RLS, pas besoin de service_role key).
+ *
+ * Lance une erreur si l'insertion échoue, afin que l'appelant puisse la traiter.
+ */
 export async function insertAuditEntry(entry: AuditEntry): Promise<void> {
-  const config = useRuntimeConfig()
+  const config      = useRuntimeConfig()
+  const supabaseUrl = config.public.supabaseUrl as string
+  const anonKey     = config.public.supabaseKey as string
 
-  const serviceRoleKey = config.supabaseServiceRoleKey as string
-  const anonKey        = config.public.supabaseKey as string
-  const supabaseUrl    = config.public.supabaseUrl as string
+  const supabase = createClient(supabaseUrl, anonKey, {
+    auth:   { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${entry.operatorToken}` } },
+  })
 
-  let supabaseKey: string
-  let extraHeaders: Record<string, string> = {}
+  const ongId = entry.ongId ?? (entry.entityType === 'ong' ? entry.entityId : null)
 
-  if (serviceRoleKey) {
-    // Préférence : service role bypass tout RLS
-    supabaseKey = serviceRoleKey
-  } else if (entry.operatorToken) {
-    // Fallback : JWT opérateur + policy at_backoffice_insert
-    supabaseKey = anonKey
-    extraHeaders = { Authorization: `Bearer ${entry.operatorToken}` }
-  } else {
-    console.warn('[audit.service] impossible d\'insérer : ni service_role ni token opérateur fourni')
-    return
+  const { error } = await supabase.rpc('insert_audit_entry', {
+    p_entity_type:  entry.entityType,
+    p_entity_id:    entry.entityId,
+    p_action:       entry.action,
+    p_performed_by: entry.operatorId ?? null,
+    p_ong_id:       ongId ?? null,
+    p_details_json: entry.metadata ?? null,
+  })
+
+  if (error) {
+    throw new Error(`[audit.service] insert_audit_entry failed: ${error.message}`)
   }
-
-  const supabase = createClient(supabaseUrl, supabaseKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-    global: { headers: extraHeaders },
-  })
-
-  const { error } = await supabase.from('audit_trail').insert({
-    entity_type:  entry.entityType,
-    entity_id:    entry.entityId,
-    action:       entry.action,
-    performed_by: entry.operatorId ?? null,
-    ong_id:       entry.ongId ?? (entry.entityType === 'ong' ? entry.entityId : null),
-    details_json: entry.metadata ?? null,
-    pre_merkle:   true,
-  })
-
-  if (error) console.error('[audit.service] insertAuditEntry:', error.message)
 }

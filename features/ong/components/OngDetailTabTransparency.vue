@@ -8,7 +8,7 @@
 
     <!-- Informations légales -->
     <div v-if="legal" class="bg-card rounded-xl border border-border p-6">
-      <h2 class="text-2xl font-semibold mb-6">Informations légales</h2>
+      <h2 class="text-lg font-semibold mb-4">Informations légales</h2>
       <div class="flex flex-col md:flex-row gap-8">
 
         <!-- Conformité (gauche) -->
@@ -53,7 +53,7 @@
 
     <!-- Monitoring et évaluation -->
     <div v-if="monitoring" class="bg-card rounded-xl border border-border p-6">
-      <h2 class="text-2xl font-semibold mb-4">Suivi et évaluation</h2>
+      <h2 class="text-lg font-semibold mb-4">Suivi et évaluation</h2>
       <div class="space-y-4">
         <div class="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
           <Icon name="i-heroicons-document-chart-bar" class="w-6 h-6 text-primary flex-shrink-0" />

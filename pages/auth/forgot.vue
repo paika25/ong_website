@@ -21,6 +21,7 @@
 import AuthForgotPassword from '~/features/auth/components/ForgotPassword.client.vue'
 
 definePageMeta({
+  layout: false,
   middleware: ['guest-client']
 })
 </script>
