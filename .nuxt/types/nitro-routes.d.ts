@@ -3,6 +3,9 @@ import type { Serialize, Simplify } from "nitropack/types";
 declare module "nitropack/types" {
   type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T
   interface InternalApi {
+    '/api/admin/donations': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/donations.get').default>>>>
+    }
     '/api/admin/dossiers': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/dossiers.get').default>>>>
     }
@@ -14,6 +17,10 @@ declare module "nitropack/types" {
     }
     '/api/admin/dossiers/:id': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/dossiers/[id]/index.get').default>>>>
+    }
+    '/api/admin/dossiers/:id/messages': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/dossiers/[id]/messages.get').default>>>>
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/dossiers/[id]/messages.post').default>>>>
     }
     '/api/admin/dossiers/:id/reject': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/dossiers/[id]/reject.post').default>>>>
@@ -54,6 +61,16 @@ declare module "nitropack/types" {
     '/api/back-office/dossiers/:id/validate': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/back-office/dossiers/[id]/validate.post').default>>>>
     }
+    '/api/donations/confirm-session': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/donations/confirm-session.post').default>>>>
+    }
+    '/api/donations/create-checkout': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/donations/create-checkout.post').default>>>>
+    }
+    '/api/ongs/:id/messages': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/ongs/[id]/messages.get').default>>>>
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/ongs/[id]/messages.post').default>>>>
+    }
     '/api/ongs/:id/resubmit': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/ongs/[id]/resubmit.post').default>>>>
     }
@@ -65,6 +82,9 @@ declare module "nitropack/types" {
     }
     '/api/score/ong/:id': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/score/ong/[id].get').default>>>>
+    }
+    '/api/webhooks/stripe': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/webhooks/stripe.post').default>>>>
     }
     '/api/webhooks/vanilla-pay': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/webhooks/vanilla-pay.post').default>>>>

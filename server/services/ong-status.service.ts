@@ -27,6 +27,7 @@ export type OngStatus =
   | 'active'
   | 'rejected'
   | 'inactive'
+  | 'suspended'
 
 export type StatusAction =
   | 'submit'        // agent soumet son dossier
@@ -57,7 +58,7 @@ const TRANSITIONS: Record<StatusAction, Transition> = {
     requiresComment: false,
   },
   start_review: {
-    from:            ['submitted'],
+    from:            ['pending', 'submitted'],
     to:              'under_review',
     auditAction:     'REVIEW_STARTED',
     requiresComment: false,
@@ -91,13 +92,13 @@ const TRANSITIONS: Record<StatusAction, Transition> = {
   },
   suspend: {
     from:            ['verified', 'active'],
-    to:              'complement_required',
+    to:              'suspended',          // état distinct — badge retiré post-certification
     auditAction:     'BADGE_SUSPENDED',
     emailTemplate:   'badge_suspended',
     requiresComment: true,
   },
   reactivate: {
-    from:            ['complement_required'],
+    from:            ['suspended'],        // ne peut réactiver que depuis suspended
     to:              'verified',
     auditAction:     'BADGE_REACTIVATED',
     emailTemplate:   'badge_reactivated',
@@ -168,22 +169,33 @@ export async function applyStatusTransition(
   }
 
   // 4. Appliquer le changement de statut
-  const { error: updateErr } = await supabase
+  // .select() permet de détecter les 0 lignes modifiées (RLS silencieux ou ONG inexistante)
+  const { data: updated, error: updateErr } = await supabase
     .from('ongs')
     .update({ status: transition.to, updated_at: new Date().toISOString() })
     .eq('id', ongId)
+    .select('id')
 
   if (updateErr) {
     return { success: false, newStatus: ong.status as OngStatus, error: updateErr.message }
   }
 
-  // 5. Audit trail (fire & forget — service role)
+  if (!updated || updated.length === 0) {
+    return {
+      success:   false,
+      newStatus: ong.status as OngStatus,
+      error:     `Mise à jour bloquée (RLS ou ONG introuvable). Vérifiez les policies Supabase sur la table ongs.`,
+    }
+  }
+
+  // 5. Audit trail (fire & forget — service role ou JWT opérateur en fallback)
   insertAuditEntry({
-    entityType:  'ong',
-    entityId:    ongId,
-    action:      transition.auditAction,
+    entityType:    'ong',
+    entityId:      ongId,
+    action:        transition.auditAction,
     operatorId,
-    metadata:    { comment, previousStatus: ong.status, newStatus: transition.to },
+    operatorToken: token,
+    metadata:      { comment, previousStatus: ong.status, newStatus: transition.to },
   }).catch(() => {})
 
   // 6. Email transactionnel (fire & forget — stub pour l'instant)

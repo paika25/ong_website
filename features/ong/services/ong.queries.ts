@@ -27,6 +27,7 @@ export const getOngs = async (): Promise<ONG[]> => {
       const { data, error } = await supabase
         .from('ongs')
         .select('*')
+        .in('status', ['verified', 'active'])  // marketplace publique : certifiées uniquement
         .order('created_at', { ascending: false })
 
       if (error) {
@@ -35,7 +36,7 @@ export const getOngs = async (): Promise<ONG[]> => {
       }
 
       const ongs: ONG[] = data.map((row: any) => fromSupabaseRow(row))
-      console.log(`✅ ${ongs.length} ONGs récupérées depuis Supabase`)
+      console.log(`✅ ${ongs.length} ONGs certifiées récupérées depuis Supabase`)
       return ongs
     } catch (err) {
       console.error('❌ Exception Supabase:', err)

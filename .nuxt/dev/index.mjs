@@ -1,5 +1,5 @@
 import process from 'node:process';globalThis._importMeta_={url:import.meta.url,env:process.env};import { tmpdir } from 'node:os';
-import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, getResponseStatus, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getRouterParam, getResponseStatusText } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/h3/dist/index.mjs';
+import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, getResponseStatus, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getRouterParam, readRawBody, getResponseStatusText } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/h3/dist/index.mjs';
 import { Server } from 'node:http';
 import { resolve, dirname, join } from 'node:path';
 import nodeCrypto from 'node:crypto';
@@ -7,6 +7,7 @@ import { parentPort, threadId } from 'node:worker_threads';
 import { escapeHtml } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/@vue/shared/dist/shared.cjs.js';
 import { createClient } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/@supabase/supabase-js/dist/index.mjs';
 import { z } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/zod/index.js';
+import Stripe from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/stripe/esm/stripe.esm.node.js';
 import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/vue-bundle-renderer/dist/runtime.mjs';
 import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, joinRelativeURL } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/ufo/dist/index.mjs';
 import { renderToString } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/vue/server-renderer/index.mjs';
@@ -881,9 +882,12 @@ const _inlineRuntimeConfig = {
   },
   "public": {
     "supabaseUrl": "",
-    "supabaseKey": ""
+    "supabaseKey": "",
+    "appUrl": ""
   },
   "supabaseServiceRoleKey": "",
+  "stripeSecretKey": "",
+  "stripeWebhookSecret": "",
   "icon": {
     "serverKnownCssClasses": []
   }
@@ -1369,7 +1373,22 @@ _QsHGK4cVKJECU974xO65FOyg1RE1_XTueHXil9TKqSg,
 _ErdtmwJcqqpQ5PD4b4UyI856ixhiUzsheifQwM0kEwY
 ];
 
-const assets = {};
+const assets = {
+  "/index.mjs": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"222c7-VEggizibFf08xYB+y3BeFwavNtw\"",
+    "mtime": "2026-05-13T16:23:36.700Z",
+    "size": 139975,
+    "path": "index.mjs"
+  },
+  "/index.mjs.map": {
+    "type": "application/json",
+    "etag": "\"74a8b-gxuE3nepTfovc4jAihnveugZJ1I\"",
+    "mtime": "2026-05-13T16:23:36.700Z",
+    "size": 477835,
+    "path": "index.mjs.map"
+  }
+};
 
 function readAsset (id) {
   const serverDir = dirname$1(fileURLToPath(globalThis._importMeta_.url));
@@ -1471,8 +1490,10 @@ const _yDW0oZ = defineEventHandler(async (event) => {
   const publicRoutes = [
     "/api/ongs",
     "/api/webhooks/vanilla-pay",
+    "/api/webhooks/stripe",
     "/api/score/criteria",
-    "/api/score/ong/"
+    "/api/score/ong/",
+    "/api/donations/"
   ];
   const isPublic = publicRoutes.some((r) => path.startsWith(r));
   if (isPublic) return;
@@ -1973,10 +1994,13 @@ async function getIslandContext(event) {
   return ctx;
 }
 
+const _lazy_A7Ft5_ = () => Promise.resolve().then(function () { return donations_get$1; });
 const _lazy_1k2zDw = () => Promise.resolve().then(function () { return dossiers_get$3; });
 const _lazy_S2B3SZ = () => Promise.resolve().then(function () { return audit_get$3; });
 const _lazy_3fSMyW = () => Promise.resolve().then(function () { return complement_post$3; });
 const _lazy_QNQ9Ab = () => Promise.resolve().then(function () { return index_get$3; });
+const _lazy_WyVmFv = () => Promise.resolve().then(function () { return messages_get$3; });
+const _lazy_XTAKmQ = () => Promise.resolve().then(function () { return messages_post$3; });
 const _lazy_bIMvQa = () => Promise.resolve().then(function () { return reject_post$3; });
 const _lazy_7xtcc0 = () => Promise.resolve().then(function () { return startReview_post$3; });
 const _lazy_C0iMdk = () => Promise.resolve().then(function () { return suspend_post$3; });
@@ -1990,20 +2014,28 @@ const _lazy_xuymcz = () => Promise.resolve().then(function () { return reject_po
 const _lazy_4u7bRh = () => Promise.resolve().then(function () { return startReview_post$1; });
 const _lazy_NHwT2z = () => Promise.resolve().then(function () { return suspend_post$1; });
 const _lazy_rvBnF9 = () => Promise.resolve().then(function () { return validate_post$1; });
+const _lazy_Jf3Ww3 = () => Promise.resolve().then(function () { return confirmSession_post$1; });
+const _lazy_ZR1hI1 = () => Promise.resolve().then(function () { return createCheckout_post$1; });
+const _lazy_zt2g8J = () => Promise.resolve().then(function () { return messages_get$1; });
+const _lazy_cHj71g = () => Promise.resolve().then(function () { return messages_post$1; });
 const _lazy_wh3blU = () => Promise.resolve().then(function () { return resubmit_post$1; });
 const _lazy_mPBlQ3 = () => Promise.resolve().then(function () { return submit_post$1; });
 const _lazy_L_SRCu = () => Promise.resolve().then(function () { return criteria_get$1; });
 const _lazy_OL1ghg = () => Promise.resolve().then(function () { return _id__get$1; });
+const _lazy_Xy9SYX = () => Promise.resolve().then(function () { return stripe_post$1; });
 const _lazy_GyPkfz = () => Promise.resolve().then(function () { return vanillaPay_post$1; });
 const _lazy_7RYPIX = () => Promise.resolve().then(function () { return renderer$1; });
 
 const handlers = [
   { route: '', handler: _DyLm2U, lazy: false, middleware: true, method: undefined },
   { route: '', handler: _yDW0oZ, lazy: false, middleware: true, method: undefined },
+  { route: '/api/admin/donations', handler: _lazy_A7Ft5_, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/dossiers', handler: _lazy_1k2zDw, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/dossiers/:id/audit', handler: _lazy_S2B3SZ, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/dossiers/:id/complement', handler: _lazy_3fSMyW, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/dossiers/:id', handler: _lazy_QNQ9Ab, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/dossiers/:id/messages', handler: _lazy_WyVmFv, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/dossiers/:id/messages', handler: _lazy_XTAKmQ, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/dossiers/:id/reject', handler: _lazy_bIMvQa, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/dossiers/:id/start-review', handler: _lazy_7xtcc0, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/dossiers/:id/suspend', handler: _lazy_C0iMdk, lazy: true, middleware: false, method: "post" },
@@ -2017,10 +2049,15 @@ const handlers = [
   { route: '/api/back-office/dossiers/:id/start-review', handler: _lazy_4u7bRh, lazy: true, middleware: false, method: "post" },
   { route: '/api/back-office/dossiers/:id/suspend', handler: _lazy_NHwT2z, lazy: true, middleware: false, method: "post" },
   { route: '/api/back-office/dossiers/:id/validate', handler: _lazy_rvBnF9, lazy: true, middleware: false, method: "post" },
+  { route: '/api/donations/confirm-session', handler: _lazy_Jf3Ww3, lazy: true, middleware: false, method: "post" },
+  { route: '/api/donations/create-checkout', handler: _lazy_ZR1hI1, lazy: true, middleware: false, method: "post" },
+  { route: '/api/ongs/:id/messages', handler: _lazy_zt2g8J, lazy: true, middleware: false, method: "get" },
+  { route: '/api/ongs/:id/messages', handler: _lazy_cHj71g, lazy: true, middleware: false, method: "post" },
   { route: '/api/ongs/:id/resubmit', handler: _lazy_wh3blU, lazy: true, middleware: false, method: "post" },
   { route: '/api/ongs/:id/submit', handler: _lazy_mPBlQ3, lazy: true, middleware: false, method: "post" },
   { route: '/api/score/criteria', handler: _lazy_L_SRCu, lazy: true, middleware: false, method: "get" },
   { route: '/api/score/ong/:id', handler: _lazy_OL1ghg, lazy: true, middleware: false, method: "get" },
+  { route: '/api/webhooks/stripe', handler: _lazy_Xy9SYX, lazy: true, middleware: false, method: "post" },
   { route: '/api/webhooks/vanilla-pay', handler: _lazy_GyPkfz, lazy: true, middleware: false, method: "post" },
   { route: '/__nuxt_error', handler: _lazy_7RYPIX, lazy: true, middleware: false, method: undefined },
   { route: '/api/_nuxt_icon/:collection', handler: _3jmRZG, lazy: false, middleware: false, method: undefined },
@@ -2280,6 +2317,25 @@ const styles$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   default: styles
 }, Symbol.toStringTag, { value: 'Module' }));
 
+const donations_get = defineEventHandler(async (event) => {
+  var _a;
+  const config = useRuntimeConfig();
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${token}` } }
+  });
+  const { data, error } = await supabase.from("financial_transactions").select("id, ong_id, amount, currency, status, provider, donor_email, created_at, metadata, stripe_payment_intent_id").eq("transaction_type", "donation").order("created_at", { ascending: false }).limit(200);
+  if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+  return data != null ? data : [];
+});
+
+const donations_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: donations_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
 const dossiers_get$2 = defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   const authHeader = getRequestHeader(event, "authorization");
@@ -2307,15 +2363,18 @@ const dossiers_get$3 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProp
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const audit_get$2 = defineEventHandler(async (event) => {
-  var _a, _b;
+  var _a, _b, _c;
   const ongId = getRouterParam(event, "id");
   const query = getQuery$1(event);
   const cursor = query.cursor;
   const limit = 20;
   if (!ongId) throw createError({ statusCode: 400, statusMessage: "ID manquant" });
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
   const config = useRuntimeConfig();
-  const supabase = createClient(config.public.supabaseUrl, config.supabaseServiceRoleKey, {
-    auth: { autoRefreshToken: false, persistSession: false }
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${token}` } }
   });
   let q = supabase.from("audit_trail").select("id, action, performed_by, details_json, created_at").eq("ong_id", ongId).order("created_at", { ascending: false }).limit(limit + 1);
   if (cursor) q = q.lt("created_at", cursor);
@@ -2326,7 +2385,7 @@ const audit_get$2 = defineEventHandler(async (event) => {
   const items = hasMore ? rows.slice(0, limit) : rows;
   return {
     data: items,
-    cursor: hasMore ? (_b = (_a = items[items.length - 1]) == null ? void 0 : _a.created_at) != null ? _b : null : null,
+    cursor: hasMore ? (_c = (_b = items[items.length - 1]) == null ? void 0 : _b.created_at) != null ? _c : null : null,
     total: items.length
   };
 });
@@ -2339,9 +2398,23 @@ const audit_get$3 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePropert
 async function insertAuditEntry(entry) {
   var _a, _b, _c;
   const config = useRuntimeConfig();
-  if (!config.supabaseServiceRoleKey) return;
-  const supabase = createClient(config.public.supabaseUrl, config.supabaseServiceRoleKey, {
-    auth: { autoRefreshToken: false, persistSession: false }
+  const serviceRoleKey = config.supabaseServiceRoleKey;
+  const anonKey = config.public.supabaseKey;
+  const supabaseUrl = config.public.supabaseUrl;
+  let supabaseKey;
+  let extraHeaders = {};
+  if (serviceRoleKey) {
+    supabaseKey = serviceRoleKey;
+  } else if (entry.operatorToken) {
+    supabaseKey = anonKey;
+    extraHeaders = { Authorization: `Bearer ${entry.operatorToken}` };
+  } else {
+    console.warn("[audit.service] impossible d'ins\xE9rer : ni service_role ni token op\xE9rateur fourni");
+    return;
+  }
+  const supabase = createClient(supabaseUrl, supabaseKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: extraHeaders }
   });
   const { error } = await supabase.from("audit_trail").insert({
     entity_type: entry.entityType,
@@ -2367,7 +2440,7 @@ const TRANSITIONS = {
     requiresComment: false
   },
   start_review: {
-    from: ["submitted"],
+    from: ["pending", "submitted"],
     to: "under_review",
     auditAction: "REVIEW_STARTED",
     requiresComment: false
@@ -2401,13 +2474,15 @@ const TRANSITIONS = {
   },
   suspend: {
     from: ["verified", "active"],
-    to: "complement_required",
+    to: "suspended",
+    // état distinct — badge retiré post-certification
     auditAction: "BADGE_SUSPENDED",
     emailTemplate: "badge_suspended",
     requiresComment: true
   },
   reactivate: {
-    from: ["complement_required"],
+    from: ["suspended"],
+    // ne peut réactiver que depuis suspended
     to: "verified",
     auditAction: "BADGE_REACTIVATED",
     emailTemplate: "badge_reactivated",
@@ -2446,15 +2521,23 @@ async function applyStatusTransition(ongId, action, token, operatorId, options) 
   if (transition.requiresComment && !comment.trim()) {
     return { success: false, newStatus: ong.status, error: "Commentaire obligatoire pour cette action" };
   }
-  const { error: updateErr } = await supabase.from("ongs").update({ status: transition.to, updated_at: (/* @__PURE__ */ new Date()).toISOString() }).eq("id", ongId);
+  const { data: updated, error: updateErr } = await supabase.from("ongs").update({ status: transition.to, updated_at: (/* @__PURE__ */ new Date()).toISOString() }).eq("id", ongId).select("id");
   if (updateErr) {
     return { success: false, newStatus: ong.status, error: updateErr.message };
+  }
+  if (!updated || updated.length === 0) {
+    return {
+      success: false,
+      newStatus: ong.status,
+      error: `Mise \xE0 jour bloqu\xE9e (RLS ou ONG introuvable). V\xE9rifiez les policies Supabase sur la table ongs.`
+    };
   }
   insertAuditEntry({
     entityType: "ong",
     entityId: ongId,
     action: transition.auditAction,
     operatorId,
+    operatorToken: token,
     metadata: { comment, previousStatus: ong.status, newStatus: transition.to }
   }).catch(() => {
   });
@@ -2520,6 +2603,61 @@ const index_get$2 = defineEventHandler(async (event) => {
 const index_get$3 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: index_get$2
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const messages_get$2 = defineEventHandler(async (event) => {
+  var _a;
+  const ongId = getRouterParam(event, "id");
+  if (!ongId) throw createError({ statusCode: 400, statusMessage: "ID manquant" });
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const config = useRuntimeConfig();
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${token}` } }
+  });
+  const { data, error } = await supabase.from("dossier_messages").select("id, sender_id, sender_role, content, read_at, created_at").eq("ong_id", ongId).order("created_at", { ascending: true });
+  if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+  return data != null ? data : [];
+});
+
+const messages_get$3 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: messages_get$2
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const BodySchema$2 = z.object({
+  content: z.string().min(1).max(2e3)
+});
+const messages_post$2 = defineEventHandler(async (event) => {
+  var _a;
+  const ongId = getRouterParam(event, "id");
+  if (!ongId) throw createError({ statusCode: 400, statusMessage: "ID manquant" });
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const raw = await readBody(event);
+  const parsed = BodySchema$2.safeParse(raw);
+  if (!parsed.success) throw createError({ statusCode: 400, statusMessage: "Contenu invalide" });
+  const config = useRuntimeConfig();
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${token}` } }
+  });
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw createError({ statusCode: 401, statusMessage: "Utilisateur introuvable" });
+  const { data, error } = await supabase.from("dossier_messages").insert({
+    ong_id: ongId,
+    sender_id: user.id,
+    sender_role: "back_office",
+    content: parsed.data.content
+  }).select("id, sender_id, sender_role, content, read_at, created_at").single();
+  if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+  return data;
+});
+
+const messages_post$3 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: messages_post$2
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const reject_post$2 = defineEventHandler(async (event) => {
@@ -2808,6 +2946,204 @@ const validate_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePro
   default: validate_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
+const confirmSession_post = defineEventHandler(async (event) => {
+  var _a, _b, _c, _d, _e, _f;
+  const raw = await readBody(event);
+  const sessionId = raw == null ? void 0 : raw.sessionId;
+  if (!sessionId) throw createError({ statusCode: 400, statusMessage: "sessionId requis" });
+  const config = useRuntimeConfig();
+  if (!config.stripeSecretKey) {
+    throw createError({ statusCode: 500, statusMessage: "Stripe non configur\xE9" });
+  }
+  let session;
+  try {
+    const stripe = new Stripe(config.stripeSecretKey);
+    session = await stripe.checkout.sessions.retrieve(sessionId);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    throw createError({ statusCode: 502, statusMessage: `Stripe: ${msg}` });
+  }
+  if (session.payment_status !== "paid") {
+    return { recorded: false, paymentStatus: session.payment_status };
+  }
+  const ongId = (_a = session.metadata) == null ? void 0 : _a.ong_id;
+  const idempotencyKey = (_b = session.metadata) == null ? void 0 : _b.idempotency_key;
+  const paymentIntentId = session.payment_intent;
+  const amountCents = session.amount_total;
+  if (!ongId || !idempotencyKey || !paymentIntentId) {
+    console.error("[confirm-session] metadata manquante:", session.metadata);
+    return { recorded: false, paymentStatus: "metadata_missing" };
+  }
+  const supabaseKey = config.supabaseServiceRoleKey || config.public.supabaseKey;
+  const supabase = createClient(
+    config.public.supabaseUrl,
+    supabaseKey,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
+  const { data: existing } = await supabase.from("financial_transactions").select("id").eq("idempotency_key", idempotencyKey).maybeSingle();
+  if (existing) return { recorded: true, alreadyExisted: true };
+  const { error } = await supabase.from("financial_transactions").insert({
+    ong_id: ongId,
+    stripe_payment_intent_id: paymentIntentId,
+    idempotency_key: idempotencyKey,
+    amount: amountCents,
+    currency: "eur",
+    status: "completed",
+    transaction_type: "donation",
+    provider: "stripe",
+    donor_email: (_d = (_c = session.customer_details) == null ? void 0 : _c.email) != null ? _d : null,
+    metadata: {
+      stripe_session_id: sessionId,
+      customer_name: (_f = (_e = session.customer_details) == null ? void 0 : _e.name) != null ? _f : null
+    }
+  });
+  if (error) {
+    console.error("[confirm-session] insert error:", error.message);
+    throw createError({ statusCode: 500, statusMessage: `DB: ${error.message}` });
+  }
+  return { recorded: true };
+});
+
+const confirmSession_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: confirmSession_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
+function getStripe() {
+  const config = useRuntimeConfig();
+  if (!config.stripeSecretKey) throw new Error("NUXT_STRIPE_SECRET_KEY non configur\xE9e");
+  return new Stripe(config.stripeSecretKey);
+}
+async function createCheckoutSession(params) {
+  const stripe = getStripe();
+  const session = await stripe.checkout.sessions.create(
+    {
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "eur",
+            unit_amount: params.amountCents,
+            product_data: {
+              name: `Don \xE0 ${params.ongName}`,
+              description: "Don unique via Paika Platform"
+            }
+          },
+          quantity: 1
+        }
+      ],
+      success_url: params.successUrl,
+      cancel_url: params.cancelUrl,
+      metadata: {
+        ong_id: params.ongId,
+        idempotency_key: params.idempotencyKey
+      }
+    },
+    { idempotencyKey: params.idempotencyKey }
+  );
+  return { url: session.url };
+}
+function constructWebhookEvent(rawBody, signature, secret) {
+  const stripe = getStripe();
+  return stripe.webhooks.constructEvent(rawBody, signature, secret);
+}
+
+const BodySchema$1 = z.object({
+  ongId: z.string().uuid(),
+  ongName: z.string().min(1).max(200),
+  amountEuros: z.number().positive().min(1).max(1e4)
+});
+const createCheckout_post = defineEventHandler(async (event) => {
+  var _a;
+  const raw = await readBody(event);
+  const parsed = BodySchema$1.safeParse(raw);
+  if (!parsed.success) {
+    throw createError({ statusCode: 400, statusMessage: "Donn\xE9es invalides : " + ((_a = parsed.error.errors[0]) == null ? void 0 : _a.message) });
+  }
+  const body = parsed.data;
+  const config = useRuntimeConfig();
+  if (!config.stripeSecretKey) {
+    throw createError({ statusCode: 500, statusMessage: "NUXT_STRIPE_SECRET_KEY non configur\xE9e" });
+  }
+  const idempotencyKey = crypto.randomUUID();
+  const appUrl = config.public.appUrl || "http://localhost:3000";
+  const amountCents = Math.round(body.amountEuros * 100);
+  try {
+    const { url } = await createCheckoutSession({
+      ongId: body.ongId,
+      ongName: body.ongName,
+      amountCents,
+      successUrl: `${appUrl}/ongs/${body.ongId}?donation=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancelUrl: `${appUrl}/ongs/${body.ongId}?donation=cancelled`,
+      idempotencyKey
+    });
+    return { url };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    throw createError({ statusCode: 502, statusMessage: `Stripe: ${msg}` });
+  }
+});
+
+const createCheckout_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: createCheckout_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const messages_get = defineEventHandler(async (event) => {
+  var _a;
+  const ongId = getRouterParam(event, "id");
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!ongId || !token) throw createError({ statusCode: 400, statusMessage: "Param\xE8tres manquants" });
+  const config = useRuntimeConfig();
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${token}` } }
+  });
+  const { data, error } = await supabase.from("dossier_messages").select("id, sender_id, sender_role, content, read_at, created_at").eq("ong_id", ongId).order("created_at", { ascending: true });
+  if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+  return data != null ? data : [];
+});
+
+const messages_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: messages_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const BodySchema = z.object({
+  content: z.string().min(1).max(2e3)
+});
+const messages_post = defineEventHandler(async (event) => {
+  var _a;
+  const ongId = getRouterParam(event, "id");
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!ongId || !token) throw createError({ statusCode: 400, statusMessage: "Param\xE8tres manquants" });
+  const raw = await readBody(event);
+  const parsed = BodySchema.safeParse(raw);
+  if (!parsed.success) throw createError({ statusCode: 400, statusMessage: "Contenu invalide" });
+  const config = useRuntimeConfig();
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${token}` } }
+  });
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const { data: ong } = await supabase.from("ongs").select("id").eq("id", ongId).eq("account_id", user.id).maybeSingle();
+  if (!ong) throw createError({ statusCode: 403, statusMessage: "Acc\xE8s non autoris\xE9" });
+  const { data, error } = await supabase.from("dossier_messages").insert({
+    ong_id: ongId,
+    sender_id: user.id,
+    sender_role: "agent",
+    content: parsed.data.content
+  }).select("id, sender_id, sender_role, content, read_at, created_at").single();
+  if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+  return data;
+});
+
+const messages_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: messages_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
 const resubmit_post = defineEventHandler(async (event) => {
   var _a;
   const ongId = getRouterParam(event, "id");
@@ -2909,6 +3245,64 @@ const _id__get = defineEventHandler(async (event) => {
 const _id__get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: _id__get
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const stripe_post = defineEventHandler(async (event) => {
+  var _a, _b, _c, _d, _e, _f;
+  const sig = getRequestHeader(event, "stripe-signature");
+  if (!sig) throw createError({ statusCode: 400, statusMessage: "Header Stripe-Signature manquant" });
+  const rawBody = await readRawBody(event);
+  if (!rawBody) throw createError({ statusCode: 400, statusMessage: "Corps de requ\xEAte vide" });
+  const config = useRuntimeConfig();
+  let stripeEvent;
+  try {
+    stripeEvent = constructWebhookEvent(rawBody, sig, config.stripeWebhookSecret);
+  } catch (err) {
+    throw createError({ statusCode: 400, statusMessage: `Signature Stripe invalide: ${err.message}` });
+  }
+  if (stripeEvent.type === "checkout.session.completed") {
+    const session = stripeEvent.data.object;
+    const ongId = (_a = session.metadata) == null ? void 0 : _a.ong_id;
+    const idempotencyKey = (_b = session.metadata) == null ? void 0 : _b.idempotency_key;
+    const amountCents = session.amount_total;
+    const paymentIntentId = session.payment_intent;
+    if (!ongId || !idempotencyKey || !amountCents || !paymentIntentId) {
+      return { received: true };
+    }
+    const supabase = createClient(
+      config.public.supabaseUrl,
+      config.supabaseServiceRoleKey,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    );
+    const { data: existing } = await supabase.from("financial_transactions").select("id").eq("idempotency_key", idempotencyKey).maybeSingle();
+    if (!existing) {
+      const { error } = await supabase.from("financial_transactions").insert({
+        ong_id: ongId,
+        stripe_payment_intent_id: paymentIntentId,
+        idempotency_key: idempotencyKey,
+        amount: amountCents,
+        currency: "eur",
+        status: "completed",
+        transaction_type: "donation",
+        provider: "stripe",
+        donor_email: (_d = (_c = session.customer_details) == null ? void 0 : _c.email) != null ? _d : null,
+        metadata: {
+          stripe_session_id: session.id,
+          customer_name: (_f = (_e = session.customer_details) == null ? void 0 : _e.name) != null ? _f : null
+        }
+      });
+      if (error) {
+        console.error("[stripe webhook] insert error:", error.message);
+        throw createError({ statusCode: 500, statusMessage: "Erreur base de donn\xE9es" });
+      }
+    }
+  }
+  return { received: true };
+});
+
+const stripe_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: stripe_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const TransactionStatusSchema = z.enum([

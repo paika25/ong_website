@@ -351,16 +351,8 @@ async function confirmSubmit() {
   submitError.value = ''
 
   try {
-    const supabase = useSupabase()
-    const { data: { session } } = await supabase!.auth.getSession()
-    const token = session?.access_token
-
-    if (!token) throw new Error('Session expirée — reconnectez-vous')
-
-    await $fetch(`/api/ongs/${currentOngId.value}/submit`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const { submitDossier } = await import('~/features/ong/services/ong-agent.service')
+    await submitDossier(currentOngId.value)
 
     showSubmitModal.value = false
     toast.add({ title: 'Dossier soumis avec succès', description: 'Notre équipe va examiner votre dossier.', color: 'green', timeout: 5000 })

@@ -41,11 +41,10 @@
         <UButton
           color="primary"
           size="lg"
-          :disabled="ong.status !== 'active'"
-          @click="$emit('join')"
+          @click="$emit('donate')"
         >
-          <Icon name="i-heroicons-currency-euro" class="w-5 h-5 mr-2" />
-          Faites un don
+          <Icon name="i-heroicons-heart" class="w-5 h-5 mr-2" />
+          Faire un don
         </UButton>
         <UButton
           variant="outline"
@@ -108,6 +107,7 @@ const props = defineProps<{
 
 defineEmits<{
   join: []
+  donate: []
   shareDonation: []
 }>()
 </script>

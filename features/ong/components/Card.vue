@@ -15,12 +15,7 @@
       
       <!-- Badge de statut -->
       <div class="absolute top-3 right-3">
-        <UBadge
-          :color="ong.status === 'active' ? 'green' : ong.status === 'pending' ? 'yellow' : 'red'"
-          variant="solid"
-        >
-          {{ getStatusLabel(ong.status) }}
-        </UBadge>
+        <OngStatus :status="ong.status" />
       </div>
 
       <!-- Badge de catégorie -->
@@ -137,14 +132,6 @@ const onViewDetails = () => {
   emit('view-details', props.ong)
 }
 
-const getStatusLabel = (status: string) => {
-  const labels = {
-    active: 'Actif',
-    pending: 'En attente',
-    inactive: 'Inactif'
-  }
-  return labels[status as keyof typeof labels] || status
-}
 
 const formatNumber = (num: number) => {
   if (num >= 1000) {

@@ -5,8 +5,6 @@ import { getOngDocuments } from '../services'
 export function useOngDetail(ong: () => ONG) {
   // État
   const activeTab = ref(0)
-  const selectedAmount = ref<number | 'custom'>(20)
-  const customAmount = ref<number | null>(null)
   const documents = ref<OngDocument[]>([])
 
   // Charger les documents
@@ -38,9 +36,7 @@ export function useOngDetail(ong: () => ONG) {
     if (o.impact) {
       baseTabs.push({ label: 'Impact', key: 'impact' })
     }
-    if (o.donationOpportunities && o.donationOpportunities.length > 0) {
-      baseTabs.push({ label: 'Dons', key: 'donation' })
-    }
+    baseTabs.push({ label: 'Dons', key: 'donation' })
     if (o.legal || o.monitoring) {
       baseTabs.push({ label: 'Administratif', key: 'transparency' })
     }
@@ -166,16 +162,14 @@ export function useOngDetail(ong: () => ONG) {
     }
   }
 
-  const handleDonate = (opportunity: any) => {
-    console.log('Faire un don pour:', opportunity.type, ong().name)
-    // TODO: Rediriger vers la page de don
+  const handleDonate = () => {
+    const idx = tabs.value.findIndex(t => t.key === 'donation')
+    if (idx !== -1) activeTab.value = idx
   }
 
   return {
     // État
     activeTab,
-    selectedAmount,
-    customAmount,
     documents,
     tabs,
     // Labels
@@ -196,6 +190,6 @@ export function useOngDetail(ong: () => ONG) {
     // Actions
     handleJoin,
     handleShare,
-    handleDonate
+    handleDonate,
   }
 }

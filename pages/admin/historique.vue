@@ -1,17 +1,8 @@
 <template>
-  <div class="min-h-screen bg-background">
-    <Header />
-
-    <main class="container mx-auto px-4 py-6 max-w-5xl">
-      <!-- En-tête + navigation admin -->
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <h1 class="text-2xl font-bold">Historique des actions</h1>
-          <p class="text-sm text-muted-foreground">Journal complet des décisions back-office</p>
-        </div>
-        <NuxtLink to="/admin/verification">
-          <UButton variant="outline" size="sm">← Kanban</UButton>
-        </NuxtLink>
+  <div class="max-w-5xl">
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold">Historique des actions</h1>
+        <p class="text-sm text-muted-foreground">Journal complet des décisions back-office</p>
       </div>
 
       <!-- Filtres -->
@@ -101,12 +92,11 @@
           </UButton>
         </div>
       </div>
-    </main>
   </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({ middleware: ['auth', 'back-office'] })
+definePageMeta({ layout: 'admin', middleware: ['auth', 'back-office'] })
 
 const filterAction = ref('')
 const filterOngId  = ref('')
@@ -158,18 +148,12 @@ function clearFilters() {
 }
 
 async function fetchPage(cursorParam?: string) {
-  const supabase = useSupabase()
-  const { data: { session } } = await supabase!.auth.getSession()
-
-  const params = new URLSearchParams()
-  if (filterAction.value) params.set('action', filterAction.value)
-  if (filterOngId.value)  params.set('ong_id', filterOngId.value)
-  if (cursorParam)        params.set('cursor', cursorParam)
-
-  return $fetch<{ data: any[]; cursor: string | null }>(
-    `/api/admin/historique?${params.toString()}`,
-    { headers: { Authorization: `Bearer ${session?.access_token}` } }
-  )
+  const { getHistorique } = await import('~/features/admin/services/admin.service')
+  return getHistorique({
+    action: filterAction.value || undefined,
+    ongId:  filterOngId.value  || undefined,
+    cursor: cursorParam,
+  })
 }
 
 async function reload() {

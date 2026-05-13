@@ -44,9 +44,10 @@ const enrichedCriteria = ref<ScoreCriterion[]>([])
 
 onMounted(async () => {
   try {
+    const { getScoreCriteria } = await import('~/features/score/services/score.service')
     const [ong, criteriaData] = await Promise.all([
       getOwnerOng(),
-      $fetch<{ criteria: any[]; version: string }>('/api/score/criteria'),
+      getScoreCriteria(),
     ])
 
     if (!ong) return

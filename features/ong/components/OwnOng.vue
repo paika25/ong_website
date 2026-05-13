@@ -9,16 +9,7 @@
               class="w-full h-full object-cover"
             />
             <div class="absolute top-4 right-4">
-              <span 
-                :class="[
-                  'px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm',
-                  props.ong.status === 'active' 
-                    ? 'bg-green-100/90 text-green-800'
-                    : 'bg-yellow-100/90 text-yellow-800'
-                ]"
-              >
-                {{ props.ong.status === 'active' ? 'Active' : 'En attente' }}
-              </span>
+              <OngStatus :status="props.ong.status" />
             </div>
           </div>
 

@@ -182,11 +182,19 @@ onMounted(async () => {
     status.value = 'success'
     message.value = 'Connexion réussie !'
 
-    // Redirection
+    // Redirection selon le rôle
     const redirect = route.query.redirect as string
-    setTimeout(() => {
-      navigateTo(redirect || '/dashboard')
-    }, 1500)
+    if (!redirect) {
+      try {
+        const payload = JSON.parse(atob(finalSession.access_token.split('.')[1]))
+        const role = payload?.app_metadata?.role ?? payload?.role
+        if (role === 'admin' || role === 'back_office') {
+          setTimeout(() => navigateTo('/admin/verification'), 1500)
+          return
+        }
+      } catch {}
+    }
+    setTimeout(() => navigateTo(redirect || '/dashboard'), 1500)
 
   } catch (err: any) {
     console.error('❌ Erreur callback:', err)

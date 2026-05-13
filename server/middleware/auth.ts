@@ -19,8 +19,10 @@ export default defineEventHandler(async (event) => {
   const publicRoutes = [
     '/api/ongs',
     '/api/webhooks/vanilla-pay',
+    '/api/webhooks/stripe',
     '/api/score/criteria',
     '/api/score/ong/',
+    '/api/donations/',
   ]
   const isPublic = publicRoutes.some(r => path.startsWith(r))
   if (isPublic) return

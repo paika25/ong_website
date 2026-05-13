@@ -18,23 +18,16 @@ function getRoleFromJWT(token: string): string | null {
 export default defineNuxtRouteMiddleware(async (to) => {
   // ── Côté client ───────────────────────────────────────────────
   if (import.meta.client) {
-    const { useAuthStore } = await import('~/features/auth/stores/auth.client')
-    const authStore = useAuthStore()
-
-    // Récupérer le rôle depuis le store ou le JWT
-    let role = authStore.currentUser?.accountType ?? null
-
-    if (!role) {
-      const supabase = useSupabase()
-      if (supabase) {
-        const { data: { session } } = await supabase.auth.getSession()
-        if (session?.access_token) {
-          role = getRoleFromJWT(session.access_token)
-        }
+    // Toujours lire le rôle depuis le JWT — le store ne contient que user_agent/user_partner
+    // et ne reflète pas les rôles admin/back_office définis dans app_metadata
+    const supabase = useSupabase()
+    if (supabase) {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.access_token) {
+        const role = getRoleFromJWT(session.access_token)
+        if (role === 'admin' || role === 'back_office') return
       }
     }
-
-    if (role === 'admin' || role === 'back_office') return
 
     throw createError({ statusCode: 403, statusMessage: 'Accès réservé au back-office' })
   }

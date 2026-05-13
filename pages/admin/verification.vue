@@ -1,36 +1,9 @@
 <template>
-  <div class="min-h-screen bg-background">
-    <Header />
-
-    <main class="container mx-auto px-4 py-6">
+  <div>
       <div class="flex items-center justify-between mb-6">
         <div>
           <h1 class="text-2xl font-bold">Pipeline de vérification</h1>
-          <p class="text-sm text-muted-foreground">Gérez les dossiers ONG soumis à validation</p>
-        </div>
-        <div class="flex items-center gap-6">
-          <!-- Lien historique -->
-          <NuxtLink to="/admin/historique" class="text-sm text-primary hover:underline flex items-center gap-1">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Historique des actions
-          </NuxtLink>
-          <!-- Métriques topbar (UX-DR4) -->
-          <div class="flex gap-4 text-sm">
-          <div class="text-center">
-            <div class="font-bold text-amber-600">{{ metrics.urgent }}</div>
-            <div class="text-muted-foreground text-xs">Urgents</div>
-          </div>
-          <div class="text-center">
-            <div class="font-bold">{{ metrics.queue }}</div>
-            <div class="text-muted-foreground text-xs">File d'attente</div>
-          </div>
-          <div class="text-center">
-            <div class="font-bold text-green-600">{{ metrics.todayDone }}</div>
-            <div class="text-muted-foreground text-xs">Traités aujourd'hui</div>
-          </div>
-        </div>
+          <p class="text-sm text-muted-foreground">{{ cards.length }} dossier{{ cards.length > 1 ? 's' : '' }} au total</p>
         </div>
       </div>
 
@@ -50,8 +23,8 @@
         @card-click="openDossier"
       >
         <template #actions="{ card, column }">
-          <!-- Actions inline (UX-DR4, size=sm) -->
-          <template v-if="column === 'a_verifier' || column === 'en_cours'">
+          <!-- Actions sur les dossiers actionnables (pas les brouillons purs ni les clôturés) -->
+          <template v-if="column === 'a_verifier' && ['submitted', 'under_review', 'complement_required'].includes(card.status)">
             <UButton size="xs" variant="outline" color="green" :loading="actionLoading === card.id + '-validate'" @click="validate(card)">
               Valider
             </UButton>
@@ -62,9 +35,20 @@
               Rejeter
             </UButton>
           </template>
+          <template v-else-if="column === 'badge_suspendu'">
+            <UButton size="xs" variant="outline" color="green" :loading="actionLoading === card.id + '-reactivate'" @click="reactivate(card)">
+              Réactiver
+            </UButton>
+            <UButton size="xs" variant="ghost" color="red" @click="openDeactivate(card)">
+              Désactiver
+            </UButton>
+          </template>
           <template v-else-if="column === 'valide'">
             <UButton size="xs" variant="ghost" color="amber" @click="openSuspend(card)">
               Suspendre
+            </UButton>
+            <UButton size="xs" variant="ghost" color="red" @click="openDeactivate(card)">
+              Désactiver
             </UButton>
           </template>
         </template>
@@ -81,7 +65,7 @@
           <!-- Infos ONG -->
           <dl class="grid grid-cols-2 gap-3 text-sm">
             <dt class="text-muted-foreground">Statut</dt>
-            <dd><BadgeVerifie :status="ongToBadge(selectedDossier.ong?.status)" /></dd>
+            <dd><OngStatus :status="selectedDossier.ong?.status ?? ''" size="md" /></dd>
             <dt class="text-muted-foreground">Email</dt>
             <dd>{{ selectedDossier.ong?.email ?? '—' }}</dd>
             <dt class="text-muted-foreground">Localisation</dt>
@@ -111,11 +95,23 @@
           </div>
           <div v-else class="text-sm text-muted-foreground">Aucun document uploadé</div>
 
-          <!-- Historique (placeholder → Story 3.4) -->
-          <div>
-            <h3 class="text-sm font-semibold mb-2">Historique des actions</h3>
-            <AuditTrailSection :ong-id="selectedCard?.id ?? ''" />
-          </div>
+          <!-- Onglets : Messagerie | Historique -->
+          <UTabs :items="[{ label: 'Messages', key: 'messages', icon: 'i-heroicons-chat-bubble-left-right' }, { label: 'Historique', key: 'audit', icon: 'i-heroicons-clock' }]">
+            <template #item="{ item }">
+              <div v-if="item.key === 'messages'" class="border border-border rounded-xl overflow-hidden" style="height: 340px; display: flex; flex-direction: column;">
+                <DossierMessagerie
+                  v-if="selectedCard?.id"
+                  :ong-id="selectedCard.id"
+                  viewer-role="back_office"
+                  api-base="/api/admin/dossiers"
+                  class="flex-1 min-h-0"
+                />
+              </div>
+              <div v-else-if="item.key === 'audit'">
+                <AuditTrailSection :ong-id="selectedCard?.id ?? ''" />
+              </div>
+            </template>
+          </UTabs>
         </div>
       </UModal>
 
@@ -154,6 +150,25 @@
         </div>
       </UModal>
 
+      <!-- Modal désactivation définitive -->
+      <UModal v-model="showDeactivateModal">
+        <div class="p-6 space-y-4">
+          <h3 class="text-lg font-semibold text-red-600">Désactiver l'ONG</h3>
+          <p class="text-sm text-muted-foreground">
+            Cette action rend l'ONG inactive et la retire de la marketplace. Elle ne peut être réactivée que manuellement.
+          </p>
+          <UFormGroup label="Motif de désactivation" required>
+            <UTextarea v-model="deactivateComment" :rows="3" placeholder="Motif obligatoire..." />
+          </UFormGroup>
+          <div class="flex gap-3">
+            <UButton variant="outline" class="flex-1" @click="showDeactivateModal = false">Annuler</UButton>
+            <UButton color="red" class="flex-1" :disabled="!deactivateComment.trim()" :loading="actionLoading === 'deactivate'" @click="confirmDeactivate">
+              Désactiver définitivement
+            </UButton>
+          </div>
+        </div>
+      </UModal>
+
       <!-- Inline complément -->
       <UModal v-model="showComplementModal">
         <div class="p-6 space-y-4">
@@ -169,19 +184,20 @@
           </div>
         </div>
       </UModal>
-    </main>
   </div>
 </template>
 
 <script setup lang="ts">
 import PipelineKanban from '~/features/verification/components/PipelineKanban.vue'
-import BadgeVerifie   from '~/features/verification/components/BadgeVerifie.vue'
+
 import AuditTrailSection from '~/features/verification/components/AuditTrailSection.vue'
+import DossierMessagerie from '~/features/verification/components/DossierMessagerie.vue'
+import { getDossiers, getDossier, callDossierAction } from '~/features/verification/services/dossier.service'
 import { KANBAN_COLUMNS } from '~/features/verification/types'
 import type { DossierCard } from '~/features/verification/types'
-import type { BadgeStatus } from '~/features/verification/types'
 
-definePageMeta({ middleware: ['auth', 'back-office'] })
+
+definePageMeta({ layout: 'admin', middleware: ['auth', 'back-office'] })
 
 const toast = useToast()
 
@@ -194,42 +210,24 @@ const showDetail        = ref(false)
 const selectedCard      = ref<DossierCard | null>(null)
 const selectedDossier   = ref<{ ong: any; documents: any[] } | null>(null)
 
-const showRejectModal    = ref(false)
-const showSuspendModal   = ref(false)
+const showRejectModal     = ref(false)
+const showSuspendModal    = ref(false)
 const showComplementModal = ref(false)
+const showDeactivateModal = ref(false)
 const rejectComment    = ref('')
 const suspendComment   = ref('')
 const complementMsg    = ref('')
+const deactivateComment = ref('')
 const actionTarget     = ref<DossierCard | null>(null)
 
-// ── Métriques ────────────────────────────────────────────────
-const metrics = computed(() => {
-  const now = Date.now()
-  const todayStart = new Date(); todayStart.setHours(0,0,0,0)
-  return {
-    urgent:    cards.value.filter(c => (now - new Date(c.submittedAt).getTime()) > 48*3_600_000 && !['verified','active'].includes(c.status)).length,
-    queue:     cards.value.filter(c => !['verified','active'].includes(c.status)).length,
-    todayDone: cards.value.filter(c => ['verified','active'].includes(c.status) && new Date(c.submittedAt) >= todayStart).length,
-  }
-})
 
-function ongToBadge(status?: string): BadgeStatus {
-  if (status === 'verified' || status === 'active') return 'verified'
-  if (status === 'submitted' || status === 'under_review') return 'pending'
-  if (status === 'complement_required') return 'suspended'
-  return 'unverified'
-}
+
 
 // ── Load ─────────────────────────────────────────────────────
 async function loadDossiers() {
   loading.value = true
   try {
-    const supabase = useSupabase()
-    const { data: { session } } = await supabase!.auth.getSession()
-    const data = await $fetch<DossierCard[]>('/api/admin/dossiers', {
-      headers: { Authorization: `Bearer ${session?.access_token}` }
-    })
-    cards.value = data
+    cards.value = await getDossiers()
   } catch (e: any) {
     toast.add({ title: 'Erreur chargement', description: e.message, color: 'red', timeout: 5000 })
   } finally {
@@ -242,36 +240,24 @@ async function openDossier(card: DossierCard) {
   showDetail.value = true
   selectedDossier.value = null
   try {
-    const supabase = useSupabase()
-    const { data: { session } } = await supabase!.auth.getSession()
-
-    // Transition automatique submitted → under_review à l'ouverture
-    if (card.status === 'submitted') {
-      await callAction(card.id, 'start-review').catch(() => {})
-      cards.value = cards.value.map(c => c.id === card.id ? { ...c, status: 'under_review' } : c)
+    if (card.status === 'pending' || card.status === 'submitted') {
+      try {
+        await callDossierAction(card.id, 'start-review')
+        // Mise à jour locale uniquement si l'API confirme
+        cards.value = cards.value.map(c => c.id === card.id ? { ...c, status: 'under_review' } : c)
+      } catch (e: any) {
+        const msg = e?.data?.statusMessage ?? e?.message ?? 'Erreur lors du passage en revue'
+        toast.add({ title: 'Transition échouée', description: msg, color: 'red', timeout: 5000 })
+      }
     }
-
-    selectedDossier.value = await $fetch(`/api/admin/dossiers/${card.id}`, {
-      headers: { Authorization: `Bearer ${session?.access_token}` }
-    })
+    selectedDossier.value = await getDossier(card.id)
   } catch { selectedDossier.value = { ong: null, documents: [] } }
-}
-
-// ── Actions ──────────────────────────────────────────────────
-async function callAction(ongId: string, action: string, body: Record<string, any> = {}) {
-  const supabase = useSupabase()
-  const { data: { session } } = await supabase!.auth.getSession()
-  return $fetch(`/api/admin/dossiers/${ongId}/${action}`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${session?.access_token}` },
-    body,
-  })
 }
 
 async function validate(card: DossierCard) {
   actionLoading.value = card.id + '-validate'
   try {
-    await callAction(card.id, 'validate')
+    await callDossierAction(card.id, 'validate')
     cards.value = cards.value.map(c => c.id === card.id ? { ...c, status: 'verified' } : c)
     toast.add({ title: `${card.ongName} validée`, color: 'green', timeout: 4000 })
   } catch (e: any) {
@@ -279,15 +265,27 @@ async function validate(card: DossierCard) {
   } finally { actionLoading.value = null }
 }
 
-function openReject(card: DossierCard)     { actionTarget.value = card; rejectComment.value = '';   showRejectModal.value = true }
-function openSuspend(card: DossierCard)    { actionTarget.value = card; suspendComment.value = ''; showSuspendModal.value = true }
-function openComplement(card: DossierCard) { actionTarget.value = card; complementMsg.value = '';  showComplementModal.value = true }
+function openReject(card: DossierCard)     { actionTarget.value = card; rejectComment.value = '';    showRejectModal.value = true }
+function openSuspend(card: DossierCard)    { actionTarget.value = card; suspendComment.value = '';  showSuspendModal.value = true }
+function openComplement(card: DossierCard) { actionTarget.value = card; complementMsg.value = '';   showComplementModal.value = true }
+function openDeactivate(card: DossierCard) { actionTarget.value = card; deactivateComment.value = ''; showDeactivateModal.value = true }
+
+async function reactivate(card: DossierCard) {
+  actionLoading.value = card.id + '-reactivate'
+  try {
+    await callDossierAction(card.id, 'reactivate')
+    cards.value = cards.value.map(c => c.id === card.id ? { ...c, status: 'verified' } : c)
+    toast.add({ title: `${card.ongName} réactivée`, color: 'green', timeout: 4000 })
+  } catch (e: any) {
+    toast.add({ title: 'Erreur', description: e.data?.statusMessage ?? e.message, color: 'red', timeout: 5000 })
+  } finally { actionLoading.value = null }
+}
 
 async function confirmReject() {
   if (!actionTarget.value) return
   actionLoading.value = 'reject'
   try {
-    await callAction(actionTarget.value.id, 'reject', { comment: rejectComment.value })
+    await callDossierAction(actionTarget.value.id, 'reject', { comment: rejectComment.value })
     cards.value = cards.value.map(c => c.id === actionTarget.value!.id ? { ...c, status: 'rejected' } : c)
     showRejectModal.value = false
     toast.add({ title: 'Dossier rejeté', color: 'amber', timeout: 4000 })
@@ -300,7 +298,7 @@ async function confirmSuspend() {
   if (!actionTarget.value) return
   actionLoading.value = 'suspend'
   try {
-    await callAction(actionTarget.value.id, 'suspend', { comment: suspendComment.value })
+    await callDossierAction(actionTarget.value.id, 'suspend', { comment: suspendComment.value })
     cards.value = cards.value.map(c => c.id === actionTarget.value!.id ? { ...c, status: 'complement_required' } : c)
     showSuspendModal.value = false
     toast.add({ title: 'Badge suspendu', color: 'amber', timeout: 4000 })
@@ -313,10 +311,23 @@ async function confirmComplement() {
   if (!actionTarget.value) return
   actionLoading.value = 'complement'
   try {
-    await callAction(actionTarget.value.id, 'complement', { message: complementMsg.value })
+    await callDossierAction(actionTarget.value.id, 'complement', { message: complementMsg.value })
     cards.value = cards.value.map(c => c.id === actionTarget.value!.id ? { ...c, status: 'complement_required' } : c)
     showComplementModal.value = false
     toast.add({ title: 'Complément demandé', color: 'blue', timeout: 4000 })
+  } catch (e: any) {
+    toast.add({ title: 'Erreur', description: e.data?.statusMessage ?? e.message, color: 'red', timeout: 5000 })
+  } finally { actionLoading.value = null }
+}
+
+async function confirmDeactivate() {
+  if (!actionTarget.value) return
+  actionLoading.value = 'deactivate'
+  try {
+    await callDossierAction(actionTarget.value.id, 'deactivate', { comment: deactivateComment.value })
+    cards.value = cards.value.filter(c => c.id !== actionTarget.value!.id)
+    showDeactivateModal.value = false
+    toast.add({ title: `${actionTarget.value.ongName} désactivée`, color: 'red', timeout: 4000 })
   } catch (e: any) {
     toast.add({ title: 'Erreur', description: e.data?.statusMessage ?? e.message, color: 'red', timeout: 5000 })
   } finally { actionLoading.value = null }

@@ -8,6 +8,7 @@
       :active-projects-count="getActiveProjectsCount(ong)"
       :years-since-creation="getYearsSinceCreation(ong)"
       @join="handleJoin"
+      @donate="handleDonate"
       @shareDonation="handleShare"
     />
 
@@ -41,11 +42,9 @@
 
         <OngDetailTabDonation
           v-else-if="item.key === 'donation'"
-          :opportunities="ong.donationOpportunities"
-          v-model:selected-amount="selectedAmount"
-          v-model:custom-amount="customAmount"
-          :format-currency="formatCurrency"
-          @donate="handleDonate"
+          :ong-id="ong.id"
+          :ong-name="ong.name"
+          :donation-status="donationStatus"
         />
 
         <OngDetailTabTransparency
@@ -88,10 +87,16 @@ import OngDetailTabVolunteers from './OngDetailTabVolunteers.vue'
 
 const props = defineProps<{ ong: ONG }>()
 
+const route = useRoute()
+const donationStatus = computed(() => {
+  const val = route.query.donation
+  if (val === 'success') return 'success' as const
+  if (val === 'cancelled') return 'cancelled' as const
+  return null
+})
+
 const {
   activeTab,
-  selectedAmount,
-  customAmount,
   documents,
   tabs,
   getStatusLabel,
@@ -108,15 +113,16 @@ const {
   formatNumber,
   handleJoin,
   handleShare,
-  handleDonate
+  handleDonate,
 } = useOngDetail(() => props.ong)
 
-// Score depuis ong_current_scores (vue matérialisée)
+import { getOngScore } from '~/features/score/services/score.service'
+
 const ongScore = ref(0)
 onMounted(async () => {
   try {
-    const res = await $fetch<{ score: number }>(`/api/score/ong/${props.ong.id}`)
-    ongScore.value = res.score
+    const { score } = await getOngScore(props.ong.id)
+    ongScore.value = score
   } catch { /* score reste 0 si non disponible */ }
 })
 </script>

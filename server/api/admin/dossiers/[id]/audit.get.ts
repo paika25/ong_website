@@ -8,9 +8,13 @@ export default defineEventHandler(async (event) => {
 
   if (!ongId) throw createError({ statusCode: 400, statusMessage: 'ID manquant' })
 
+  const token = getRequestHeader(event, 'authorization')?.replace('Bearer ', '')
+  if (!token) throw createError({ statusCode: 401, statusMessage: 'Non authentifié' })
+
   const config = useRuntimeConfig()
-  const supabase = createClient(config.public.supabaseUrl, config.supabaseServiceRoleKey, {
-    auth: { autoRefreshToken: false, persistSession: false }
+  const supabase = createClient(config.public.supabaseUrl as string, config.public.supabaseKey as string, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${token}` } },
   })
 
   let q = supabase

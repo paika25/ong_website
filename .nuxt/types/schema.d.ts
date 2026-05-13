@@ -189,6 +189,10 @@ declare module 'nuxt/schema' {
 
    supabaseServiceRoleKey: string,
 
+   stripeSecretKey: string,
+
+   stripeWebhookSecret: string,
+
    nitro: {
       envPrefix: string,
    },
@@ -201,6 +205,8 @@ declare module 'nuxt/schema' {
    supabaseUrl: string,
 
    supabaseKey: string,
+
+   appUrl: string,
   }
 }
 declare module 'vue' {

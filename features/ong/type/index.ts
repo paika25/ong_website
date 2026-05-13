@@ -15,7 +15,7 @@ export interface ONG {
   name: string
   description: string
   category: 'education' | 'health' | 'environment' | 'social' | 'culture'
-  status: 'active' | 'pending' | 'inactive' | 'submitted' | 'under_review' | 'complement_required' | 'verified' | 'rejected'
+  status: 'active' | 'pending' | 'inactive' | 'submitted' | 'under_review' | 'complement_required' | 'verified' | 'rejected' | 'suspended'
   location: string
   image?: string
   volunteers: number

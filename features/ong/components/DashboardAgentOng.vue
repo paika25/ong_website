@@ -43,9 +43,7 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="text-xs text-muted-foreground">Statut :</span>
-            <span :class="['text-xs font-semibold px-2 py-0.5 rounded-full', statusConfig.class]">
-              {{ statusConfig.label }}
-            </span>
+            <OngStatus :status="ong.status" />
           </div>
           <NuxtLink
             v-if="ong.status === 'submitted' || ong.status === 'under_review' || ong.status === 'verified' || ong.status === 'active'"
@@ -69,6 +67,16 @@
           </UButton>
         </div>
 
+        <!-- Bloc badge suspendu (post-certification) -->
+        <div v-else-if="ong.status === 'suspended'" class="p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg space-y-2">
+          <p class="text-xs font-semibold text-red-700 dark:text-red-300">
+            ⚠ Badge suspendu — votre ONG n'est plus visible
+          </p>
+          <p class="text-xs text-red-600 dark:text-red-400">
+            Le back-office a suspendu votre certification. Consultez vos messages pour connaître les raisons et les documents à fournir.
+          </p>
+        </div>
+
         <!-- Bloc rejeté -->
         <div v-else-if="ong.status === 'rejected'" class="p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg">
           <p class="text-xs font-semibold text-red-700 dark:text-red-300">✗ Dossier rejeté</p>
@@ -85,6 +93,35 @@
             </UButton>
           </NuxtLink>
         </div>
+      </div>
+
+      <!-- Messagerie back-office — toujours visible dès qu'une ONG existe -->
+      <div
+        ref="messagesSection"
+        data-messages-section
+        class="bg-card border rounded-xl overflow-hidden transition-colors"
+        :class="unreadMessages > 0 ? 'border-primary/50 ring-1 ring-primary/20' : 'border-border'"
+        style="height: 380px; display: flex; flex-direction: column;"
+      >
+        <div class="flex items-center justify-between px-4 py-2.5 border-b border-border bg-muted/30 shrink-0">
+          <div class="flex items-center gap-2">
+            <Icon name="i-heroicons-chat-bubble-left-right" class="w-4 h-4 text-primary" />
+            <span class="text-sm font-semibold">Messages back-office</span>
+          </div>
+          <span
+            v-if="unreadMessages > 0"
+            class="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1 rounded-full bg-primary text-primary-foreground text-xs font-bold"
+          >
+            {{ unreadMessages }}
+          </span>
+        </div>
+        <DossierMessagerie
+          :ong-id="ong.id"
+          viewer-role="agent"
+          api-base="/api/ongs"
+          class="flex-1 min-h-0"
+          @unread-count="unreadMessages = $event"
+        />
       </div>
 
       <!-- Carte ONG principale -->
@@ -115,30 +152,18 @@
 <script setup lang="ts">
 import type { ONG } from '~/features/ong/type'
 import { getOwnerOng } from '~/features/ong/services'
+import { resubmitDossier } from '~/features/ong/services/ong-agent.service'
 import OwnOng from './OwnOng.vue'
+import DossierMessagerie from '~/features/verification/components/DossierMessagerie.vue'
 
-const loading     = ref(true)
-const resubmitting = ref(false)
-const ong = ref<ONG | null>(null)
+const loading        = ref(true)
+const resubmitting   = ref(false)
+const ong            = ref<ONG | null>(null)
+const unreadMessages = ref(0)
+const messagesSection = ref<HTMLElement | null>(null)
 const toast = useToast()
 let realtimeChannel: ReturnType<NonNullable<ReturnType<typeof useSupabase>>['channel']> | null = null
 
-// ── Status config ────────────────────────────────────────────
-const STATUS_CONFIG: Record<string, { label: string; class: string }> = {
-  pending:             { label: 'En cours de création', class: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300' },
-  submitted:           { label: 'Soumis', class: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' },
-  under_review:        { label: 'En révision', class: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300' },
-  complement_required: { label: 'Complément requis', class: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300' },
-  verified:            { label: '✓ Vérifié', class: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' },
-  active:              { label: '✓ Vérifié', class: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' },
-  rejected:            { label: 'Rejeté', class: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' },
-  inactive:            { label: 'Inactif', class: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' },
-}
-
-const statusConfig = computed(() => {
-  const s = ong.value?.status ?? 'pending'
-  return STATUS_CONFIG[s] ?? STATUS_CONFIG.pending
-})
 
 // ── Complétude % (UX-DR11) ───────────────────────────────────
 const completionPct = computed(() => {
@@ -192,12 +217,7 @@ async function resubmit() {
   if (!ong.value?.id) return
   resubmitting.value = true
   try {
-    const supabase = useSupabase()
-    const { data: { session } } = await supabase!.auth.getSession()
-    await $fetch(`/api/ongs/${ong.value.id}/resubmit`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${session?.access_token}` },
-    })
+    await resubmitDossier(ong.value.id)
     if (ong.value) ong.value = { ...ong.value, status: 'submitted' }
     toast.add({ title: 'Dossier re-soumis', description: 'Votre dossier est à nouveau en attente de vérification.', color: 'green', timeout: 5000 })
   } catch (e: any) {
