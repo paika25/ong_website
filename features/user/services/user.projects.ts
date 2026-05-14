@@ -23,12 +23,24 @@ export const useUserProjectsService = () => {
 
       if (ongsError) {
         console.error('Erreur chargement projets (ong_managers):', ongsError.message)
-        return []
       }
 
-      if (!agentOngs || agentOngs.length === 0) return []
+      const { data: ownedOngs, error: ownedError } = await supabase
+        .from('ongs')
+        .select('id')
+        .eq('account_id', userId)
 
-      const ongIds = agentOngs.map((o: any) => o.ong_id)
+      if (ownedError) {
+        console.error('Erreur chargement projets (account_id):', ownedError.message)
+      }
+
+      const ongIdSet = new Set<string>()
+      for (const o of agentOngs || []) ongIdSet.add((o as any).ong_id)
+      for (const o of ownedOngs || []) ongIdSet.add((o as any).id)
+
+      if (ongIdSet.size === 0) return []
+
+      const ongIds = Array.from(ongIdSet)
 
       const { data: ongs, error: projError } = await supabase
         .from('ongs')

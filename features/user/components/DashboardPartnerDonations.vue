@@ -88,7 +88,7 @@
       <h3 class="text-base font-semibold mb-2">Aucun don pour le moment</h3>
       <p class="text-sm text-muted-foreground mb-6">Soutenez une ONG en faisant votre premier don</p>
       <NuxtLink to="/">
-        <UButton variant="default">
+        <UButton>
           Découvrir les ONGs
         </UButton>
       </NuxtLink>
