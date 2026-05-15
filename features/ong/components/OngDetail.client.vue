@@ -7,7 +7,8 @@
       :project-count="getProjectCount(ong)"
       :active-projects-count="getActiveProjectsCount(ong)"
       :years-since-creation="getYearsSinceCreation(ong)"
-      @join="handleJoin"
+      :share-copied="shareCopied"
+      @donate="handleDonate"
       @shareDonation="handleShare"
     />
 
@@ -41,11 +42,9 @@
 
         <OngDetailTabDonation
           v-else-if="item.key === 'donation'"
-          :opportunities="ong.donationOpportunities"
-          v-model:selected-amount="selectedAmount"
-          v-model:custom-amount="customAmount"
-          :format-currency="formatCurrency"
-          @donate="handleDonate"
+          :ong-id="ong.id"
+          :ong-name="ong.name"
+          :donation-status="donationStatus"
         />
 
         <OngDetailTabTransparency
@@ -53,6 +52,7 @@
           :legal="ong.legal"
           :monitoring="ong.monitoring"
           :format-date="formatDate"
+          :score="ongScore"
         />
 
         <OngDetailTabDocuments
@@ -69,6 +69,22 @@
         />
       </template>
     </UTabs>
+
+    <Teleport to="body">
+      <OngDonationModal
+        v-if="showDonationModal"
+        :ong="ong"
+        :amount="selectedAmount"
+        :custom-amount="customAmount"
+        @close="showDonationModal = false"
+      />
+
+      <OngVolunteerModal
+        v-if="showVolunteerModal"
+        :ong="ong"
+        @close="showVolunteerModal = false"
+      />
+    </Teleport>
   </div>
 </template>
 
@@ -84,15 +100,26 @@ import OngDetailTabDonation from './OngDetailTabDonation.vue'
 import OngDetailTabTransparency from './OngDetailTabTransparency.vue'
 import OngDetailTabDocuments from './OngDetailTabDocuments.vue'
 import OngDetailTabVolunteers from './OngDetailTabVolunteers.vue'
+import OngDonationModal from './OngDonationModal.vue'
+import OngVolunteerModal from './OngVolunteerModal.vue'
 
 const props = defineProps<{ ong: ONG }>()
 
+const route = useRoute()
+const donationStatus = computed(() => {
+  const val = route.query.donation
+  if (val === 'success') return 'success' as const
+  if (val === 'cancelled') return 'cancelled' as const
+  return null
+})
+
 const {
   activeTab,
-  selectedAmount,
-  customAmount,
   documents,
   tabs,
+  showDonationModal,
+  showVolunteerModal,
+  shareCopied,
   getStatusLabel,
   getCategoryLabel,
   getProjectStatusColor,
@@ -107,6 +134,16 @@ const {
   formatNumber,
   handleJoin,
   handleShare,
-  handleDonate
+  handleDonate,
 } = useOngDetail(() => props.ong)
+
+import { getOngScore } from '~/features/score/services/score.service'
+
+const ongScore = ref(0)
+onMounted(async () => {
+  try {
+    const { score } = await getOngScore(props.ong.id)
+    ongScore.value = score
+  } catch { /* score reste 0 si non disponible */ }
+})
 </script>

@@ -4,6 +4,7 @@
  */
 
 import type { ONG } from '../type'
+import { DEFAULT_SECTION_VISIBILITY } from '../type'
 import type { OngFormPayload } from './ong.types'
 
 /**
@@ -56,6 +57,7 @@ export const fromSupabaseRow = (row: any): ONG => ({
   impact: row.impact || {},
   donationOpportunities: row.donation_opportunities || [],
   monitoring: row.monitoring || {},
+  sectionVisibility: row.section_visibility ?? DEFAULT_SECTION_VISIBILITY,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 })

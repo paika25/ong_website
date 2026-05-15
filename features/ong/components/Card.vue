@@ -1,5 +1,8 @@
 <template>
-  <div class="bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow duration-300">
+  <div
+    class="bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full cursor-pointer"
+    @click="onViewDetails"
+  >
     <!-- Image de l'ONG -->
     <div class="relative h-48 bg-muted">
       <img
@@ -15,12 +18,7 @@
       
       <!-- Badge de statut -->
       <div class="absolute top-3 right-3">
-        <UBadge
-          :color="ong.status === 'active' ? 'green' : ong.status === 'pending' ? 'yellow' : 'red'"
-          variant="solid"
-        >
-          {{ getStatusLabel(ong.status) }}
-        </UBadge>
+        <OngStatus :status="ong.status" />
       </div>
 
       <!-- Badge de catégorie -->
@@ -32,7 +30,7 @@
     </div>
 
     <!-- Contenu de la card -->
-    <div class="p-6">
+    <div class="p-6 flex flex-col flex-1">
       <!-- Header avec nom et localisation -->
       <div class="mb-3">
         <h3 class="font-semibold text-lg mb-1 line-clamp-1">{{ ong.name }}</h3>
@@ -60,7 +58,7 @@
       </div>
 
       <!-- Actions -->
-      <div class="flex gap-2">
+      <div class="flex gap-2 mt-auto">
         <UButton
           variant="outline"
           size="sm"
@@ -81,7 +79,7 @@
       </div>
 
       <!-- Contact rapide -->
-      <div class="flex items-center justify-center gap-3 mt-4 pt-4 border-t border-border">
+      <div class="flex items-center justify-center gap-3 mt-4 pt-4 border-t border-border" @click.stop>
         <UButton
           v-if="ong.email"
           variant="ghost"
@@ -137,14 +135,6 @@ const onViewDetails = () => {
   emit('view-details', props.ong)
 }
 
-const getStatusLabel = (status: string) => {
-  const labels = {
-    active: 'Actif',
-    pending: 'En attente',
-    inactive: 'Inactif'
-  }
-  return labels[status as keyof typeof labels] || status
-}
 
 const formatNumber = (num: number) => {
   if (num >= 1000) {

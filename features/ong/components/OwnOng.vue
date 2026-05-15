@@ -9,16 +9,7 @@
               class="w-full h-full object-cover"
             />
             <div class="absolute top-4 right-4">
-              <span 
-                :class="[
-                  'px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm',
-                  props.ong.status === 'active' 
-                    ? 'bg-green-100/90 text-green-800'
-                    : 'bg-yellow-100/90 text-yellow-800'
-                ]"
-              >
-                {{ props.ong.status === 'active' ? 'Active' : 'En attente' }}
-              </span>
+              <OngStatus :status="props.ong.status" />
             </div>
           </div>
 
@@ -26,7 +17,7 @@
           <div class="p-6">
             <div class="flex items-start justify-between mb-6">
               <div class="flex-1">
-                <h3 class="text-2xl font-bold mb-2">{{ props.ong.name }}</h3>
+                <h3 class="text-lg font-semibold mb-2">{{ props.ong.name }}</h3>
                 <p class="text-muted-foreground mb-4">{{ props.ong.description }}</p>
                 <div class="flex flex-wrap gap-2">
                   <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">

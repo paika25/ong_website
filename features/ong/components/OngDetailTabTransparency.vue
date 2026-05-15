@@ -1,8 +1,14 @@
 <template>
   <div class="space-y-6">
+    <!-- Score de Transparence (Story 4.2) -->
+    <div v-if="score !== undefined" class="bg-card rounded-xl border border-border p-6">
+      <h2 class="text-lg font-semibold mb-4">Score de Transparence</h2>
+      <ScoreTransparenceWidget :score="score" :criteria="criteria" />
+    </div>
+
     <!-- Informations légales -->
     <div v-if="legal" class="bg-card rounded-xl border border-border p-6">
-      <h2 class="text-2xl font-semibold mb-6">Informations légales</h2>
+      <h2 class="text-lg font-semibold mb-4">Informations légales</h2>
       <div class="flex flex-col md:flex-row gap-8">
 
         <!-- Conformité (gauche) -->
@@ -47,7 +53,7 @@
 
     <!-- Monitoring et évaluation -->
     <div v-if="monitoring" class="bg-card rounded-xl border border-border p-6">
-      <h2 class="text-2xl font-semibold mb-4">Suivi et évaluation</h2>
+      <h2 class="text-lg font-semibold mb-4">Suivi et évaluation</h2>
       <div class="space-y-4">
         <div class="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
           <Icon name="i-heroicons-document-chart-bar" class="w-6 h-6 text-primary flex-shrink-0" />
@@ -78,9 +84,14 @@
 <script setup lang="ts">
 import type { ONG } from '../type'
 
+import ScoreTransparenceWidget from '~/features/verification/components/ScoreTransparenceWidget.vue'
+import type { ScoreCriterion } from '~/features/verification/components/ScoreTransparenceWidget.vue'
+
 defineProps<{
-  legal: ONG['legal']
-  monitoring: ONG['monitoring']
-  formatDate: (date: string) => string
+  legal:       ONG['legal']
+  monitoring:  ONG['monitoring']
+  formatDate:  (date: string) => string
+  score?:      number
+  criteria?:   ScoreCriterion[]
 }>()
 </script>

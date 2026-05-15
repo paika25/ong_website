@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-4">
     <div class="bg-card rounded-xl border border-border p-6">
-      <h2 class="text-2xl font-semibold mb-4">Documents officiels</h2>
+      <h2 class="text-lg font-semibold mb-4">Documents officiels</h2>
       <div class="space-y-3">
         <a
           v-for="doc in documents"

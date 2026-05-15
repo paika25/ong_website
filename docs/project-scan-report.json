@@ -1,0 +1,52 @@
+{
+  "workflow_version": "1.2.0",
+  "timestamps": {
+    "started": "2026-05-13T00:00:00Z",
+    "last_updated": "2026-05-13T00:00:00Z",
+    "completed": "2026-05-13T00:00:00Z"
+  },
+  "mode": "initial_scan",
+  "scan_level": "deep",
+  "project_root": "/Users/marius/Documents/Proffessionnel/ONG",
+  "project_knowledge": "/Users/marius/Documents/Proffessionnel/ONG/docs",
+  "project_types": [
+    {
+      "part_id": "main",
+      "project_type_id": "web",
+      "display_name": "Paika ONG Platform — Nuxt 3 full-stack"
+    }
+  ],
+  "repository_type": "monolith",
+  "completed_steps": [
+    { "step": "step_1", "status": "completed", "timestamp": "2026-05-13T00:00:00Z", "summary": "Classifié monolith web, 1 part — Nuxt 3 + TypeScript + Supabase" },
+    { "step": "step_2", "status": "completed", "timestamp": "2026-05-13T00:00:00Z", "summary": "Aucune documentation existante trouvée dans docs/" },
+    { "step": "step_3", "status": "completed", "timestamp": "2026-05-13T00:00:00Z", "summary": "Stack: Nuxt 3, Vue 3, TypeScript, Tailwind, Pinia, Supabase, Stripe" },
+    { "step": "step_4", "status": "completed", "timestamp": "2026-05-13T00:00:00Z", "summary": "30 endpoints API, 8 tables DB, 50+ composants, 6 server services" },
+    { "step": "step_5", "status": "completed", "timestamp": "2026-05-13T00:00:00Z", "summary": "Arborescence complète annotée générée" },
+    { "step": "step_6", "status": "completed", "timestamp": "2026-05-13T00:00:00Z", "summary": "Dev guide + deployment guide générés" },
+    { "step": "step_8", "status": "completed", "timestamp": "2026-05-13T00:00:00Z", "summary": "Architecture document généré" },
+    { "step": "step_9", "status": "completed", "timestamp": "2026-05-13T00:00:00Z", "summary": "6 documents de support générés" },
+    { "step": "step_10", "status": "completed", "timestamp": "2026-05-13T00:00:00Z", "summary": "Index master généré" },
+    { "step": "step_12", "status": "completed", "timestamp": "2026-05-13T00:00:00Z", "summary": "Workflow complet" }
+  ],
+  "current_step": "completed",
+  "findings": {
+    "project_classification": "Monolith web — Nuxt 3 full-stack avec Supabase",
+    "technology_stack": "Nuxt 3, Vue 3, TypeScript, Tailwind CSS, Nuxt UI v2, Pinia, Supabase, Stripe, Netlify",
+    "apis": "30 endpoints documentés",
+    "database": "8 tables principales + 3 fonctions SECURITY DEFINER + 17 migrations",
+    "components": "50+ composants Vue répartis en 8 features"
+  },
+  "outputs_generated": [
+    "docs/index.md",
+    "docs/project-overview.md",
+    "docs/architecture.md",
+    "docs/source-tree-analysis.md",
+    "docs/api-contracts.md",
+    "docs/data-models.md",
+    "docs/component-inventory.md",
+    "docs/development-guide.md",
+    "docs/deployment-guide.md",
+    "docs/project-scan-report.json"
+  ]
+}

@@ -14,8 +14,10 @@ type HydrationStrategies = {
 type LazyComponent<T> = DefineComponent<HydrationStrategies, {}, {}, {}, {}, {}, {}, { hydrated: () => void }> & T
 
 
+export const AppNotificationModal: typeof import("../components/AppNotificationModal.vue")['default']
 export const Footer: typeof import("../components/Footer.client.vue")['default']
 export const Header: typeof import("../components/Header.vue")['default']
+export const OngStatus: typeof import("../components/OngStatus.vue")['default']
 export const ThemeToggle: typeof import("../components/ThemeToggle.client.vue")['default']
 export const VilleAutoCompletion: typeof import("../components/VilleAutoCompletion.vue")['default']
 export const UAccordion: typeof import("../node_modules/@nuxt/ui/dist/runtime/components/elements/Accordion.vue")['default']
@@ -92,8 +94,10 @@ export const Head: typeof import("../node_modules/nuxt/dist/head/runtime/compone
 export const Html: typeof import("../node_modules/nuxt/dist/head/runtime/components")['Html']
 export const Body: typeof import("../node_modules/nuxt/dist/head/runtime/components")['Body']
 export const NuxtIsland: typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']
+export const LazyAppNotificationModal: LazyComponent<typeof import("../components/AppNotificationModal.vue")['default']>
 export const LazyFooter: LazyComponent<typeof import("../components/Footer.client.vue")['default']>
 export const LazyHeader: LazyComponent<typeof import("../components/Header.vue")['default']>
+export const LazyOngStatus: LazyComponent<typeof import("../components/OngStatus.vue")['default']>
 export const LazyThemeToggle: LazyComponent<typeof import("../components/ThemeToggle.client.vue")['default']>
 export const LazyVilleAutoCompletion: LazyComponent<typeof import("../components/VilleAutoCompletion.vue")['default']>
 export const LazyUAccordion: LazyComponent<typeof import("../node_modules/@nuxt/ui/dist/runtime/components/elements/Accordion.vue")['default']>

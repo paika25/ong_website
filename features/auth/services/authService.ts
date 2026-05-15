@@ -58,6 +58,54 @@ const getReadableError = (error: string): string => {
   return errorMap[error] || error
 }
 
+const maybeCreateAgentOng = async (supabase: any, userId: string, signUpData: SignUpData) => {
+  if (signUpData.accountType !== 'user_agent' || !signUpData.companyName) return
+
+  const { data: ongData, error } = await supabase
+    .from('ongs')
+    .insert({
+      account_id: userId,
+      name: signUpData.companyName,
+      description: signUpData.bio || '',
+      category: null,
+      location: signUpData.location || '',
+      website: signUpData.website || null,
+      email: signUpData.email,
+      status: 'pending',
+      volunteers: 0,
+      projects: [],
+      financials: {},
+      legal: {},
+      impact: {},
+      donation_opportunities: [],
+      monitoring: {}
+    })
+    .select('id')
+    .maybeSingle()
+
+  if (error) {
+    console.warn('⚠️ [maybeCreateAgentOng] ONG non créée automatiquement:', error.message)
+    return
+  }
+
+  console.log('✅ [maybeCreateAgentOng] ONG créée pour l\'agent:', signUpData.companyName)
+
+  // Enregistrer le créateur comme propriétaire
+  if (ongData?.id) {
+    const { error: managerError } = await supabase
+      .from('agent_ong_managers')
+      .insert({
+        agent_account_id: userId,
+        ong_id: ongData.id,
+        role: 'Propriétaire',
+      })
+
+    if (managerError) {
+      console.warn('⚠️ [maybeCreateAgentOng] Erreur agent_ong_managers:', managerError.message)
+    }
+  }
+}
+
 export const useAuthService = () => {
   const supabase = useSupabase()
 
@@ -114,6 +162,11 @@ export const useAuthService = () => {
         return { user: null, error: 'Erreur lors de la création du compte' }
       }
 
+      // Supabase retourne identities: [] quand l'e-mail est déjà enregistré
+      if (authData.user.identities?.length === 0) {
+        return { user: null, error: 'Cet email est déjà utilisé. Connectez-vous ou réinitialisez votre mot de passe.' }
+      }
+
       console.log('✅ Utilisateur créé dans auth.users:', authData.user.id)
 
       // Attendre que le trigger s'exécute (si configuré)
@@ -128,6 +181,7 @@ export const useAuthService = () => {
 
       if (accountData) {
         console.log('✅ Account créé par le trigger:', accountData)
+        await maybeCreateAgentOng(supabase, authData.user.id, signUpData)
         return {
           user: mapSupabaseToUser(accountData),
           error: null,
@@ -188,6 +242,7 @@ export const useAuthService = () => {
       }
 
       console.log('✅ Account créé manuellement:', insertedAccount)
+      await maybeCreateAgentOng(supabase, authData.user.id, signUpData)
 
       return {
         user: mapSupabaseToUser(insertedAccount),
@@ -238,42 +293,96 @@ export const useAuthService = () => {
         .from('accounts')
         .select('*')
         .eq('id', authData.user.id)
-        .single()
+        .maybeSingle()
 
-      if (accountError || !accountData) {
+      if (accountError) {
         console.error('❌ Erreur récupération account:', accountError)
-        
-        // Le compte auth existe mais pas le profil - créer un profil basique
-        const { error: insertError } = await supabase
-          .from('accounts')
-          .insert({
-            id: authData.user.id,
-            email: authData.user.email!,
-            account_type: 'user_partner',
-            verified: authData.user.email_confirmed_at !== null,
-            created_at: authData.user.created_at,
-            updated_at: new Date().toISOString()
-          })
+        return { user: null, error: 'Erreur lors de la récupération du profil' }
+      }
 
-        if (insertError) {
-          return { user: null, error: 'Erreur de synchronisation du profil' }
+      if (accountData) {
+        console.log('✅ Account récupéré:', accountData)
+
+        // Corriger le account_type si les métadonnées indiquent un type différent
+        const metaType = authData.user.user_metadata?.account_type
+        if (metaType && metaType !== accountData.account_type) {
+          console.warn(`⚠️ account_type incorrect (${accountData.account_type} → ${metaType}), correction...`)
+          await supabase
+            .from('accounts')
+            .update({ account_type: metaType, updated_at: new Date().toISOString() })
+            .eq('id', authData.user.id)
+          accountData.account_type = metaType
         }
 
-        // Récupérer le profil créé
-        const { data: newAccount } = await supabase
+        return { user: mapSupabaseToUser(accountData), error: null }
+      }
+
+      // Compte non trouvé — créer depuis les métadonnées auth
+      console.warn('⚠️ Account introuvable, création depuis les métadonnées...')
+      const meta = authData.user.user_metadata || {}
+
+      const { error: insertError } = await supabase
+        .from('accounts')
+        .insert({
+          id: authData.user.id,
+          email: authData.user.email!,
+          account_type: meta.account_type || 'user_partner',
+          first_name: meta.first_name || null,
+          last_name: meta.last_name || null,
+          company_name: meta.company_name || null,
+          bio: meta.bio || null,
+          location: meta.location || null,
+          website: meta.website || null,
+          verified: authData.user.email_confirmed_at !== null,
+          created_at: authData.user.created_at,
+          updated_at: new Date().toISOString()
+        })
+
+      if (insertError) {
+        console.error('❌ Erreur création account:', insertError)
+        // Peut-être créé entre-temps (race condition) — tenter une relecture
+        const { data: retryAccount } = await supabase
           .from('accounts')
           .select('*')
           .eq('id', authData.user.id)
-          .single()
+          .maybeSingle()
 
-        if (newAccount) {
-          return { user: mapSupabaseToUser(newAccount), error: null }
+        if (retryAccount) {
+          return { user: mapSupabaseToUser(retryAccount), error: null }
         }
+
+        // Fallback ultime : construire l'utilisateur depuis les métadonnées auth
+        const fallbackUser: User = {
+          id: authData.user.id,
+          email: authData.user.email!,
+          accountType: (meta.account_type as 'user_partner' | 'user_agent') || 'user_partner',
+          firstName: meta.first_name || null,
+          lastName: meta.last_name || null,
+          fullName: [meta.first_name, meta.last_name].filter(Boolean).join(' ') || authData.user.email!.split('@')[0],
+          companyName: meta.company_name || null,
+          bio: meta.bio || null,
+          location: meta.location || null,
+          website: meta.website || null,
+          verified: authData.user.email_confirmed_at !== null,
+          createdAt: authData.user.created_at,
+          updatedAt: new Date().toISOString()
+        }
+        console.log('⚠️ Retour user depuis métadonnées auth:', fallbackUser.email)
+        return { user: fallbackUser, error: null }
       }
 
-      console.log('✅ Account récupéré:', accountData)
+      // Récupérer le profil fraîchement créé
+      const { data: newAccount } = await supabase
+        .from('accounts')
+        .select('*')
+        .eq('id', authData.user.id)
+        .maybeSingle()
 
-      return { user: mapSupabaseToUser(accountData), error: null }
+      if (newAccount) {
+        return { user: mapSupabaseToUser(newAccount), error: null }
+      }
+
+      return { user: null, error: 'Erreur de synchronisation du profil' }
     } catch (err: any) {
       console.error('❌ Erreur signIn:', err)
       return { user: null, error: err.message || 'Erreur de connexion' }
@@ -283,29 +392,82 @@ export const useAuthService = () => {
   /**
    * Déconnexion
    */
-  const signOut = async (): Promise<{ error: string | null }> => {
+  const signOut = async (global = false): Promise<{ error: string | null }> => {
     if (!supabase) {
       return { error: null }
     }
 
     try {
-      const { error } = await supabase.auth.signOut()
-      
-      // Nettoyer le localStorage
+      const { error } = await supabase.auth.signOut(
+        global ? { scope: 'global' } : undefined
+      )
+
       if (typeof window !== 'undefined') {
         localStorage.removeItem('auth-token')
         localStorage.removeItem('refresh-token')
         localStorage.removeItem('login')
         localStorage.removeItem('user')
         sessionStorage.clear()
+        // Supprimer la session Supabase interne (clé auto-générée)
+        const supabaseSessionKey = 'sb-cdbpsbwhklvkjpaeavnk-auth-token'
+        localStorage.removeItem(supabaseSessionKey)
+        document.cookie = `${supabaseSessionKey}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
       }
 
       if (error) {
-        console.error('❌ Erreur déconnexion:', error)
         return { error: error.message }
       }
 
-      console.log('✅ Déconnexion réussie')
+      return { error: null }
+    } catch (err: any) {
+      return { error: err.message }
+    }
+  }
+
+  /**
+   * Mettre à jour l'email (envoie confirmation à la nouvelle adresse)
+   */
+  const updateEmail = async (newEmail: string): Promise<{ error: string | null }> => {
+    if (!supabase) return { error: 'Service non disponible' }
+
+    try {
+      const { error } = await supabase.auth.updateUser(
+        { email: newEmail },
+        { emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined }
+      )
+      if (error) return { error: getReadableError(error.message) }
+      return { error: null }
+    } catch (err: any) {
+      return { error: err.message }
+    }
+  }
+
+  /**
+   * Changer le mot de passe après vérification de l'ancien
+   */
+  const verifyAndUpdatePassword = async (
+    currentEmail: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<{ error: string | null }> => {
+    if (!supabase) return { error: 'Service non disponible' }
+
+    if (newPassword.length < 8) {
+      return { error: 'Le nouveau mot de passe doit contenir au moins 8 caractères' }
+    }
+
+    try {
+      // Vérifier l'ancien mot de passe via re-authentification
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: currentEmail,
+        password: currentPassword,
+      })
+      if (signInError) return { error: 'Mot de passe actuel incorrect' }
+
+      // Mettre à jour avec le nouveau
+      const { error } = await supabase.auth.updateUser({ password: newPassword })
+      if (error) return { error: getReadableError(error.message) }
+
       return { error: null }
     } catch (err: any) {
       return { error: err.message }
@@ -331,10 +493,21 @@ export const useAuthService = () => {
         .from('accounts')
         .select('*')
         .eq('id', authUser.id)
-        .single()
+        .maybeSingle()
 
       if (accountError || !accountData) {
         return null
+      }
+
+      // Corriger le account_type si les métadonnées indiquent un type différent
+      const metaType = authUser.user_metadata?.account_type
+      if (metaType && metaType !== accountData.account_type) {
+        console.warn(`⚠️ [getCurrentUser] account_type incorrect (${accountData.account_type} → ${metaType}), correction...`)
+        await supabase
+          .from('accounts')
+          .update({ account_type: metaType, updated_at: new Date().toISOString() })
+          .eq('id', authUser.id)
+        accountData.account_type = metaType
       }
 
       return mapSupabaseToUser(accountData)
@@ -370,6 +543,31 @@ export const useAuthService = () => {
   }
 
   /**
+   * Mettre à jour le mot de passe (appelé depuis la page reset-password)
+   */
+  const updatePassword = async (newPassword: string): Promise<{ error: string | null }> => {
+    if (!supabase) {
+      return { error: 'Service non disponible' }
+    }
+
+    try {
+      if (newPassword.length < 8) {
+        return { error: 'Le mot de passe doit contenir au moins 8 caractères' }
+      }
+
+      const { error } = await supabase.auth.updateUser({ password: newPassword })
+
+      if (error) {
+        return { error: getReadableError(error.message) }
+      }
+
+      return { error: null }
+    } catch (err: any) {
+      return { error: err.message }
+    }
+  }
+
+  /**
    * Vérifier si l'utilisateur est connecté
    */
   const isAuthenticated = async (): Promise<boolean> => {
@@ -389,6 +587,9 @@ export const useAuthService = () => {
     signOut,
     getCurrentUser,
     resetPassword,
+    updatePassword,
+    updateEmail,
+    verifyAndUpdatePassword,
     isAuthenticated
   }
 }

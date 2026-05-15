@@ -5,12 +5,20 @@ export default defineNuxtConfig({
   
   nitro: {
     preset: 'netlify',
+    // Stripe doit rester externe au bundle Nitro pour conserver sa chaîne prototype (StripeError extends Error)
+    externals: {
+      external: ['stripe'],
+    },
   },
   
   runtimeConfig: {
+    supabaseServiceRoleKey: '', // NUXT_SUPABASE_SERVICE_ROLE_KEY
+    stripeSecretKey: '',        // NUXT_STRIPE_SECRET_KEY
+    stripeWebhookSecret: '',    // NUXT_STRIPE_WEBHOOK_SECRET
     public: {
       supabaseUrl: '',
-      supabaseKey: '',
+      supabaseAnonKey: '',
+      appUrl: '',               // NUXT_PUBLIC_APP_URL (ex: https://paika.mg)
     }
   },
   

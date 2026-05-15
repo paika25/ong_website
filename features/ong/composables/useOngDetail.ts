@@ -5,9 +5,10 @@ import { getOngDocuments } from '../services'
 export function useOngDetail(ong: () => ONG) {
   // État
   const activeTab = ref(0)
-  const selectedAmount = ref<number | 'custom'>(20)
-  const customAmount = ref<number | null>(null)
   const documents = ref<OngDocument[]>([])
+  const showDonationModal = ref(false)
+  const showVolunteerModal = ref(false)
+  const shareCopied = ref(false)
 
   // Charger les documents
   const loadDocuments = async () => {
@@ -16,13 +17,21 @@ export function useOngDetail(ong: () => ONG) {
 
   onMounted(loadDocuments)
 
-  // Onglets dynamiques
+  // Onglets dynamiques — filtrés selon sectionVisibility
   const tabs = computed(() => {
     const o = ong()
-    const baseTabs = [
-      { label: 'À propos', key: 'about' },
-      { label: 'Projets', key: 'projects' }
-    ]
+    const vis = o.sectionVisibility
+
+    const baseTabs: Array<{ label: string; key: string }> = []
+
+    // À propos = identite + mission
+    if (!vis || vis.identite !== false || vis.mission !== false) {
+      baseTabs.push({ label: 'À propos', key: 'about' })
+    }
+
+    if (!vis || vis.projets !== false) {
+      baseTabs.push({ label: 'Projets', key: 'projects' })
+    }
 
     if (o.financials) {
       baseTabs.push({ label: 'Finances', key: 'financials' })
@@ -30,17 +39,13 @@ export function useOngDetail(ong: () => ONG) {
     if (o.impact) {
       baseTabs.push({ label: 'Impact', key: 'impact' })
     }
-    if (o.donationOpportunities && o.donationOpportunities.length > 0) {
-      baseTabs.push({ label: 'Dons', key: 'donation' })
-    }
+    baseTabs.push({ label: 'Dons', key: 'donation' })
     if (o.legal || o.monitoring) {
       baseTabs.push({ label: 'Administratif', key: 'transparency' })
     }
-    if (documents.value.length > 0) {
+    if (documents.value.length > 0 && (!vis || vis.documents !== false)) {
       baseTabs.push({ label: 'Documents', key: 'documents' })
     }
-
-    baseTabs.push({ label: 'Bénévoles', key: 'volunteers' })
 
     return baseTabs
   })
@@ -143,35 +148,32 @@ export function useOngDetail(ong: () => ONG) {
   // ── Actions ──
 
   const handleJoin = () => {
-    console.log('Rejoindre ONG:', ong().name)
-    // TODO: Implémenter la logique d'adhésion
+    showVolunteerModal.value = true
   }
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const o = ong()
     if (navigator.share) {
-      navigator.share({
-        title: o.name,
-        text: o.description,
-        url: window.location.href
-      })
+      await navigator.share({ title: o.name, text: o.description, url: window.location.href })
     } else {
-      navigator.clipboard.writeText(window.location.href)
+      await navigator.clipboard.writeText(window.location.href)
+      shareCopied.value = true
+      setTimeout(() => { shareCopied.value = false }, 2000)
     }
   }
 
-  const handleDonate = (opportunity: any) => {
-    console.log('Faire un don pour:', opportunity.type, ong().name)
-    // TODO: Rediriger vers la page de don
+  const handleDonate = (_opportunity?: any) => {
+    showDonationModal.value = true
   }
 
   return {
     // État
     activeTab,
-    selectedAmount,
-    customAmount,
     documents,
     tabs,
+    showDonationModal,
+    showVolunteerModal,
+    shareCopied,
     // Labels
     getStatusLabel,
     getCategoryLabel,
@@ -190,6 +192,6 @@ export function useOngDetail(ong: () => ONG) {
     // Actions
     handleJoin,
     handleShare,
-    handleDonate
+    handleDonate,
   }
 }

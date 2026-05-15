@@ -5,7 +5,13 @@ inputDocuments:
   - '_bmad-output/planning-artifacts/architecture.md'
   - '_bmad-output/planning-artifacts/ux-design-specification.md'
   - '_bmad-output/project-context.md'
+lastAudit: '2026-05-09'
 ---
+
+> **Audit d'implémentation — 2026-05-09**
+> Légende des statuts : ✅ Terminé · 🔄 En cours · ⬜ Non démarré
+>
+> **Résumé :** Epic 1 🔄 (2 stories ✅, 4 🔄, 5 ⬜) · Epic 2 🔄 (5 🔄, 1 ⬜) · Epics 3, 4, 5 ⬜ · Epic 6 🔄 (2 🔄, 2 ⬜) · Epic 7 ⬜
 
 # Paika ONG Platform - Epic Breakdown
 
@@ -260,7 +266,7 @@ Les bailleurs financent directement les ONGs via Vanilla Pay avec preuve d'immua
 
 ## Epic 1 : Fondation & Authentification
 
-### Story 1.1 — Migration vers Architecture Feature-Based & Gardes Techniques
+### Story 1.1 — Migration vers Architecture Feature-Based & Gardes Techniques 🔄
 
 En tant que développeur,
 je veux migrer la base brownfield vers `~/features/[feature]/` avec les gardes ESLint et TypeScript strict,
@@ -276,9 +282,11 @@ afin que toutes les features suivantes puissent être développées avec des fro
 **And** les imports croisés entre features sont interdits sauf via `~/types/` ou `~/lib/`
 **And** `bun run dev` démarre sans erreur et tous les tests existants passent
 
+> **Avancement :** `features/auth/`, `features/ong/`, `features/user/` existent avec structure composants/composables/services/types. Les pages brownfield (`pages/auth/`, `pages/ongs/`) coexistent encore avec les features. **Reste à faire :** règle ESLint `no-restricted-imports` sur `@supabase/supabase-js`, `tsconfig.strict.json` pour features/payments+audit-trail+score, migration complète des pages brownfield sous les features.
+
 ---
 
-### Story 1.2 — Migrations Supabase : Tables de Fondation & Triggers Immuabilité
+### Story 1.2 — Migrations Supabase : Tables de Fondation & Triggers Immuabilité ⬜
 
 En tant que système,
 je veux que les tables de fondation, triggers d'immuabilité et politiques RLS soient appliqués dès le départ,
@@ -297,9 +305,11 @@ afin que la conformité FATF et l'isolation multi-tenant soient garanties avant 
 **And** un index PostgreSQL sur `ong_id` existe sur `financial_transactions`, `ong_profiles`, `score_history`
 **And** les vues matérialisées pour le calcul du Score existent
 
+> **Avancement :** Aucune migration Supabase trouvée dans le repo (pas de dossier `supabase/migrations/`). Entièrement à faire.
+
 ---
 
-### Story 1.3 — Validation RLS Multi-tenant par Tests E2E
+### Story 1.3 — Validation RLS Multi-tenant par Tests E2E ⬜
 
 En tant que développeur,
 je veux que l'isolation RLS soit validée par des tests automatisés avec de vrais utilisateurs staging,
@@ -315,9 +325,11 @@ afin qu'aucune fuite de données entre tenants ne puisse passer en production.
 **And** `back_office` peut lire toutes les rows de toutes les tables protégées
 **And** la suite complète est verte avant la clôture de l'Epic 1
 
+> **Avancement :** Aucun fichier `tests/e2e/rls-matrix.spec.ts`. Entièrement à faire (dépend de Story 1.2).
+
 ---
 
-### Story 1.4 — Custom JWT Claims & Middleware de Rôles Nuxt
+### Story 1.4 — Custom JWT Claims & Middleware de Rôles Nuxt 🔄
 
 En tant que système,
 je veux que le rôle utilisateur soit encodé dans le JWT via `app_metadata` et vérifié côté serveur,
@@ -333,9 +345,11 @@ afin que les pages protégées soient inaccessibles sans le bon rôle, en SSR co
 **And** les routes `/dashboard/agent/*` sont inaccessibles pour `user_partner` ou non-authentifié — retour 401 en SSR
 **And** les routes `/back-office/*` sont inaccessibles pour tout rôle autre que `back_office`
 
+> **Avancement :** Middleware `auth.client.ts`, `agent-only.client.ts`, `partner-only.client.ts`, `guest.client.ts` opérationnels (client-side). Le rôle est lu depuis la table `accounts` (champ `account_type`). **Reste à faire :** trigger Postgres `set_user_role_claim` → `app_metadata.role` dans le JWT, version SSR des middleware (`.ts` sans `.client`), protection `/back-office/*` pour rôle `back_office`.
+
 ---
 
-### Story 1.5 — Contrats de Services Partagés (Stubs Typés Frozen)
+### Story 1.5 — Contrats de Services Partagés (Stubs Typés Frozen) ⬜
 
 En tant que développeur,
 je veux que tous les services partagés exposent leurs interfaces publiques dès Epic 1,
@@ -354,9 +368,11 @@ afin que les epics suivants puissent être développés sans conflit de merge su
 **And** `types/schemas/payment.schema.ts`, `ong.schema.ts`, `score.schema.ts` existent avec les types Zod de base
 **And** `server/api/webhooks/vanilla-pay.post.ts` existe avec un router d'événements dispatching vers handlers stubs (`subscription.payment`, `donation.payment`) — chaque handler retourne `{ received: true }`
 
+> **Avancement :** Aucun `server/services/`, `server/utils/errors.ts`, `types/pagination.ts`, `types/schemas/`, ni `server/api/webhooks/`. Entièrement à faire.
+
 ---
 
-### Story 1.6 — Spike Vanilla Pay : Validation de l'Intégration Sandbox
+### Story 1.6 — Spike Vanilla Pay : Validation de l'Intégration Sandbox ⬜
 
 En tant que développeur,
 je veux valider que l'API Vanilla Pay sandbox reçoit et répond correctement à nos webhooks de test,
@@ -371,9 +387,11 @@ afin de connaître le risque d'intégration avant de construire la logique méti
 **And** le feature flag `NUXT_PUBLIC_FEATURE_PAYMENTS=false` désactive le endpoint sans redéploiement
 **And** le résultat du spike est documenté dans `docs/spikes/vanilla-pay-sandbox.md` : latences, format JSON reçu, gestion d'erreurs observée
 
+> **Avancement :** Aucun fichier lié. Dépend de Story 1.5 (webhook skeleton). Entièrement à faire.
+
 ---
 
-### Story 1.7 — Inscription Utilisateur (FR1)
+### Story 1.7 — Inscription Utilisateur (FR1) ✅
 
 En tant que visiteur,
 je veux créer un compte avec le rôle `user_agent` ou `user_partner`,
@@ -390,9 +408,11 @@ afin d'accéder aux fonctionnalités de la plateforme adaptées à mon profil.
 **And** la validation est `on-blur` par champ — `on-submit` révèle tous les champs invalides restants (UX-DR22)
 **And** le label est toujours visible, le message d'erreur remplace le helper text (UX-DR22)
 
+> **Avancement :** `features/auth/services/authService.ts` → `signUp()` complet. Page `pages/auth/SignUp.vue` opérationnelle. Email, mot de passe ≥ 8 car., choix rôle (user_agent/user_partner), email de confirmation Supabase, redirection post-login. **Considéré terminé** (pas de user enumeration sur email existant : ✅, validation on-blur : partiellement via `useAuthValidation`).
+
 ---
 
-### Story 1.8 — Authentification Email/Mot de Passe (FR2)
+### Story 1.8 — Authentification Email/Mot de Passe (FR2) ✅
 
 En tant qu'utilisateur inscrit,
 je veux me connecter avec mon email et mon mot de passe,
@@ -408,9 +428,11 @@ afin d'accéder à mon tableau de bord.
 **And** aucune clé API ni secret n'est exposé dans le bundle client (NFR13)
 **And** le skip link `#main-content` est présent et fonctionnel sur la page de login (UX-DR12)
 
+> **Avancement :** `signIn()` complet avec Supabase Auth, session JWT, redirect `?redirect=`, option rememberMe localStorage. Page `pages/auth/Login.vue` opérationnelle. Rate-limiting géré nativement par Supabase (5 tentatives). **Considéré terminé.**
+
 ---
 
-### Story 1.9 — Réinitialisation de Mot de Passe (FR3)
+### Story 1.9 — Réinitialisation de Mot de Passe (FR3) 🔄
 
 En tant qu'utilisateur ayant perdu son mot de passe,
 je veux recevoir un lien de réinitialisation par email,
@@ -426,9 +448,11 @@ afin de récupérer l'accès à mon compte sans contacter le support.
 **And** après réinitialisation réussie, toutes les sessions actives sont révoquées
 **And** un lien expiré ou déjà utilisé affiche un message d'erreur explicite avec option de renvoyer un nouveau lien
 
+> **Avancement :** `authService.resetPassword()` implémenté (Supabase `resetPasswordForEmail`, redirectTo `/auth/reset-password`). **Reste à faire :** créer les pages `/auth/forgot` (formulaire email) et `/auth/reset-password` (formulaire nouveau mot de passe + confirmation).
+
 ---
 
-### Story 1.10 — Gestion du Profil Compte & Déconnexion Globale (FR4, FR5)
+### Story 1.10 — Gestion du Profil Compte & Déconnexion Globale (FR4, FR5) 🔄
 
 En tant qu'utilisateur authentifié,
 je veux mettre à jour mes identifiants et pouvoir me déconnecter de toutes mes sessions,
@@ -444,9 +468,11 @@ afin de contrôler la sécurité de mon compte.
 **And** après déconnexion globale, toute session active est redirigée vers `/login`
 **And** les erreurs (email déjà utilisé, mauvais mot de passe actuel) affichent des messages explicites (NFR27)
 
+> **Avancement :** `features/user/components/ProfilEditForm.client.vue` + `updateUserData()` dans le store. `signOut()` implémenté mais sans `scope: 'global'`. **Reste à faire :** `signOut({ scope: 'global' })`, confirmation email pour changement d'adresse, vérification de l'ancien mot de passe avant modification, page `/account/settings` dédiée.
+
 ---
 
-### Story 1.11 — Observabilité, Monitoring & Feature Flags
+### Story 1.11 — Observabilité, Monitoring & Feature Flags ⬜
 
 En tant que développeur et opérateur,
 je veux que les erreurs soient capturées automatiquement et que les features puissent être activées sans redéploiement,
@@ -460,11 +486,13 @@ afin de monitorer la production et de déployer progressivement.
 **And** les feature flags `NUXT_PUBLIC_FEATURE_PAYMENTS`, `NUXT_PUBLIC_FEATURE_SCORE`, `NUXT_PUBLIC_FEATURE_PDF` désactivent les sections correspondantes si `false`, lus via `useRuntimeConfig()`
 **And** l'absence de `SENTRY_DSN` en développement local ne fait pas crasher l'application
 
+> **Avancement :** Aucune config Sentry, aucun feature flag `NUXT_PUBLIC_FEATURE_*`. Entièrement à faire.
+
 ---
 
 ## Epic 2 : Profil ONG & Dossier de Candidature
 
-### Story 2.1 — Infrastructure Feature Ong-Profile & Composant DocumentUploadZone (UX-DR6)
+### Story 2.1 — Infrastructure Feature Ong-Profile & Composant DocumentUploadZone (UX-DR6) 🔄
 
 En tant que développeur,
 je veux initialiser la feature `~/features/ong-profile/` avec le composant `DocumentUploadZone`,
@@ -484,9 +512,11 @@ afin que les stories suivantes puissent implémenter les fonctionnalités métie
 **And** `server/services/pdf.service.ts` existe avec la fonction `generateDossierSummary(ongId: string): Promise<string>` — body `throw new ServiceError('NOT_IMPLEMENTED', 'pdf')` (stub, implémentation complète en Epic 6 Story 6.1)
 **And** `bun run dev` démarre sans erreur
 
+> **Avancement :** `features/ong/` existe avec `ong.documents.ts` (upload Supabase Storage, bucket `ong-documents`, validation type+taille, URL publique, table `ong_documents`). **Reste à faire :** renommer/créer `features/ong-profile/`, créer `DocumentUploadZone` conforme spec (5 états idle/dragging/uploading/success/error, ARIA, chunked upload > 1Mo), créer stub `pdf.service.ts`.
+
 ---
 
-### Story 2.2 — Composant StepperForm 5 Étapes Non-Linéaire (UX-DR3, FR6, FR12)
+### Story 2.2 — Composant StepperForm 5 Étapes Non-Linéaire (UX-DR3, FR6, FR12) ⬜
 
 En tant que développeur,
 je veux implémenter le composant `StepperForm` avec navigation non-linéaire et sauvegarde automatique,
@@ -505,9 +535,11 @@ afin que le formulaire multi-étapes soit utilisable comme fondation pour la cr�
 **And** une perte de connexion ne fait pas perdre les données saisies — persistance via `VueUse useStorage` (NFR19)
 **And** `useOnline()` détecte la reconnexion et déclenche une synchronisation automatique vers la base
 
+> **Avancement :** Aucun composant `StepperForm`. `OwnOngForm.vue` (1146 lignes) est un formulaire monopagé. Entièrement à faire (bloque Stories 2.3 et 2.4).
+
 ---
 
-### Story 2.3 — Création Profil ONG : Étapes Identité, Mission, Documents (FR6, FR7)
+### Story 2.3 — Création Profil ONG : Étapes Identité, Mission, Documents (FR6, FR7) 🔄
 
 En tant que `user_agent`,
 je veux remplir les 3 premières étapes de mon profil ONG (Identité, Mission, Documents),
@@ -526,9 +558,11 @@ afin de commencer à constituer mon dossier de candidature.
 **And** la validation de chaque champ est `on-blur`, `on-submit` révèle tous les champs invalides (UX-DR22)
 **And** un skeleton loader s'affiche pendant le chargement du formulaire (UX-DR15)
 
+> **Avancement :** `OwnOngForm.vue` couvre les champs identité (nom, forme juridique, date, récépissé, adresse), mission (secteurs multiselect, zones), et upload documents via `ong.documents.ts`. **Reste à faire :** intégration dans `StepperForm`, score sidebar en footer, skeleton loaders, mise à jour Score après chaque upload.
+
 ---
 
-### Story 2.4 — Création Profil ONG : Étapes Projets & Contacts + Reprise Formulaire (FR6, FR12)
+### Story 2.4 — Création Profil ONG : Étapes Projets & Contacts + Reprise Formulaire (FR6, FR12) 🔄
 
 En tant que `user_agent`,
 je veux remplir les étapes Projets et Contacts, et pouvoir reprendre le formulaire plus tard depuis l'étape interrompue,
@@ -545,9 +579,11 @@ afin de compléter mon dossier à mon rythme sans perdre mon travail.
 **And** le CTA "Soumettre mon dossier" reste désactivé tant que le Score ONG est < 40 ou que les documents obligatoires sont manquants (UX-DR17)
 **And** un `empty state` s'affiche dans la section Projets si aucun projet n'a été ajouté (UX-DR16)
 
+> **Avancement :** `OwnOngForm.vue` couvre les champs projets (titre, description, budget, zones, statut) et contacts (responsable légal, site web). **Reste à faire :** reprise depuis étape interrompue (`?step=<id>` + restauration depuis base), empty state Projets, CTA soumission conditionnel (Score ≥ 40 + docs obligatoires présents).
+
 ---
 
-### Story 2.5 — Modification Profil ONG & Configuration Visibilité Publique (FR8, FR9)
+### Story 2.5 — Modification Profil ONG & Configuration Visibilité Publique (FR8, FR9) 🔄
 
 En tant que `user_agent`,
 je veux modifier mon profil ONG à tout moment et choisir les informations visibles publiquement,
@@ -564,9 +600,11 @@ afin de maintenir mes données à jour et contrôler ma présentation aux baille
 **And** la modification d'une information déclenche un recalcul du Score de Transparence (FR21)
 **And** un `UToast` de confirmation succès s'auto-dismiss après 4s en bas-droite (UX-DR13)
 
+> **Avancement :** `pages/ongs/[id]/edit.vue` + `updateOng()` dans `ong.mutations.ts` opérationnels. **Reste à faire :** page `/dashboard/agent/ong/visibility` avec toggles visibilité par section, RLS enforcement des sections masquées, UToast confirmation, déclenchement recalcul Score.
+
 ---
 
-### Story 2.6 — Soumission Dossier, Suivi Statut & Téléchargement Récapitulatif (FR10, FR11)
+### Story 2.6 — Soumission Dossier, Suivi Statut & Téléchargement Récapitulatif (FR10, FR11) 🔄
 
 En tant que `user_agent`,
 je veux soumettre mon dossier et suivre son état de vérification en temps réel,
@@ -584,11 +622,13 @@ afin d'être informé de l'avancement sans avoir à contacter le back-office.
 **And** le header contextuel Agent affiche le % de complétude et le score actuel (UX-DR11)
 **And** un skeleton loader remplace le statut pendant le chargement (UX-DR15)
 
+> **Avancement :** Statut ONG (active/pending) affiché dans `DashboardAgentOng.vue`. **Reste à faire :** workflow soumission formel avec gate Score ≥ 40, modal confirmation récapitulatif, email confirmation via `email.service.ts`, page suivi statut temps réel (subscriptions Supabase Realtime), page téléchargement récapitulatif HTML (SSR).
+
 ---
 
 ## Epic 3 : Vérification Back-office & Badge
 
-### Story 3.1 — Infrastructure Feature Verification & Composants PipelineKanban / BadgeVerifie
+### Story 3.1 — Infrastructure Feature Verification & Composants PipelineKanban / BadgeVerifie ⬜
 
 En tant que développeur,
 je veux initialiser la feature `~/features/verification/` avec les composants `PipelineKanban` et `BadgeVerifie`,
@@ -607,9 +647,11 @@ afin que les stories back-office puissent être construites sur des composants s
 **And** `role="status"` et `aria-label` contextuel sont présents sur `BadgeVerifie` (UX-DR2)
 **And** `prefers-reduced-motion` désactive les animations de transition d'état du badge (UX-DR14)
 
+> **Avancement :** Aucun code lié. Entièrement à faire.
+
 ---
 
-### Story 3.2 — Pipeline Kanban : Liste et Détail des Dossiers (FR13, FR14)
+### Story 3.2 — Pipeline Kanban : Liste et Détail des Dossiers (FR13, FR14) ⬜
 
 En tant que `back_office`,
 je veux consulter tous les dossiers ONG en attente dans un pipeline kanban et accéder au détail de chacun,
@@ -628,9 +670,11 @@ afin d'instruire les dossiers efficacement.
 **And** un skeleton 3 colonnes s'affiche pendant le chargement (UX-DR15)
 **And** un `empty state` s'affiche si le kanban est vide (UX-DR16)
 
+> **Avancement :** Aucun code lié. Dépend de Story 3.1.
+
 ---
 
-### Story 3.3 — Actions de Vérification : Valider, Rejeter, Demander Complément (FR15, FR16, FR17, FR18)
+### Story 3.3 — Actions de Vérification : Valider, Rejeter, Demander Complément (FR15, FR16, FR17, FR18) ⬜
 
 En tant que `back_office`,
 je veux valider, rejeter ou demander des compléments sur un dossier ONG directement depuis le kanban,
@@ -654,9 +698,11 @@ afin de traiter les dossiers sans friction inutile.
 **And** chaque action est journalisée via `audit.service.ts` avec horodatage ISO 8601 et identifiant `back_office` (FR39)
 **And** l'accusé de réception de chaque action est retourné en < 500ms (NFR2)
 
+> **Avancement :** Aucun code lié.
+
 ---
 
-### Story 3.4 — Historique et Traçabilité des Actions Back-office (FR19, FR39)
+### Story 3.4 — Historique et Traçabilité des Actions Back-office (FR19, FR39) ⬜
 
 En tant que `back_office`,
 je veux consulter l'historique complet des actions sur chaque dossier ONG,
@@ -673,9 +719,11 @@ afin de comprendre les décisions passées et garantir la traçabilité.
 **And** l'historique est accessible uniquement aux `back_office` — RLS bloque les `user_agent` sur cette vue (NFR8)
 **And** un `empty state` s'affiche si aucune action n'a encore été effectuée (UX-DR16)
 
+> **Avancement :** Aucun code lié. Dépend de Story 1.5 (audit.service.ts stub) et 3.1.
+
 ---
 
-### Story 3.5 — Messagerie Intégrée Back-office ↔ ONG (FR44, FR45)
+### Story 3.5 — Messagerie Intégrée Back-office ↔ ONG (FR44, FR45) ⬜
 
 En tant que `back_office` et `user_agent`,
 je veux échanger des messages dans le cadre du processus de vérification,
@@ -693,11 +741,13 @@ afin de traiter les demandes de complément sans recourir à un canal externe.
 **And** un `empty state` s'affiche si aucun message n'a encore été échangé (UX-DR16)
 **And** les messages sont chiffrés en transit (TLS 1.2+) et au repos (AES-256) (NFR6, NFR7)
 
+> **Avancement :** Aucun code lié.
+
 ---
 
 ## Epic 4 : Score de Transparence
 
-### Story 4.1 — Implémentation score.service.ts & Moteur de Calcul (FR20, FR21)
+### Story 4.1 — Implémentation score.service.ts & Moteur de Calcul (FR20, FR21) ⬜
 
 En tant que système,
 je veux que le Score de Transparence soit calculé automatiquement et recalculé sur événements déclencheurs,
@@ -715,9 +765,11 @@ afin que chaque ONG dispose d'un score précis et à jour selon des critères pu
 **And** un accusé de réception est retourné en < 500ms — le calcul effectif peut continuer en arrière-plan (NFR2)
 **And** les critères et pondérations de la version active sont exposés publiquement via `GET /api/score/criteria`
 
+> **Avancement :** Aucun `score.service.ts`. Dépend de Stories 1.2 (tables), 1.5 (stub). Entièrement à faire.
+
 ---
 
-### Story 4.2 — Composant ScoreTransparenceWidget & Parcours Agent (UX-DR1, FR22, FR23)
+### Story 4.2 — Composant ScoreTransparenceWidget & Parcours Agent (UX-DR1, FR22, FR23) ⬜
 
 En tant que `user_agent`, `user_partner` et visiteur,
 je veux consulter le Score de Transparence d'une ONG avec le détail des critères atteints et manquants,
@@ -736,9 +788,11 @@ afin de comprendre la fiabilité de l'organisation et les actions pour l'amélio
 **And** les hints proactifs "+X pts" sont affichés en sidebar du StepperForm pour chaque critère non atteint (UX-DR11)
 **And** le `user_agent` consulte son score sur `/dashboard/agent/score` — les `user_partner` et visiteurs voient le score sur le profil public d'une ONG certifiée (FR23)
 
+> **Avancement :** `OngDetailTabTransparency.vue` (86 lignes) affiche un onglet transparence basique. **Aucun** `ScoreTransparenceWidget` conforme spec (ARIA role="meter", barres colorées par palier, critères). Entièrement à faire.
+
 ---
 
-### Story 4.3 — Gouvernance Algorithme : Versions & Disputes (FR24)
+### Story 4.3 — Gouvernance Algorithme : Versions & Disputes (FR24) ⬜
 
 En tant que `back_office`,
 je veux gérer les versions de l'algorithme de calcul du Score et traiter les contestations des ONGs,
@@ -757,11 +811,13 @@ afin de maintenir la gouvernance avec traçabilité complète.
 **And** l'avancement du recalcul de masse est visible dans le dashboard back-office (nb ONGs recalculées / total)
 **And** le tableau liste toutes les versions avec : statut, date d'activation, créateur, nb ONGs scorées avec cette version
 
+> **Avancement :** Aucun code lié. Dépend de Story 4.1.
+
 ---
 
 ## Epic 5 : Abonnement Vanilla Pay & Audit Trail Financier
 
-### Story 5.1 — Implémentation payment.service.ts & Merkle Chain SHA-256 (FR32, FR38)
+### Story 5.1 — Implémentation payment.service.ts & Merkle Chain SHA-256 (FR32, FR38) ⬜
 
 En tant que système,
 je veux que toute transaction financière suive la séquence canonique et soit chaînée via Merkle SHA-256,
@@ -780,9 +836,11 @@ afin que l'immuabilité et la traçabilité cryptographique soient garanties dè
 **And** aucune clé API Vanilla Pay n'est exposée côté client (NFR13)
 **And** les fonctionnalités d'Epic 3 (journalisation via `insertAuditEntry()`, historique dossier, messagerie BO↔ONG) passent leurs tests existants sans modification après déploiement de Story 5.1
 
+> **Avancement :** Aucun code lié. Dépend de Stories 1.5 (stubs), 1.6 (Spike Vanilla Pay), 3.x (audit.service.ts actif).
+
 ---
 
-### Story 5.2 — Parcours Abonnement Vanilla Pay Agent (FR32, FR33, FR34, FR35)
+### Story 5.2 — Parcours Abonnement Vanilla Pay Agent (FR32, FR33, FR34, FR35) ⬜
 
 En tant que `user_agent`,
 je veux souscrire à l'abonnement "Vérifié" et gérer son état depuis mon tableau de bord,
@@ -800,9 +858,11 @@ afin de maintenir mon badge actif en payant 20 000 Ar/mois via Vanilla Pay.
 **And** un email de notification est envoyé à chaque changement d'état (certification, suspension, réactivation) via `email.service.ts` (FR43)
 **And** en cas d'échec du webhook Vanilla Pay, 3 tentatives avec backoff exponentiel sont effectuées avant insertion d'une alerte dans `ops_alerts` (NFR20)
 
+> **Avancement :** Aucun code lié.
+
 ---
 
-### Story 5.3 — Composant TransactionStatusBadge, UX Paiement & Notifications Expiration (UX-DR7, FR43, FR46)
+### Story 5.3 — Composant TransactionStatusBadge, UX Paiement & Notifications Expiration (UX-DR7, FR43, FR46) ⬜
 
 En tant que `user_agent`,
 je veux voir l'état de mes transactions en temps réel et être notifié avant l'expiration de mon abonnement,
@@ -820,11 +880,13 @@ afin d'anticiper les actions nécessaires pour maintenir mon badge actif.
 **And** le parcours paiement est désactivé si `NUXT_PUBLIC_FEATURE_PAYMENTS=false` (feature flag)
 **And** un timeout de requête affiche un message d'erreur explicite avec option de réessai — jamais de page blanche (NFR27)
 
+> **Avancement :** Aucun code lié. Dépend de Story 5.2.
+
 ---
 
 ## Epic 6 : Marketplace Bailleur & Découverte
 
-### Story 6.1 — Infrastructure Feature Marketplace & pdf.service.ts
+### Story 6.1 — Infrastructure Feature Marketplace & pdf.service.ts ⬜
 
 En tant que développeur,
 je veux initialiser `~/features/marketplace/` et implémenter `pdf.service.ts` via Supabase Edge Functions,
@@ -842,9 +904,11 @@ afin que la marketplace et la génération de rapports PDF puissent être constr
 **And** les PDFs sont conformes au standard ISO 32000 et s'ouvrent sans plugin dans les navigateurs modernes (NFR23)
 **And** le pipeline CI/CD Supabase Functions est distinct du pipeline principal Netlify
 
+> **Avancement :** Aucun `features/marketplace/`, aucun `pdf.service.ts`. Entièrement à faire.
+
 ---
 
-### Story 6.2 — Liste Publique ONGs & Filtres URL-Persistent (FR25, FR28)
+### Story 6.2 — Liste Publique ONGs & Filtres URL-Persistent (FR25, FR28) 🔄
 
 En tant que `user_partner` et visiteur,
 je veux rechercher des ONGs certifiées avec des filtres combinés et naviguer dans les résultats,
@@ -863,9 +927,11 @@ afin de trouver rapidement les partenaires pertinents pour mes objectifs.
 **And** un `empty state` s'affiche si aucun résultat ne correspond aux filtres (UX-DR16)
 **And** les images et logos sont chargés en lazy loading (NFR26)
 
+> **Avancement :** `OngList.client.vue` + `OngListFilter.vue` avec filtres recherche texte, catégorie, statut, localisation. Données depuis Supabase ou mock. **Reste à faire :** persistence URL (`?q=&secteur=&region=&score_min=&badge=`), debounce 300ms, filtre Score minimum, filtre badge "✓ Vérifié", badge "N filtres actifs + [× Tout effacer]", lazy loading images, résultats < 2s pour 1000 ONGs.
+
 ---
 
-### Story 6.3 — Profil Public ONG & Téléchargement Rapport PDF (FR26, FR27)
+### Story 6.3 — Profil Public ONG & Téléchargement Rapport PDF (FR26, FR27) 🔄
 
 En tant que `user_partner`,
 je veux consulter le profil complet d'une ONG certifiée et télécharger son rapport de vérification PDF,
@@ -883,9 +949,11 @@ afin d'évaluer l'ONG avant un engagement financier.
 **And** un skeleton loader s'affiche pendant le chargement du profil (UX-DR15)
 **And** les visiteurs non authentifiés peuvent accéder au profil public mais pas à l'historique des financements
 
+> **Avancement :** `pages/ongs/[id]/index.vue` + `OngDetail.client.vue` avec tabs About/Projects/Financials/Transparency/Documents/Donation. **Reste à faire :** hero section spec (BadgeVerifie + ScoreTransparenceWidget), skeleton loaders, log accès bailleur (FR50), bouton téléchargement PDF (pdf.service.ts), skeleton loaders.
+
 ---
 
-### Story 6.4 — Favoris, Notifications & Historique Financements (FR29, FR30, FR31)
+### Story 6.4 — Favoris, Notifications & Historique Financements (FR29, FR30, FR31) ⬜
 
 En tant que `user_partner`,
 je veux sauvegarder des ONGs favorites, être notifié de leur certification et consulter leur historique de financements,
@@ -902,11 +970,13 @@ afin de suivre les organisations qui m'intéressent et préparer mes décisions.
 **And** le `user_agent` peut consulter la vue d'intérêt depuis `/dashboard/agent/views` : liste de consultations avec identifiants bailleurs pseudonymisés (FR31)
 **And** l'accès favoris est protégé par authentification — redirection `/login?redirect=` pour les visiteurs non authentifiés
 
+> **Avancement :** Aucun code lié. Dépend de Story 5.x (Vanilla Pay) et 6.3.
+
 ---
 
 ## Epic 7 : Virements Bailleurs & Analytics Back-office
 
-### Story 7.1 — Handler Virements Vanilla Pay & Immuabilité (FR36, FR37, FR38)
+### Story 7.1 — Handler Virements Vanilla Pay & Immuabilité (FR36, FR37, FR38) ⬜
 
 En tant que `user_partner`,
 je veux virer des fonds directement vers une ONG via Vanilla Pay avec traçabilité cryptographique irréfutable,
@@ -924,9 +994,11 @@ afin de financer des projets en toute transparence.
 **And** chaque entrée d'historique affiche : date, montant, statut `TransactionStatusBadge`, identifiant virement pseudonymisé
 **And** en cas d'échec webhook, 3 tentatives avec backoff exponentiel avant alerte `ops_alerts` (NFR20)
 
+> **Avancement :** Aucun code lié. Dépend de Stories 5.1 (Merkle) et 1.2 (tables).
+
 ---
 
-### Story 7.2 — Preuve d'Immuabilité & Hash SHA-256 Quotidien (FR41, FR42)
+### Story 7.2 — Preuve d'Immuabilité & Hash SHA-256 Quotidien (FR41, FR42) ⬜
 
 En tant que `user_partner` et `back_office`,
 je veux pouvoir vérifier l'immuabilité d'une transaction et consulter le hash journalier de l'audit trail,
@@ -942,9 +1014,11 @@ afin de prouver qu'aucune donnée financière n'a été falsifiée.
 **And** une divergence de hash déclenche une alerte dans `ops_alerts` et un email au `back_office`
 **And** le `back_office` peut exporter un rapport d'audit complet pour une période donnée en CSV ou PDF (FR40)
 
+> **Avancement :** Aucun code lié.
+
 ---
 
-### Story 7.3 — Dashboard Back-office & Métriques Live (FR47)
+### Story 7.3 — Dashboard Back-office & Métriques Live (FR47) ⬜
 
 En tant que `back_office`,
 je veux un tableau de bord global avec des métriques en temps réel,
@@ -961,9 +1035,11 @@ afin de piloter la plateforme et détecter les anomalies rapidement.
 **And** un skeleton loader s'affiche pendant le premier chargement des métriques (UX-DR15)
 **And** un `empty state` s'affiche si aucune métrique n'est encore disponible (UX-DR16)
 
+> **Avancement :** Aucun code lié. Dépend de Story 3.1 (features/back-office/).
+
 ---
 
-### Story 7.4 — Rapports Agrégés, Exports & Gestion Paramètres Plateforme (FR40, FR48, FR49, FR50, FR51)
+### Story 7.4 — Rapports Agrégés, Exports & Gestion Paramètres Plateforme (FR40, FR48, FR49, FR50, FR51) ⬜
 
 En tant que `back_office`,
 je veux générer des rapports anonymisés, exporter les données et gérer les paramètres de la plateforme,
@@ -979,3 +1055,5 @@ afin d'assurer le reporting externe et l'administration opérationnelle.
 **And** la page Paramètres (`/back-office/settings`) permet de modifier : critères du Score, tarif abonnement, messages types email — chaque modification est journalisée dans `audit.service.ts` (FR49, FR39)
 **And** le log d'accès des bailleurs (FR50) est consultable en tableau avec pagination curseur `PaginatedResponse<T>` et exportable en CSV
 **And** tous les exports se génèrent en < 30s (NFR5)
+
+> **Avancement :** Aucun code lié. Dépend de Stories 7.1, 7.2, 7.3, 6.1 (pdf.service.ts).

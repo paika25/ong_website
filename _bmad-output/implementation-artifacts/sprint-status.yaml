@@ -1,6 +1,6 @@
 # generated: 2026-05-02
-# last_updated: 2026-05-02
-# project: ong_website
+# last_updated: 2026-05-09
+# project: ong_website (Paika ONG Platform)
 # project_key: NOKEY
 # tracking_system: file-system
 # story_location: _bmad-output/implementation-artifacts
@@ -12,30 +12,41 @@
 #   - in-progress: Epic actively being worked on
 #   - done: All stories in epic completed
 #
-# Epic Status Transitions:
-#   - backlog → in-progress: Automatically when first story is created (via create-story)
-#   - in-progress → done: Manually when all stories reach 'done' status
-#
 # Story Status:
 #   - backlog: Story only exists in epic file
 #   - ready-for-dev: Story file created in stories folder
 #   - in-progress: Developer actively working on implementation
-#   - review: Ready for code review (via Dev's code-review workflow)
+#   - review: Ready for code review
 #   - done: Story completed
+
+# ═══════════════════════════════════════════════════════════════
+# VISION STRATÉGIQUE (doc Paika 2026-05-09)
+# ═══════════════════════════════════════════════════════════════
 #
-# Retrospective Status:
-#   - optional: Can be completed but not required
-#   - done: Retrospective has been completed
+# PHASE 1 — Sécurisation & Crédibilité (objectif : présenter aux grands comptes)
+#   → RLS / Cloisonnement données (secret bancaire)
+#   → Coffre-fort numérique (gestion documentaire certifiée + chiffrement)
+#   → Score de Transparence (valeur ajoutée unique — doit être visible AVANT le back-office)
+#   → Back-office de certification (portail de validation manuelle = notre sérieux)
+#   → Simplification UX investisseur (suppression bénévolat, focus KPIs/Budget/Impact)
+#   → Marketplace bailleurs (les "clients" voient les ONGs certifiées + scorées)
 #
-# WORKFLOW NOTES:
-# ===============
-# - Epic transitions to 'in-progress' automatically when first story is created
-# - Stories can be worked in parallel if team capacity allows
-# - Developer typically creates next story after previous one is 'done' to incorporate learnings
-# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+# PHASE 2 — Rentabilisation & Transactions
+#   → Passerelle paiement : MVola + Orange Money + Airtel + Stripe (carte bancaire)
+#   → CRM messagerie interne (garder les échanges dans Paika)
+#   → Matching automatique (alertes bailleur → ONG)
+#   → Commissions 3-5% sur les transactions
+#
+# ORDRE D'EXÉCUTION REVU (2026-05-10) :
+#   #1  Cloisonnement RLS (Epic 1) — fermer les gaps : SSR middleware 1.4 + tests E2E 1.3
+#   #2  Coffre-fort Documentaire (Epic 2) — finir 2.4 → 2.5 → 2.6
+#   #3  Back-Office Certification (Epic 3) — avant Epic 4 : sans badge, pas de preuve
+#   #4  Simplification UX + Score Transparence (UX + Epic 4) — masquer bénévolat + moteur score
+#   Ordre final : 1 → 2 → 3 → UX+4 → PHASE 2 (5/6/7)
+# ═══════════════════════════════════════════════════════════════
 
 generated: "2026-05-02"
-last_updated: "2026-05-02"
+last_updated: "2026-05-11"
 project: ong_website
 project_key: NOKEY
 tracking_system: file-system
@@ -43,80 +54,187 @@ story_location: _bmad-output/implementation-artifacts
 
 development_status:
 
+  # ═══════════════════════════════════════════════════════════════
+  # ██████  PHASE 1 — SÉCURISATION & CRÉDIBILITÉ
+  # ═══════════════════════════════════════════════════════════════
+
   # ─────────────────────────────────────────────────────────────
-  # Epic 1 : Fondation & Authentification
+  # Sprint A — Epic 1 : Fondations Auth & Sécurité
   # ─────────────────────────────────────────────────────────────
-  epic-1: backlog
-  1-1-migration-vers-architecture-feature-based-gardes-techniques: backlog
-  1-2-migrations-supabase-tables-de-fondation-triggers-immuabilite: backlog
+  epic-1: in-progress
+
+  1-7-inscription-utilisateur: done
+  # ✅ signUp() Supabase, page /auth/signup, rôle user_agent/user_partner
+
+  1-8-authentification-email-mot-de-passe: done
+  # ✅ signIn() Supabase, session JWT, redirect, rate-limiting natif
+
+  1-2-migrations-supabase-tables-de-fondation-triggers-immuabilite: done
+  # ✅ 6 tables créées + triggers immuabilité + RLS + vue matérialisée — appliqué en prod
+
+  1-5-contrats-de-services-partages-stubs-types-frozen: done
+  # ✅ server/services/ stubs + types/schemas/ Zod + webhook vanilla-pay skeleton
+
+  1-9-reinitialisation-de-mot-de-passe: done
+  # ✅ /auth/forgot + /auth/reset-password + updatePassword()
+
+  1-10-gestion-du-profil-compte-deconnexion-globale: done
+  # ✅ /account/settings + updateEmail() + verifyAndUpdatePassword() + signOut(global)
+
+  1-4-custom-jwt-claims-middleware-de-roles-nuxt: review
+  # ✅ trigger Postgres JWT claims + middleware SSR Nuxt + migration pages (auth → SSR actif)
+  # ⚠️ Appliquer migration 07 en prod avant de valider : Dashboard Supabase → SQL Editor
+
+  1-1-migration-vers-architecture-feature-based-gardes-techniques: in-progress
+  # ESLint no-restricted-imports + tsconfig.strict.json (features/payments, features/audit-trail)
+
   1-3-validation-rls-multi-tenant-par-tests-e2e: backlog
-  1-4-custom-jwt-claims-middleware-de-roles-nuxt: backlog
-  1-5-contrats-de-services-partages-stubs-types-frozen: backlog
-  1-6-spike-vanilla-pay-validation-de-lintegration-sandbox: backlog
-  1-7-inscription-utilisateur: backlog
-  1-8-authentification-email-mot-de-passe: backlog
-  1-9-reinitialisation-de-mot-de-passe: backlog
-  1-10-gestion-du-profil-compte-deconnexion-globale: backlog
+  # Preuve formelle du cloisonnement multi-tenant — APRÈS complétion du SSR middleware (1.4)
+  # 11 tests vitest structurés — 4 blocs : isolation agent, partner lecture seule, back_office total, immuabilité FATF
+  # Exécuter avec SUPABASE_SERVICE_ROLE_KEY dans .env.test pour valider contre prod
+
   1-11-observabilite-monitoring-feature-flags: backlog
+  # Sentry SDK + NUXT_PUBLIC_FEATURE_* (observabilité avant présentation grands comptes)
+
   epic-1-retrospective: optional
 
   # ─────────────────────────────────────────────────────────────
-  # Epic 2 : Profil ONG & Dossier de Candidature
+  # Sprint B — Epic 2 : Coffre-fort Documentaire ONG
+  # (bilans comptables certifiés, rapports d'audit chiffrés)
   # ─────────────────────────────────────────────────────────────
-  epic-2: backlog
-  2-1-infrastructure-feature-ong-profile-composant-documentuploadzone: backlog
-  2-2-composant-stepperform-5-etapes-non-lineaire: backlog
-  2-3-creation-profil-ong-etapes-identite-mission-documents: backlog
-  2-4-creation-profil-ong-etapes-projets-contacts-reprise-formulaire: backlog
-  2-5-modification-profil-ong-configuration-visibilite-publique: backlog
-  2-6-soumission-dossier-suivi-statut-telechargement-recapitulatif: backlog
+  epic-2: in-progress
+
+  2-1-infrastructure-feature-ong-profile-composant-documentuploadzone: done
+  # ✅ features/ong-profile/ créé + DocumentUploadZone 5 états + drag&drop + TUS > 1Mo + pdf.service.ts stub
+  # Note : spec drag&drop non formalisée (acceptable — implem en prod)
+
+  2-2-composant-stepperform-5-etapes-non-lineaire: done
+  # ✅ StepperForm.vue (ARIA tablist/tab/aria-current) + OngDossierStepper 5 étapes + auto-save 30s + useOnline sync
+
+  2-3-creation-profil-ong-etapes-identite-mission-documents: done
+  # ✅ OngStepIdentite + OngStepMission + OngStepDocuments + useOngDossierForm (localStorage persist) + OngDossierCreate orchestrateur
+
+  2-4-creation-profil-ong-etapes-projets-contacts-reprise-formulaire: review
+  # ✅ OngDossierStepper 5 étapes branché sur /ongs/new — URL step ?step=, restore Supabase, CTA submit conditionnel
+
+  2-5-modification-profil-ong-configuration-visibilite-publique: review
+  # ✅ UToast dans edit, page /dashboard/agent/ong/visibility, section_visibility JSONB, tabs filtrés dans OngDetail
+  # ⚠️ Appliquer migration 08 en prod : Dashboard Supabase → SQL Editor
+
+  2-6-soumission-dossier-suivi-statut-telechargement-recapitulatif: review
+  # ✅ Modal confirmation + POST /api/ongs/:id/submit + Realtime + statuts étendus + page recap imprimable
+  # ⚠️ Activer Realtime sur table ongs dans Supabase Dashboard → Database → Replication
+  # ⚠️ Ajouter NUXT_SUPABASE_SERVICE_ROLE_KEY dans .env
+
   epic-2-retrospective: optional
 
   # ─────────────────────────────────────────────────────────────
-  # Epic 3 : Vérification Back-office & Badge
+  # Sprint C — Epic 3 : Back-Office de Validation (Portail Certification)
+  # PRIORITÉ #3 — sans badge « ✓ Vérifié », le Score n'a aucune valeur
   # ─────────────────────────────────────────────────────────────
-  epic-3: backlog
-  3-1-infrastructure-feature-verification-composants-pipelinekanban-badgevertifie: backlog
-  3-2-pipeline-kanban-liste-et-detail-des-dossiers: backlog
-  3-3-actions-de-verification-valider-rejeter-demander-complement: backlog
-  3-4-historique-et-tracabilite-des-actions-back-office: backlog
+  epic-3: in-progress
+
+  3-1-infrastructure-feature-verification-composants-pipelinekanban-badgevertifie: review
+  # ✅ features/verification/ + PipelineKanban (tri ancienneté, urgent amber) + BadgeVerifie (4 états, ARIA, 3 tailles)
+
+  3-2-pipeline-kanban-liste-et-detail-des-dossiers: review
+  # ✅ /back-office/verification kanban + modal détail + docs signés 1h + skeleton + empty state
+
+  3-3-actions-de-verification-valider-rejeter-demander-complement: review
+  # ✅ POST validate/reject/complement/suspend + audit trail + email stubs
+
+  3-4-historique-et-tracabilite-des-actions-back-office: review
+  # ✅ audit.service.ts implémenté + GET /audit pagination curseur + AuditTrailSection.vue
+
   3-5-messagerie-integree-back-office-ong: backlog
+  # CRM interne : garder les échanges dans Paika (rétention)
+
   epic-3-retrospective: optional
 
   # ─────────────────────────────────────────────────────────────
-  # Epic 4 : Score de Transparence
+  # Sprint D — Simplification UX Investisseur + Epic 4 : Score de Transparence
+  # PRIORITÉ #4 — masquer bénévolat (1-2h), puis moteur score, puis widget
   # ─────────────────────────────────────────────────────────────
-  epic-4: backlog
-  4-1-implementation-score-service-ts-moteur-de-calcul: backlog
-  4-2-composant-scoretransparencewidget-parcours-agent: backlog
+  ux-simplification-focus-investisseur: review
+  # ✅ Onglet Bénévolat déjà retiré dans useOngDetail.ts (story 2.5 refactor)
+  # → Parler le langage des bailleurs institutionnels (Banque Mondiale, AFD, GIZ)
+  # Effort : 1-2h, peut se faire en parallèle d'une autre story
+
+  epic-4: in-progress
+
+  4-1-implementation-score-service-ts-moteur-de-calcul: review
+  # ✅ score.service.ts implémenté (5 critères, poids algo v1, score_history, refresh vue matérialisée)
+  # ✅ GET /api/score/criteria public — critères + pondérations exposés
+
+  4-2-composant-scoretransparencewidget-parcours-agent: review
+  # ✅ ScoreTransparenceWidget (ARIA role=meter, barres colorées, critères +X pts, CTA contextuel)
+  # ✅ /dashboard/agent/score + OngDetailTabTransparency mis à jour
+
   4-3-gouvernance-algorithme-versions-disputes: backlog
+  # Versions draft/approved/active + disputes ONG
+
   epic-4-retrospective: optional
 
   # ─────────────────────────────────────────────────────────────
-  # Epic 5 : Abonnement Vanilla Pay & Audit Trail Financier
+  # Sprint E — Epic 6 : Marketplace Bailleurs & Découverte
+  # Les "clients" (bailleurs) voient les ONGs certifiées + scorées
+  # ─────────────────────────────────────────────────────────────
+  epic-6: in-progress
+
+  6-1-infrastructure-feature-marketplace-pdf-service-ts: backlog
+  # features/marketplace/ + pdf.service.ts Playwright Edge Function
+
+  6-2-liste-publique-ongs-filtres-url-persistent: in-progress
+  # OngList basique existe — ajouter filtres URL-persistent + debounce + filtre Score/Badge
+
+  6-3-profil-public-ong-telechargement-rapport-pdf: in-progress
+  # OngDetail tabs exist — hero section BadgeVerifie+Score + PDF 1-clic + log accès bailleur
+
+  6-4-favoris-notifications-historique-financements: backlog
+  # Matching automatique : "Une ONG correspond à vos critères" (moteur de rétention bailleur)
+
+  epic-6-retrospective: optional
+
+  # ═══════════════════════════════════════════════════════════════
+  # ██████  PHASE 2 — RENTABILISATION & TRANSACTIONS
+  # ═══════════════════════════════════════════════════════════════
+
+  # ─────────────────────────────────────────────────────────────
+  # Sprint F — Passerelle Paiement (MVola + Orange + Airtel + Stripe)
+  # Commission 3-5% — "Cash Machine" une fois développé
   # ─────────────────────────────────────────────────────────────
   epic-5: backlog
+
+  1-6-spike-vanilla-pay-validation-de-lintegration-sandbox: backlog
+  # Spike technique Vanilla Pay sandbox (webhook + HMAC)
+  # NOTE : Stripe (carte bancaire) à ajouter en story dédiée après ce spike
+
   5-1-implementation-payment-service-ts-merkle-chain-sha-256: backlog
+  # Séquence canonique Zod→idempotence→BEGIN→INSERT→audit→COMMIT→score async
+
   5-2-parcours-abonnement-vanilla-pay-agent: backlog
+  # Abonnement "Vérifié" 20 000 Ar/mois + grâce 3j + réactivation automatique
+
   5-3-composant-transactionstatusbadge-ux-paiement-notifications-expiration: backlog
+  # TransactionStatusBadge 4 états + notification expiration J-7
+
   epic-5-retrospective: optional
 
   # ─────────────────────────────────────────────────────────────
-  # Epic 6 : Marketplace Bailleur & Découverte
-  # ─────────────────────────────────────────────────────────────
-  epic-6: backlog
-  6-1-infrastructure-feature-marketplace-pdf-service-ts: backlog
-  6-2-liste-publique-ongs-filtres-url-persistent: backlog
-  6-3-profil-public-ong-telechargement-rapport-pdf: backlog
-  6-4-favoris-notifications-historique-financements: backlog
-  epic-6-retrospective: optional
-
-  # ─────────────────────────────────────────────────────────────
-  # Epic 7 : Virements Bailleurs & Analytics Back-office
+  # Sprint G — Virements Bailleurs & Analytics Back-office
   # ─────────────────────────────────────────────────────────────
   epic-7: backlog
+
   7-1-handler-virements-vanilla-pay-immuabilite: backlog
+  # Handler donations + chaîne Merkle + table append-only
+
   7-2-preuve-dimmuabilite-hash-sha-256-quotidien: backlog
+  # Hash SHA-256 quotidien + preuve d'immuabilité visible bailleur
+
   7-3-dashboard-back-office-metriques-live: backlog
+  # Métriques live : ONGs certifiées, dossiers en attente, volume transactions, Score moyen
+
   7-4-rapports-agreges-exports-gestion-parametres-plateforme: backlog
+  # Rapports CSV/PDF anonymisés + export ONGs certifiées + Licence Data (B2B)
+
   epic-7-retrospective: optional

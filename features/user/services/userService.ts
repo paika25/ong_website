@@ -144,7 +144,9 @@ export const useUserService = () => {
       if (accountType === 'user_agent') {
         // Stats pour les agents (gestionnaires d'ONG)
         console.log('📊 Chargement stats agent...')
-        const { data: ongs, error: ongsError } = await supabase
+
+        // Récupérer les IDs via agent_ong_managers
+        const { data: managedOngs, error: ongsError } = await supabase
           .from('agent_ong_managers')
           .select('ong_id')
           .eq('agent_account_id', userId)
@@ -153,12 +155,27 @@ export const useUserService = () => {
           console.warn('⚠️ Erreur agent_ong_managers:', ongsError.message)
         }
 
+        // Récupérer les ONGs créées directement par l'agent
+        const { data: ownedOngs, error: ownedError } = await supabase
+          .from('ongs')
+          .select('id')
+          .eq('account_id', userId)
+
+        if (ownedError) {
+          console.warn('⚠️ Erreur ongs account_id:', ownedError.message)
+        }
+
+        // Fusionner sans doublons
+        const allOngIds = new Set<string>()
+        for (const o of managedOngs || []) allOngIds.add((o as any).ong_id)
+        for (const o of ownedOngs || []) allOngIds.add((o as any).id)
+
         let totalProjects = 0
-        if (ongs && ongs.length > 0) {
+        if (allOngIds.size > 0) {
           const { data: ongsData, error: projectsError } = await supabase
             .from('ongs')
             .select('projects')
-            .in('id', ongs.map((o: any) => o.ong_id))
+            .in('id', Array.from(allOngIds))
 
           if (projectsError) {
             console.warn('⚠️ Erreur ongs projects:', projectsError.message)
@@ -170,9 +187,9 @@ export const useUserService = () => {
           }, 0) || 0
         }
 
-        console.log('✅ Stats agent:', { ongs: ongs?.length || 0, projects: totalProjects })
+        console.log('✅ Stats agent:', { ongs: allOngIds.size, projects: totalProjects })
         return {
-          ongs: ongs?.length || 0,
+          ongs: allOngIds.size,
           projects: totalProjects,
           donations: 0,
           totalDonated: 0

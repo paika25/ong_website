@@ -1,6 +1,6 @@
 <template>
   <div class="bg-card rounded-xl border border-border p-6">
-    <h2 class="text-xl font-semibold mb-6">Modifier le profil</h2>
+    <h2 class="text-lg font-semibold mb-6">Modifier le profil</h2>
 
     <form @submit.prevent="handleSave" class="space-y-4">
       <div class="grid md:grid-cols-2 gap-4">

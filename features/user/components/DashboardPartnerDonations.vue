@@ -2,8 +2,8 @@
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-2xl font-bold">Mes Dons</h2>
-        <p class="text-muted-foreground">Historique de vos contributions</p>
+        <h2 class="text-lg font-semibold">Mes Dons</h2>
+        <p class="text-sm text-muted-foreground">Historique de vos contributions</p>
       </div>
       <div class="flex gap-8">
         <div class="text-right">
@@ -85,10 +85,10 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
         </svg>
       </div>
-      <h3 class="text-xl font-semibold mb-2">Aucun don pour le moment</h3>
-      <p class="text-muted-foreground mb-6">Soutenez une ONG en faisant votre premier don</p>
+      <h3 class="text-base font-semibold mb-2">Aucun don pour le moment</h3>
+      <p class="text-sm text-muted-foreground mb-6">Soutenez une ONG en faisant votre premier don</p>
       <NuxtLink to="/">
-        <UButton variant="default">
+        <UButton>
           Découvrir les ONGs
         </UButton>
       </NuxtLink>

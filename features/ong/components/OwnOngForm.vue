@@ -45,7 +45,13 @@
               placeholder="Décrivez la mission et les objectifs de votre ONG..."
               class="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none"
             ></textarea>
-            <p class="text-xs text-muted-foreground mt-1">{{ form.description?.length || 0 }} / 2000 caractères</p>
+            <p
+              class="text-xs mt-1"
+              :class="(form.description?.length || 0) >= 10 ? 'text-muted-foreground' : 'text-yellow-600 dark:text-yellow-400'"
+            >
+              {{ form.description?.length || 0 }} / 2000 caractères
+              <span v-if="(form.description?.length || 0) < 10"> — 10 caractères minimum</span>
+            </p>
           </div>
 
           <!-- Catégorie -->

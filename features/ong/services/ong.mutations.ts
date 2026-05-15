@@ -4,6 +4,7 @@
  */
 
 import type { OngFormPayload, OngServiceResult, DeleteOngResult } from './ong.types'
+import type { SectionVisibility } from '../type'
 import { isClient } from './ong.helpers'
 import { toSupabasePayload, fromSupabaseRow } from './ong.mapper'
 
@@ -97,6 +98,80 @@ export const createOng = async (
   try {
     console.log(`🏗️ [createOng] Création ONG pour le compte ${accountId}...`)
 
+    // S'assurer que le compte est bien de type user_agent (correction si trigger n'a pas tourné)
+    const { data: account, error: accountReadError } = await supabase
+      .from('accounts')
+      .select('account_type')
+      .eq('id', accountId)
+      .maybeSingle()
+
+    if (accountReadError) {
+      console.error('❌ [createOng] Lecture account:', accountReadError.message)
+    }
+
+    if (!account) {
+      // Compte introuvable dans accounts : le créer depuis la session auth
+      console.warn('⚠️ [createOng] Account absent, création depuis auth.getUser()...')
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+      if (authUser) {
+        const meta = authUser.user_metadata || {}
+        const { error: insertAccError } = await supabase
+          .from('accounts')
+          .insert({
+            id: accountId,
+            email: authUser.email || '',
+            account_type: 'user_agent',
+            first_name: meta.first_name || null,
+            last_name: meta.last_name || null,
+            company_name: meta.company_name || null,
+            bio: meta.bio || null,
+            location: meta.location || null,
+            website: meta.website || null,
+            verified: authUser.email_confirmed_at !== null,
+            created_at: authUser.created_at,
+            updated_at: new Date().toISOString()
+          })
+        if (insertAccError) {
+          console.error('❌ [createOng] Impossible de créer le compte:', insertAccError.message)
+          // L'insert peut échouer si le compte existe déjà (race condition) — tenter une relecture
+          const { data: retryAccount } = await supabase
+            .from('accounts')
+            .select('account_type')
+            .eq('id', accountId)
+            .maybeSingle()
+          if (retryAccount) {
+            // Compte trouvé après retry → corriger le type si besoin
+            if (retryAccount.account_type !== 'user_agent') {
+              await supabase
+                .from('accounts')
+                .update({ account_type: 'user_agent', updated_at: new Date().toISOString() })
+                .eq('id', accountId)
+            }
+            console.log('✅ [createOng] Compte récupéré après retry')
+          } else {
+            return {
+              success: false,
+              data: null,
+              error: 'Votre profil de compte est manquant. Veuillez vous déconnecter, vous reconnecter et réessayer. Si le problème persiste, exécutez le script fix_accounts_agent.sql dans votre dashboard Supabase.',
+            }
+          }
+        }
+        console.log('✅ [createOng] Compte créé en user_agent')
+      }
+    } else if (account.account_type !== 'user_agent') {
+      // Compte existe mais avec le mauvais type → corriger
+      console.warn(`⚠️ [createOng] account_type="${account.account_type}", correction en user_agent...`)
+      const { error: updateError } = await supabase
+        .from('accounts')
+        .update({ account_type: 'user_agent', updated_at: new Date().toISOString() })
+        .eq('id', accountId)
+      if (updateError) {
+        console.error('❌ [createOng] Erreur UPDATE account_type:', updateError.message)
+        return { success: false, data: null, error: 'Impossible de corriger votre type de compte. Contactez le support.' }
+      }
+      console.log('✅ [createOng] account_type corrigé en user_agent')
+    }
+
     // Vérifier que l'agent n'a pas déjà une ONG (règle 1 agent = 1 ONG)
     const { data: existing, error: checkError } = await supabase
       .from('ongs')
@@ -142,11 +217,49 @@ export const createOng = async (
 
     const newOng = fromSupabaseRow(data)
     console.log(`✅ [createOng] ONG "${newOng.name}" créée (id: ${newOng.id}, status: pending)`)
+
+    // Enregistrer le créateur comme propriétaire dans agent_ong_managers
+    const { error: managerError } = await supabase
+      .from('agent_ong_managers')
+      .insert({
+        agent_account_id: accountId,
+        ong_id: newOng.id,
+        role: 'Propriétaire',
+      })
+
+    if (managerError) {
+      console.warn('⚠️ [createOng] Erreur insertion agent_ong_managers:', managerError.message)
+    } else {
+      console.log(`✅ [createOng] Agent ${accountId} enregistré comme Propriétaire`)
+    }
+
     return { success: true, data: newOng, error: null }
   } catch (err: any) {
     console.error('❌ [createOng] Exception:', err)
     return { success: false, data: null, error: err.message || 'Erreur inconnue' }
   }
+}
+
+// ============================================
+// UPDATE ONG VISIBILITY
+// ============================================
+
+export const updateOngVisibility = async (
+  ongId: string,
+  visibility: SectionVisibility
+): Promise<{ success: boolean; error: string | null }> => {
+  if (!isClient()) return { success: false, error: 'Opération client-only' }
+
+  const supabase = useSupabase()
+  if (!supabase) return { success: false, error: 'Supabase non disponible' }
+
+  const { error } = await supabase
+    .from('ongs')
+    .update({ section_visibility: visibility, updated_at: new Date().toISOString() })
+    .eq('id', ongId)
+
+  if (error) return { success: false, error: error.message }
+  return { success: true, error: null }
 }
 
 // ============================================

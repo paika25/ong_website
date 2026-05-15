@@ -1,9 +1,21 @@
+export interface SectionVisibility {
+  identite: boolean
+  mission: boolean
+  documents: boolean
+  projets: boolean
+  contacts: boolean
+}
+
+export const DEFAULT_SECTION_VISIBILITY: SectionVisibility = {
+  identite: true, mission: true, documents: true, projets: true, contacts: true,
+}
+
 export interface ONG {
   id: string
   name: string
   description: string
   category: 'education' | 'health' | 'environment' | 'social' | 'culture'
-  status: 'active' | 'pending' | 'inactive'
+  status: 'active' | 'pending' | 'inactive' | 'submitted' | 'under_review' | 'complement_required' | 'verified' | 'rejected' | 'suspended'
   location: string
   image?: string
   volunteers: number
@@ -11,6 +23,7 @@ export interface ONG {
   email?: string
   phone?: string
   website?: string
+  sectionVisibility?: SectionVisibility
   createdAt: string
   updatedAt: string
   financials?: {
