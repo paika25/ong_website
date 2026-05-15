@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   if (!ongId) throw createError({ statusCode: 400, statusMessage: 'ID manquant' })
 
   const config = useRuntimeConfig()
-  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey, {
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   })
 

@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   if (!token) throw createError({ statusCode: 401, statusMessage: 'Non authentifié' })
 
   // Utiliser le JWT de l'admin — la RLS back_office autorise SELECT ALL sur les tables concernées
-  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey, {
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
     auth: { autoRefreshToken: false, persistSession: false },
     global: { headers: { Authorization: `Bearer ${token}` } },
   })

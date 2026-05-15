@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Service role si disponible, sinon anon key (policy ft_stripe_server_insert le permet)
-  const supabaseKey = (config.supabaseServiceRoleKey as string) || (config.public.supabaseKey as string)
+  const supabaseKey = (config.supabaseServiceRoleKey as string) || (config.public.supabaseAnonKey as string)
   const supabase = createClient(
     config.public.supabaseUrl as string,
     supabaseKey,

@@ -27,8 +27,8 @@ export default defineEventHandler(async (event) => {
   const isPublic = publicRoutes.some(r => path.startsWith(r))
   if (isPublic) return
 
-  // Ne traiter que les routes /api/
-  if (!path.startsWith('/api/')) return
+  // Ne traiter que les routes /api/ — exclure les routes internes Nuxt (/api/_nuxt_icon/, etc.)
+  if (!path.startsWith('/api/') || path.startsWith('/api/_')) return
 
   const authHeader = getRequestHeader(event, 'authorization')
   const token = authHeader?.replace('Bearer ', '')

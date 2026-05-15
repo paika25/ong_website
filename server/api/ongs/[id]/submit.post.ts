@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
 
   // Vérifier que l'ONG appartient bien à cet agent (ownership check)
   const config = useRuntimeConfig()
-  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey, {
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
     auth:   { autoRefreshToken: false, persistSession: false },
     global: { headers: { Authorization: `Bearer ${token}` } },
   })

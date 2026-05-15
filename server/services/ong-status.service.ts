@@ -132,7 +132,7 @@ export async function applyStatusTransition(
   const config = useRuntimeConfig()
 
   // Client avec JWT de l'opérateur pour que la RLS s'applique
-  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey, {
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
     auth:   { autoRefreshToken: false, persistSession: false },
     global: { headers: { Authorization: `Bearer ${token}` } },
   })

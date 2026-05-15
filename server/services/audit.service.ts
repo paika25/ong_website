@@ -20,7 +20,7 @@ export interface AuditEntry {
 export async function insertAuditEntry(entry: AuditEntry): Promise<void> {
   const config      = useRuntimeConfig()
   const supabaseUrl = config.public.supabaseUrl as string
-  const anonKey     = config.public.supabaseKey as string
+  const anonKey     = config.public.supabaseAnonKey as string
 
   const supabase = createClient(supabaseUrl, anonKey, {
     auth:   { autoRefreshToken: false, persistSession: false },

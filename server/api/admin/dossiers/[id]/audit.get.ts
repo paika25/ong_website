@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   if (!token) throw createError({ statusCode: 401, statusMessage: 'Non authentifié' })
 
   const config = useRuntimeConfig()
-  const supabase = createClient(config.public.supabaseUrl as string, config.public.supabaseKey as string, {
+  const supabase = createClient(config.public.supabaseUrl as string, config.public.supabaseAnonKey as string, {
     auth: { autoRefreshToken: false, persistSession: false },
     global: { headers: { Authorization: `Bearer ${token}` } },
   })

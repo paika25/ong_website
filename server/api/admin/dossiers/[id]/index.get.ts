@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   const token = authHeader?.replace('Bearer ', '')
   if (!token) throw createError({ statusCode: 401, statusMessage: 'Non authentifié' })
 
-  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey, {
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
     auth: { autoRefreshToken: false, persistSession: false },
     global: { headers: { Authorization: `Bearer ${token}` } },
   })

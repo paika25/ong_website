@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
   if (!parsed.success) throw createError({ statusCode: 400, statusMessage: 'Contenu invalide' })
 
   const config = useRuntimeConfig()
-  const supabase = createClient(config.public.supabaseUrl as string, config.public.supabaseKey as string, {
+  const supabase = createClient(config.public.supabaseUrl as string, config.public.supabaseAnonKey as string, {
     auth: { autoRefreshToken: false, persistSession: false },
     global: { headers: { Authorization: `Bearer ${token}` } },
   })
