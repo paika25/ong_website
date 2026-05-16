@@ -21,7 +21,14 @@ export default defineEventHandler(async (event) => {
   }
 
   const idempotencyKey = crypto.randomUUID()
-  const appUrl = (config.public.appUrl as string) || 'http://localhost:3000'
+
+  // Priorité : variable d'env > host de la requête (fonctionne sur Netlify sans config supplémentaire)
+  const configuredUrl = config.public.appUrl as string
+  const requestUrl = getRequestURL(event)
+  const appUrl =
+    configuredUrl && !configuredUrl.includes('localhost')
+      ? configuredUrl
+      : `${requestUrl.protocol}//${requestUrl.host}`
   const amountCents = Math.round(body.amountEuros * 100)
 
   try {

@@ -1376,16 +1376,16 @@ _ErdtmwJcqqpQ5PD4b4UyI856ixhiUzsheifQwM0kEwY
 const assets = {
   "/index.mjs": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"22438-0h24hHOqQ9/rTQErmc5yazBKEDQ\"",
-    "mtime": "2026-05-15T08:10:01.471Z",
-    "size": 140344,
+    "etag": "\"224d6-dgkksqvMWYb9yZmhyzyUO/vkeTQ\"",
+    "mtime": "2026-05-16T11:53:33.479Z",
+    "size": 140502,
     "path": "index.mjs"
   },
   "/index.mjs.map": {
     "type": "application/json",
-    "etag": "\"7520a-QcApvYCrXZBf5WcMeEZ1WYW9CE0\"",
-    "mtime": "2026-05-15T08:10:01.471Z",
-    "size": 479754,
+    "etag": "\"754c1-raZ59+dkRdUq4qNVKUGQIUmNtO4\"",
+    "mtime": "2026-05-16T11:53:33.479Z",
+    "size": 480449,
     "path": "index.mjs.map"
   }
 };
@@ -3061,7 +3061,9 @@ const createCheckout_post = defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, statusMessage: "NUXT_STRIPE_SECRET_KEY non configur\xE9e" });
   }
   const idempotencyKey = crypto.randomUUID();
-  const appUrl = config.public.appUrl || "http://localhost:3000";
+  const configuredUrl = config.public.appUrl;
+  const requestUrl = getRequestURL(event);
+  const appUrl = configuredUrl && !configuredUrl.includes("localhost") ? configuredUrl : `${requestUrl.protocol}//${requestUrl.host}`;
   const amountCents = Math.round(body.amountEuros * 100);
   try {
     const { url } = await createCheckoutSession({
