@@ -55,9 +55,12 @@
 const route = useRoute()
 
 const NAV_ITEMS = [
-  { label: 'ONGs',         to: '/admin/ongs',         icon: 'i-heroicons-building-office-2' },
-  { label: 'Vérification', to: '/admin/verification', icon: 'i-heroicons-shield-check' },
-  { label: 'Dons',         to: '/admin/donations',    icon: 'i-heroicons-heart' },
-  { label: 'Historique',   to: '/admin/historique',   icon: 'i-heroicons-clock' },
+  { label: 'Vue d\'ensemble', to: '/admin',              icon: 'i-heroicons-squares-2x2' },
+  { label: 'ONGs',            to: '/admin/ongs',         icon: 'i-heroicons-building-office-2' },
+  { label: 'Vérification',    to: '/admin/verification', icon: 'i-heroicons-shield-check' },
+  { label: 'Dons',            to: '/admin/donations',    icon: 'i-heroicons-heart' },
+  { label: 'Utilisateurs',    to: '/admin/utilisateurs', icon: 'i-heroicons-users' },
+  { label: 'Algorithme',      to: '/admin/algorithme',   icon: 'i-heroicons-cpu-chip' },
+  { label: 'Historique',      to: '/admin/historique',   icon: 'i-heroicons-clock' },
 ]
 </script>

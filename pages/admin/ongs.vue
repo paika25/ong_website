@@ -54,8 +54,11 @@
               </td>
               <td class="px-4 py-3">
                 <div class="flex gap-2">
+                  <NuxtLink :to="`/admin/ongs/${ong.id}`">
+                    <UButton size="xs" variant="outline">Détail</UButton>
+                  </NuxtLink>
                   <NuxtLink :to="`/ongs/${ong.id}`" target="_blank">
-                    <UButton size="xs" variant="ghost">Voir</UButton>
+                    <UButton size="xs" variant="ghost">Public</UButton>
                   </NuxtLink>
                   <UButton
                     v-if="['submitted','under_review','complement_required'].includes(ong.status)"
