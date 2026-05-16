@@ -1,6 +1,6 @@
 <template>
   <main class="container mx-auto px-4 py-8 max-w-2xl">
-      <NuxtLink to="/dashboard" class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 group">
+      <NuxtLink to="/ong-dashboard" class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 group">
         <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>

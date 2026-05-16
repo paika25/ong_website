@@ -6,14 +6,22 @@
         <h2 class="text-lg font-semibold">Mon ONG</h2>
         <p class="text-sm text-muted-foreground">Gérez votre organisation</p>
       </div>
-      <NuxtLink v-if="!loading && !ong" to="/ongs/new">
-        <UButton variant="default">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          Créer mon ONG
-        </UButton>
-      </NuxtLink>
+      <div class="flex items-center gap-2">
+        <NuxtLink v-if="!loading && ong" to="/ong-dashboard">
+          <UButton variant="outline" size="sm">
+            <Icon name="i-heroicons-squares-2x2" class="w-4 h-4 mr-1.5" />
+            Tableau de bord
+          </UButton>
+        </NuxtLink>
+        <NuxtLink v-if="!loading && !ong" to="/ongs/new">
+          <UButton variant="default">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Créer mon ONG
+          </UButton>
+        </NuxtLink>
+      </div>
     </div>
 
     <!-- Skeleton loader (UX-DR15) -->

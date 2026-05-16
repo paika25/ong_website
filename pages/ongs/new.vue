@@ -1,13 +1,13 @@
 <template>
   <main class="container mx-auto px-4 py-8 max-w-4xl">
       <NuxtLink
-        to="/dashboard"
+        to="/ong-dashboard"
         class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6 group"
       >
         <svg class="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
-        Retour au dashboard
+        Retour à mon espace ONG
       </NuxtLink>
 
       <div class="mb-8">

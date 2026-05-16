@@ -11,18 +11,26 @@
         Accueil
       </NuxtLink>
       <NuxtLink
-        to="/dashboard"
+        v-if="!isAgent"
+        :to="'/dashboard'"
         class="px-3 py-1.5 rounded-md text-sm font-medium hover:text-green-500 transition-colors"
-        inactive-class="text-muted-foreground "
+        inactive-class="text-muted-foreground"
         active-class="text-green-500"
       >
-        Dashboard
+        Mon Espace
       </NuxtLink>
       
     </nav>
 
     <!-- Séparateur -->
     <div class="hidden md:block h-5 w-px bg-border mr-2" />
+    <NuxtLink v-if="isAgent" to="/ong-dashboard" class="mr-2">
+      <UButton size="xs" color="orange" variant="soft" class="gap-1">
+        <Icon name="i-heroicons-building-office-2" class="w-4 h-4 text-white" />
+        Mon ONG
+      </UButton>
+    </NuxtLink>
+
 
     <!-- Admin badge -->
     <NuxtLink v-if="isAdmin" to="/admin/verification" class="mr-2">
@@ -44,7 +52,7 @@
             {{ user.fullName?.split(' ')[0] }}
           </p>
           <p class="text-[11px] text-muted-foreground">
-            {{ user.accountType === 'user_agent' ? 'Agent ONG' : 'Partenaire' }}
+            {{ isAgent ? 'Agent ONG' : 'Partenaire' }}
           </p>
         </div>
         <div class="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold shrink-0">
@@ -86,6 +94,7 @@ const user = computed(() => authStore.currentUser)
 const userInitials = computed(() => authStore.userInitials)
 const loggingOut = ref(false)
 const isAdmin = ref(false)
+const isAgent = ref(false)
 const unreadCount = ref(0)
 
 onMounted(async () => {
@@ -97,9 +106,10 @@ onMounted(async () => {
     const payload = JSON.parse(atob(session.access_token.split('.')[1]))
     const role = payload?.app_metadata?.role ?? payload?.role
     isAdmin.value = role === 'admin' || role === 'back_office'
+    isAgent.value = user.value?.accountType === 'user_agent'
   } catch {}
 
-  if (user.value?.accountType === 'user_agent') {
+  if (isAgent) {
     watchUnreadMessages(supabase, session.access_token)
   }
 })
