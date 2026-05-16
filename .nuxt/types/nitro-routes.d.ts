@@ -3,6 +3,16 @@ import type { Serialize, Simplify } from "nitropack/types";
 declare module "nitropack/types" {
   type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T
   interface InternalApi {
+    '/api/admin/algorithm/:id': {
+      'patch': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/algorithm/[id].patch').default>>>>
+    }
+    '/api/admin/algorithm/:id/status': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/algorithm/[id]/status.post').default>>>>
+    }
+    '/api/admin/algorithm': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/algorithm/index.get').default>>>>
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/algorithm/index.post').default>>>>
+    }
     '/api/admin/donations': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/donations.get').default>>>>
     }
@@ -36,6 +46,15 @@ declare module "nitropack/types" {
     }
     '/api/admin/historique': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/historique.get').default>>>>
+    }
+    '/api/admin/ongs/:id/visibility': {
+      'patch': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/ongs/[id]/visibility.patch').default>>>>
+    }
+    '/api/admin/overview': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/overview.get').default>>>>
+    }
+    '/api/admin/users': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/users.get').default>>>>
     }
     '/api/back-office/dossiers': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/back-office/dossiers.get').default>>>>

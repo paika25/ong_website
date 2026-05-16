@@ -5,8 +5,8 @@ import { resolve, dirname, join } from 'node:path';
 import nodeCrypto from 'node:crypto';
 import { parentPort, threadId } from 'node:worker_threads';
 import { escapeHtml } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/@vue/shared/dist/shared.cjs.js';
-import { createClient } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/@supabase/supabase-js/dist/index.mjs';
 import { z } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/zod/index.js';
+import { createClient } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/@supabase/supabase-js/dist/index.mjs';
 import Stripe from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/stripe/esm/stripe.esm.node.js';
 import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/vue-bundle-renderer/dist/runtime.mjs';
 import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, joinRelativeURL } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/ufo/dist/index.mjs';
@@ -1590,6 +1590,40 @@ function publicAssetsURL(...path) {
   return path.length ? joinRelativeURL(publicBase, ...path) : publicBase;
 }
 
+function createAdminReadClient(config, userToken) {
+  const url = config.public.supabaseUrl;
+  const serviceKey = config.supabaseServiceRoleKey;
+  if (serviceKey) {
+    return createClient(url, serviceKey, {
+      auth: { autoRefreshToken: false, persistSession: false }
+    });
+  }
+  return createClient(url, config.public.supabaseAnonKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${userToken}` } }
+  });
+}
+function createAdminWriteClient(config) {
+  const serviceKey = config.supabaseServiceRoleKey;
+  if (!serviceKey) {
+    throw createError({
+      statusCode: 503,
+      statusMessage: "Service role key non configur\xE9e. Ajoutez NUXT_SUPABASE_SERVICE_ROLE_KEY dans votre .env (Supabase Dashboard \u2192 Settings \u2192 API \u2192 service_role)."
+    });
+  }
+  return createClient(config.public.supabaseUrl, serviceKey, {
+    auth: { autoRefreshToken: false, persistSession: false }
+  });
+}
+function parseJwtSub(token) {
+  var _a;
+  try {
+    return (_a = JSON.parse(Buffer.from(token.split(".")[1], "base64").toString()).sub) != null ? _a : null;
+  } catch {
+    return null;
+  }
+}
+
 const codeToStatus = {
   NOT_FOUND: 404,
   VALIDATION: 422,
@@ -1979,6 +2013,10 @@ async function getIslandContext(event) {
   return ctx;
 }
 
+const _lazy_DaxJy4 = () => Promise.resolve().then(function () { return _id__patch$1; });
+const _lazy_dQUsqU = () => Promise.resolve().then(function () { return status_post$1; });
+const _lazy_4xtLv1 = () => Promise.resolve().then(function () { return index_get$5; });
+const _lazy_cf7rxe = () => Promise.resolve().then(function () { return index_post$1; });
 const _lazy_A7Ft5_ = () => Promise.resolve().then(function () { return donations_get$1; });
 const _lazy_1k2zDw = () => Promise.resolve().then(function () { return dossiers_get$3; });
 const _lazy_S2B3SZ = () => Promise.resolve().then(function () { return audit_get$3; });
@@ -1991,6 +2029,9 @@ const _lazy_7xtcc0 = () => Promise.resolve().then(function () { return startRevi
 const _lazy_C0iMdk = () => Promise.resolve().then(function () { return suspend_post$3; });
 const _lazy_fxB5OF = () => Promise.resolve().then(function () { return validate_post$3; });
 const _lazy_wn_l1H = () => Promise.resolve().then(function () { return historique_get$1; });
+const _lazy_3aPZDt = () => Promise.resolve().then(function () { return visibility_patch$1; });
+const _lazy_oZdLM3 = () => Promise.resolve().then(function () { return overview_get$1; });
+const _lazy_VhqqhD = () => Promise.resolve().then(function () { return users_get$1; });
 const _lazy_TNVXua = () => Promise.resolve().then(function () { return dossiers_get$1; });
 const _lazy_qq4Efz = () => Promise.resolve().then(function () { return audit_get$1; });
 const _lazy_BU_lEt = () => Promise.resolve().then(function () { return complement_post$1; });
@@ -2014,6 +2055,10 @@ const _lazy_7RYPIX = () => Promise.resolve().then(function () { return renderer$
 const handlers = [
   { route: '', handler: _DyLm2U, lazy: false, middleware: true, method: undefined },
   { route: '', handler: _yDW0oZ, lazy: false, middleware: true, method: undefined },
+  { route: '/api/admin/algorithm/:id', handler: _lazy_DaxJy4, lazy: true, middleware: false, method: "patch" },
+  { route: '/api/admin/algorithm/:id/status', handler: _lazy_dQUsqU, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/algorithm', handler: _lazy_4xtLv1, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/algorithm', handler: _lazy_cf7rxe, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/donations', handler: _lazy_A7Ft5_, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/dossiers', handler: _lazy_1k2zDw, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/dossiers/:id/audit', handler: _lazy_S2B3SZ, lazy: true, middleware: false, method: "get" },
@@ -2026,6 +2071,9 @@ const handlers = [
   { route: '/api/admin/dossiers/:id/suspend', handler: _lazy_C0iMdk, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/dossiers/:id/validate', handler: _lazy_fxB5OF, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/historique', handler: _lazy_wn_l1H, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/ongs/:id/visibility', handler: _lazy_3aPZDt, lazy: true, middleware: false, method: "patch" },
+  { route: '/api/admin/overview', handler: _lazy_oZdLM3, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/users', handler: _lazy_VhqqhD, lazy: true, middleware: false, method: "get" },
   { route: '/api/back-office/dossiers', handler: _lazy_TNVXua, lazy: true, middleware: false, method: "get" },
   { route: '/api/back-office/dossiers/:id/audit', handler: _lazy_qq4Efz, lazy: true, middleware: false, method: "get" },
   { route: '/api/back-office/dossiers/:id/complement', handler: _lazy_BU_lEt, lazy: true, middleware: false, method: "post" },
@@ -2300,6 +2348,167 @@ const styles = {};
 const styles$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: styles
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const WeightsSchema$1 = z.object({
+  documents_uploaded: z.number().int().min(0).max(100),
+  profile_complete: z.number().int().min(0).max(100),
+  backoffice_validated: z.number().int().min(0).max(100),
+  financial_reports: z.number().int().min(0).max(100),
+  projects_declared: z.number().int().min(0).max(100)
+});
+const BodySchema$6 = z.object({
+  weights: WeightsSchema$1.optional(),
+  thresholds: z.object({
+    submission_minimum: z.number().int().min(0).max(100),
+    verified_badge: z.number().int().min(0).max(100)
+  }).optional(),
+  required_documents: z.array(z.string().min(1)).optional()
+});
+const _id__patch = defineEventHandler(async (event) => {
+  var _a;
+  const versionId = getRouterParam(event, "id");
+  if (!versionId) throw createError({ statusCode: 400, statusMessage: "ID manquant" });
+  const raw = await readBody(event);
+  const parsed = BodySchema$6.safeParse(raw);
+  if (!parsed.success) throw createError({ statusCode: 400, statusMessage: "Donn\xE9es invalides" });
+  const config = useRuntimeConfig();
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const reader = createAdminReadClient(config, token);
+  const { data: current, error: readErr } = await reader.from("algorithm_versions").select("status, params_json").eq("id", versionId).single();
+  if (readErr || !current) throw createError({ statusCode: 404, statusMessage: "Version introuvable" });
+  if (current.status !== "draft") {
+    throw createError({ statusCode: 409, statusMessage: "Seuls les brouillons sont modifiables" });
+  }
+  const updatedParams = {
+    ...current.params_json,
+    ...parsed.data.weights && { weights: parsed.data.weights },
+    ...parsed.data.thresholds && { thresholds: parsed.data.thresholds },
+    ...parsed.data.required_documents && { required_documents: parsed.data.required_documents }
+  };
+  const writer = createAdminWriteClient(config);
+  const { data, error } = await writer.from("algorithm_versions").update({ params_json: updatedParams }).eq("id", versionId).select().single();
+  if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+  return data;
+});
+
+const _id__patch$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: _id__patch
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const VALID_TRANSITIONS = {
+  draft: ["approved", "deprecated"],
+  approved: ["active", "deprecated"],
+  active: ["deprecated"]
+};
+const BodySchema$5 = z.object({
+  status: z.enum(["approved", "active", "deprecated"])
+});
+const status_post = defineEventHandler(async (event) => {
+  var _a, _b;
+  const versionId = getRouterParam(event, "id");
+  if (!versionId) throw createError({ statusCode: 400, statusMessage: "ID manquant" });
+  const raw = await readBody(event);
+  const parsed = BodySchema$5.safeParse(raw);
+  if (!parsed.success) throw createError({ statusCode: 400, statusMessage: "Statut invalide" });
+  const targetStatus = parsed.data.status;
+  const config = useRuntimeConfig();
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const supabase = createAdminWriteClient(config);
+  const { data: current, error: readErr } = await supabase.from("algorithm_versions").select("status, version").eq("id", versionId).single();
+  if (readErr || !current) throw createError({ statusCode: 404, statusMessage: "Version introuvable" });
+  const allowed = (_b = VALID_TRANSITIONS[current.status]) != null ? _b : [];
+  if (!allowed.includes(targetStatus)) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: `Transition invalide : ${current.status} \u2192 ${targetStatus}`
+    });
+  }
+  if (targetStatus === "active") {
+    const { error: deprecateErr } = await supabase.from("algorithm_versions").update({ status: "deprecated" }).eq("status", "active").neq("id", versionId);
+    if (deprecateErr) {
+      throw createError({ statusCode: 500, statusMessage: `Erreur d\xE9pr\xE9ciation : ${deprecateErr.message}` });
+    }
+  }
+  const updatePayload = { status: targetStatus };
+  if (targetStatus === "approved") {
+    updatePayload.approved_by = parseJwtSub(token);
+    updatePayload.approved_at = (/* @__PURE__ */ new Date()).toISOString();
+  }
+  const { data, error } = await supabase.from("algorithm_versions").update(updatePayload).eq("id", versionId).select().single();
+  if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+  return data;
+});
+
+const status_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: status_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const index_get$4 = defineEventHandler(async (event) => {
+  var _a;
+  const config = useRuntimeConfig();
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const supabase = createAdminReadClient(config, token);
+  const { data, error } = await supabase.from("algorithm_versions").select("id, version, params_json, status, approved_by, approved_at, created_by, created_at").order("created_at", { ascending: false });
+  if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+  return data != null ? data : [];
+});
+
+const index_get$5 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: index_get$4
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const WeightsSchema = z.object({
+  documents_uploaded: z.number().int().min(0).max(100),
+  profile_complete: z.number().int().min(0).max(100),
+  backoffice_validated: z.number().int().min(0).max(100),
+  financial_reports: z.number().int().min(0).max(100),
+  projects_declared: z.number().int().min(0).max(100)
+});
+const BodySchema$4 = z.object({
+  version: z.string().regex(/^\d+\.\d+\.\d+$/, "Format semver requis (ex: 1.2.0)"),
+  weights: WeightsSchema,
+  thresholds: z.object({
+    submission_minimum: z.number().int().min(0).max(100),
+    verified_badge: z.number().int().min(0).max(100)
+  }),
+  required_documents: z.array(z.string().min(1)).min(1)
+});
+const index_post = defineEventHandler(async (event) => {
+  var _a, _b, _c;
+  const raw = await readBody(event);
+  const parsed = BodySchema$4.safeParse(raw);
+  if (!parsed.success) {
+    throw createError({ statusCode: 400, statusMessage: (_b = (_a = parsed.error.errors[0]) == null ? void 0 : _a.message) != null ? _b : "Donn\xE9es invalides" });
+  }
+  const config = useRuntimeConfig();
+  const token = (_c = getRequestHeader(event, "authorization")) == null ? void 0 : _c.replace("Bearer ", "");
+  if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const supabase = createAdminWriteClient(config);
+  const createdBy = parseJwtSub(token);
+  const { data, error } = await supabase.from("algorithm_versions").insert({
+    version: parsed.data.version,
+    params_json: {
+      weights: parsed.data.weights,
+      thresholds: parsed.data.thresholds,
+      required_documents: parsed.data.required_documents
+    },
+    status: "draft",
+    created_by: createdBy
+  }).select().single();
+  if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+  return data;
+});
+
+const index_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: index_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const donations_get = defineEventHandler(async (event) => {
@@ -2605,7 +2814,7 @@ const messages_get$3 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProp
   default: messages_get$2
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const BodySchema$2 = z.object({
+const BodySchema$3 = z.object({
   content: z.string().min(1).max(2e3)
 });
 const messages_post$2 = defineEventHandler(async (event) => {
@@ -2615,7 +2824,7 @@ const messages_post$2 = defineEventHandler(async (event) => {
   const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
   if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
   const raw = await readBody(event);
-  const parsed = BodySchema$2.safeParse(raw);
+  const parsed = BodySchema$3.safeParse(raw);
   if (!parsed.success) throw createError({ statusCode: 400, statusMessage: "Contenu invalide" });
   const config = useRuntimeConfig();
   const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
@@ -2748,6 +2957,118 @@ const historique_get = defineEventHandler(async (event) => {
 const historique_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: historique_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const BodySchema$2 = z.object({
+  identite: z.boolean(),
+  mission: z.boolean(),
+  documents: z.boolean(),
+  projets: z.boolean(),
+  contacts: z.boolean()
+});
+const visibility_patch = defineEventHandler(async (event) => {
+  var _a;
+  const ongId = getRouterParam(event, "id");
+  if (!ongId) throw createError({ statusCode: 400, statusMessage: "ID manquant" });
+  const raw = await readBody(event);
+  const parsed = BodySchema$2.safeParse(raw);
+  if (!parsed.success) throw createError({ statusCode: 400, statusMessage: "Donn\xE9es invalides" });
+  const config = useRuntimeConfig();
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${token}` } }
+  });
+  const { error } = await supabase.from("ongs").update({ section_visibility: parsed.data, updated_at: (/* @__PURE__ */ new Date()).toISOString() }).eq("id", ongId);
+  if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+  return { updated: true };
+});
+
+const visibility_patch$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: visibility_patch
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const overview_get = defineEventHandler(async (event) => {
+  var _a, _b, _c, _d, _e;
+  const config = useRuntimeConfig();
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${token}` } }
+  });
+  const [ongsRes, donationsRes, usersRes] = await Promise.all([
+    supabase.from("ongs").select("status"),
+    supabase.from("financial_transactions").select("amount, status, currency").eq("status", "completed").eq("currency", "eur"),
+    supabase.from("accounts").select("account_type")
+  ]);
+  const ongs = (_b = ongsRes.data) != null ? _b : [];
+  const donations = (_c = donationsRes.data) != null ? _c : [];
+  const users = (_d = usersRes.data) != null ? _d : [];
+  const byStatus = {};
+  for (const o of ongs) {
+    byStatus[o.status] = ((_e = byStatus[o.status]) != null ? _e : 0) + 1;
+  }
+  return {
+    totalOngs: ongs.length,
+    byStatus,
+    totalDonations: donations.length,
+    totalAmountCents: donations.reduce((sum, d) => {
+      var _a2;
+      return sum + ((_a2 = d.amount) != null ? _a2 : 0);
+    }, 0),
+    totalUsers: users.length,
+    totalAgents: users.filter((u) => u.account_type === "user_agent").length,
+    totalPartners: users.filter((u) => u.account_type === "user_partner").length
+  };
+});
+
+const overview_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: overview_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const users_get = defineEventHandler(async (event) => {
+  var _a, _b, _c;
+  const config = useRuntimeConfig();
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${token}` } }
+  });
+  const query = getQuery$1(event);
+  const search = (_c = (_b = query.search) == null ? void 0 : _b.trim()) != null ? _c : "";
+  const type = query.type;
+  let q = supabase.from("accounts").select("id, email, account_type, first_name, last_name, company_name, verified, created_at").order("created_at", { ascending: false });
+  if (type === "user_agent" || type === "user_partner") {
+    q = q.eq("account_type", type);
+  }
+  if (search) {
+    q = q.or(`email.ilike.%${search}%,first_name.ilike.%${search}%,last_name.ilike.%${search}%,company_name.ilike.%${search}%`);
+  }
+  const { data, error } = await q.limit(200);
+  if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+  return (data != null ? data : []).map((row) => {
+    var _a2;
+    return {
+      id: row.id,
+      email: row.email,
+      accountType: row.account_type,
+      firstName: row.first_name,
+      lastName: row.last_name,
+      companyName: row.company_name,
+      verified: (_a2 = row.verified) != null ? _a2 : false,
+      createdAt: row.created_at
+    };
+  });
+});
+
+const users_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: users_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const dossiers_get = defineEventHandler(async (event) => {

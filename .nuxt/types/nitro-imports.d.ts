@@ -15,6 +15,8 @@ declare global {
   const clearResponseHeaders: typeof import('../../node_modules/h3')['clearResponseHeaders']
   const clearSession: typeof import('../../node_modules/h3')['clearSession']
   const codeToStatus: typeof import('../../server/utils/errors')['codeToStatus']
+  const createAdminReadClient: typeof import('../../server/utils/admin-supabase')['createAdminReadClient']
+  const createAdminWriteClient: typeof import('../../server/utils/admin-supabase')['createAdminWriteClient']
   const createApp: typeof import('../../node_modules/h3')['createApp']
   const createAppEventHandler: typeof import('../../node_modules/h3')['createAppEventHandler']
   const createError: typeof import('../../node_modules/h3')['createError']
@@ -83,6 +85,7 @@ declare global {
   const lazyEventHandler: typeof import('../../node_modules/h3')['lazyEventHandler']
   const nitroPlugin: typeof import('../../node_modules/nitropack/dist/runtime/internal/plugin')['nitroPlugin']
   const parseCookies: typeof import('../../node_modules/h3')['parseCookies']
+  const parseJwtSub: typeof import('../../server/utils/admin-supabase')['parseJwtSub']
   const promisifyNodeListener: typeof import('../../node_modules/h3')['promisifyNodeListener']
   const proxyRequest: typeof import('../../node_modules/h3')['proxyRequest']
   const readBody: typeof import('../../node_modules/h3')['readBody']
@@ -147,4 +150,5 @@ export { defineNitroErrorHandler } from 'nitropack/runtime/internal/error/utils'
 export { appendCorsHeaders, appendCorsPreflightHeaders, appendHeader, appendHeaders, appendResponseHeader, appendResponseHeaders, assertMethod, callNodeListener, clearResponseHeaders, clearSession, createApp, createAppEventHandler, createError, createEvent, createEventStream, createRouter, defaultContentType, defineEventHandler, defineLazyEventHandler, defineNodeListener, defineNodeMiddleware, defineRequestMiddleware, defineResponseMiddleware, defineWebSocket, defineWebSocketHandler, deleteCookie, dynamicEventHandler, eventHandler, fetchWithEvent, fromNodeMiddleware, fromPlainHandler, fromWebHandler, getCookie, getHeader, getHeaders, getMethod, getProxyRequestHeaders, getQuery, getRequestFingerprint, getRequestHeader, getRequestHeaders, getRequestHost, getRequestIP, getRequestPath, getRequestProtocol, getRequestURL, getRequestWebStream, getResponseHeader, getResponseHeaders, getResponseStatus, getResponseStatusText, getRouterParam, getRouterParams, getSession, getValidatedQuery, getValidatedRouterParams, handleCacheHeaders, handleCors, isCorsOriginAllowed, isError, isEvent, isEventHandler, isMethod, isPreflightRequest, isStream, isWebResponse, lazyEventHandler, parseCookies, promisifyNodeListener, proxyRequest, readBody, readFormData, readMultipartFormData, readRawBody, readValidatedBody, removeResponseHeader, sanitizeStatusCode, sanitizeStatusMessage, sealSession, send, sendError, sendIterable, sendNoContent, sendProxy, sendRedirect, sendStream, sendWebResponse, serveStatic, setCookie, setHeader, setHeaders, setResponseHeader, setResponseHeaders, setResponseStatus, splitCookiesString, toEventHandler, toNodeListener, toPlainHandler, toWebHandler, toWebRequest, unsealSession, updateSession, useBase, useSession, writeEarlyHints } from 'h3';
 export { buildAssetsURL as __buildAssetsURL, publicAssetsURL as __publicAssetsURL } from '/Users/marius/Documents/Proffessionnel/ONG/node_modules/nuxt/dist/core/runtime/nitro/utils/paths';
 export { defineAppConfig } from '/Users/marius/Documents/Proffessionnel/ONG/node_modules/nuxt/dist/core/runtime/nitro/utils/config';
+export { createAdminReadClient, createAdminWriteClient, parseJwtSub } from '/Users/marius/Documents/Proffessionnel/ONG/server/utils/admin-supabase';
 export { codeToStatus, ServiceError } from '/Users/marius/Documents/Proffessionnel/ONG/server/utils/errors';
