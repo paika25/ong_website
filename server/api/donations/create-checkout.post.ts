@@ -2,13 +2,21 @@ import { z } from 'zod'
 import { createCheckoutSession } from '~/server/services/stripe.service'
 
 const BodySchema = z.object({
-  ongId: z.string().uuid(),
-  ongName: z.string().min(1).max(200),
+  ongId:       z.string().uuid(),
+  ongName:     z.string().min(1).max(200),
   amountEuros: z.number().positive().min(1).max(10000),
 })
 
+function parseJwtSub(token: string): string | null {
+  try {
+    return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()).sub ?? null
+  } catch {
+    return null
+  }
+}
+
 export default defineEventHandler(async (event) => {
-  const raw = await readBody(event)
+  const raw    = await readBody(event)
   const parsed = BodySchema.safeParse(raw)
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: 'Données invalides : ' + parsed.error.errors[0]?.message })
@@ -20,25 +28,31 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, statusMessage: 'NUXT_STRIPE_SECRET_KEY non configurée' })
   }
 
+  // Extraction optionnelle du donor_id depuis le JWT (null si invité non connecté)
+  const authHeader = getRequestHeader(event, 'authorization')
+  const token      = authHeader?.replace('Bearer ', '') ?? null
+  const donorId    = token ? parseJwtSub(token) : null
+
   const idempotencyKey = crypto.randomUUID()
 
-  // Priorité : variable d'env > host de la requête (fonctionne sur Netlify sans config supplémentaire)
   const configuredUrl = config.public.appUrl as string
-  const requestUrl = getRequestURL(event)
-  const appUrl =
+  const requestUrl    = getRequestURL(event)
+  const appUrl        =
     configuredUrl && !configuredUrl.includes('localhost')
       ? configuredUrl
       : `${requestUrl.protocol}//${requestUrl.host}`
+
   const amountCents = Math.round(body.amountEuros * 100)
 
   try {
     const { url } = await createCheckoutSession({
-      ongId: body.ongId,
-      ongName: body.ongName,
+      ongId:          body.ongId,
+      ongName:        body.ongName,
       amountCents,
-      successUrl: `${appUrl}/ongs/${body.ongId}?donation=success&session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${appUrl}/ongs/${body.ongId}?donation=cancelled`,
+      successUrl:     `${appUrl}/ongs/${body.ongId}?donation=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancelUrl:      `${appUrl}/ongs/${body.ongId}?donation=cancelled`,
       idempotencyKey,
+      donorId,
     })
     return { url }
   } catch (err: unknown) {

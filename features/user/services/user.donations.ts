@@ -1,62 +1,56 @@
 import { useSupabase } from '~/composables/useSupabase.client'
 
-export type DonationStatus = 'pending' | 'completed' | 'failed' | 'refunded'
-export type DonationType = 'one-time' | 'monthly' | 'annual' | 'project-based'
-
-export interface DonationMetadata {
-  anonymous: boolean
-  publicMessage: string | null
-  taxReceiptRequested: boolean
-  taxReceiptSent: boolean
-  recognitionType: string
-}
+export type DonationStatus = 'pending' | 'completed' | 'failed' | 'refunded' | 'cancelled'
+export type DonationType   = 'one-time' | 'monthly' | 'annual' | 'project-based'
 
 export interface UserDonation {
-  id: string
-  ongId: string
-  ongName: string
-  amount: number
-  type: DonationType
-  status: DonationStatus
+  id:            string
+  ongId:         string
+  ongName:       string
+  amount:        number  // en euros (centimes convertis)
+  currency:      string
+  type:          DonationType
+  status:        DonationStatus
+  provider:      string
   paymentMethod: string | null
   transactionId: string | null
-  metadata: DonationMetadata
-  createdAt: string
+  createdAt:     string
 }
 
 export const useUserDonationsService = () => {
   const fetchUserDonations = async (userId: string): Promise<UserDonation[]> => {
     const supabase = useSupabase()
-    if (!supabase) return []
+    if (!supabase || !userId) return []
 
     try {
       const { data, error } = await supabase
-        .from('donations')
-        .select('id, ong_id, amount, type, status, payment_method, transaction_id, metadata, created_at, ong:ongs ( name )')
-        .eq('donor_account_id', userId)
+        .from('financial_transactions')
+        .select('id, ong_id, amount, currency, status, provider, stripe_payment_intent_id, created_at, ong:ongs(name)')
+        .eq('donor_id', userId)
+        .eq('transaction_type', 'donation')
         .order('created_at', { ascending: false })
 
       if (error) {
-        console.error('Erreur chargement donations:', error.message)
+        console.error('[user.donations] Erreur Supabase:', error.message)
         return []
       }
 
-      if (!data || data.length === 0) return []
-
-      return data.map((d: any) => ({
-        id: d.id,
-        ongId: d.ong_id,
-        ongName: d.ong?.name || 'ONG inconnue',
-        amount: Number(d.amount),
-        type: d.type || 'one-time',
-        status: d.status || 'pending',
-        paymentMethod: d.payment_method,
-        transactionId: d.transaction_id,
-        metadata: d.metadata || { anonymous: false, publicMessage: null, taxReceiptRequested: false, taxReceiptSent: false, recognitionType: 'full_name' },
-        createdAt: d.created_at
+      return (data ?? []).map((d: any) => ({
+        id:            d.id,
+        ongId:         d.ong_id,
+        ongName:       d.ong?.name ?? 'ONG inconnue',
+        // financial_transactions stocke les montants EUR en centimes
+        amount:        d.currency === 'eur' ? Math.round(d.amount / 100) : d.amount,
+        currency:      d.currency ?? 'eur',
+        type:          'one-time' as DonationType,
+        status:        d.status as DonationStatus,
+        provider:      d.provider ?? 'stripe',
+        paymentMethod: d.provider ?? null,
+        transactionId: d.stripe_payment_intent_id ?? null,
+        createdAt:     d.created_at,
       }))
     } catch (err) {
-      console.error('Erreur chargement donations:', err)
+      console.error('[user.donations] Exception:', err)
       return []
     }
   }

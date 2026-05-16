@@ -1,3 +1,5 @@
+import { getToken } from '~/features/auth/utils/getToken'
+
 export interface CheckoutResult {
   url: string
 }
@@ -13,8 +15,10 @@ export async function createCheckout(
   ongName: string,
   amountEuros: number
 ): Promise<CheckoutResult> {
+  const token = await getToken()
   return $fetch<CheckoutResult>('/api/donations/create-checkout', {
     method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
     body: { ongId, ongName, amountEuros },
   })
 }

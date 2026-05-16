@@ -179,7 +179,13 @@ const statCards = computed(() => [
 ])
 
 function statusLabel(status: string): string {
-  return { completed: 'Complété', pending: 'En attente', failed: 'Échoué', refunded: 'Remboursé' }[status] ?? status
+  return ({
+    completed: 'Complété',
+    pending:   'En attente',
+    failed:    'Échoué',
+    refunded:  'Remboursé',
+    cancelled: 'Annulé',
+  } as Record<string, string>)[status] ?? status
 }
 
 function statusClass(status: string): string {
@@ -188,6 +194,7 @@ function statusClass(status: string): string {
     pending:   'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300',
     failed:    'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',
     refunded:  'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
+    cancelled: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
   } as Record<string, string>)[status] ?? 'bg-gray-100 text-gray-600'
 }
 

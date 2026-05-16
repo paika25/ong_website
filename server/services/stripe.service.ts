@@ -7,12 +7,13 @@ function getStripe(): Stripe {
 }
 
 export async function createCheckoutSession(params: {
-  ongId: string
-  ongName: string
-  amountCents: number
-  successUrl: string
-  cancelUrl: string
+  ongId:          string
+  ongName:        string
+  amountCents:    number
+  successUrl:     string
+  cancelUrl:      string
   idempotencyKey: string
+  donorId?:       string | null
 }): Promise<{ url: string }> {
   const stripe = getStripe()
 
@@ -33,10 +34,13 @@ export async function createCheckoutSession(params: {
         },
       ],
       success_url: params.successUrl,
-      cancel_url: params.cancelUrl,
+      cancel_url:  params.cancelUrl,
       metadata: {
-        ong_id: params.ongId,
+        ong_id:          params.ongId,
         idempotency_key: params.idempotencyKey,
+        // donor_id stocké dans les metadata Stripe pour être récupéré
+        // à la fois par confirm-session ET par le webhook
+        ...(params.donorId ? { donor_id: params.donorId } : {}),
       },
     },
     { idempotencyKey: params.idempotencyKey }

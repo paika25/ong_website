@@ -1373,7 +1373,22 @@ _QsHGK4cVKJECU974xO65FOyg1RE1_XTueHXil9TKqSg,
 _ErdtmwJcqqpQ5PD4b4UyI856ixhiUzsheifQwM0kEwY
 ];
 
-const assets = {};
+const assets = {
+  "/index.mjs": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"26356-NZl62VpiveJvSmh3IGwIgiCqCqI\"",
+    "mtime": "2026-05-16T15:57:00.212Z",
+    "size": 156502,
+    "path": "index.mjs"
+  },
+  "/index.mjs.map": {
+    "type": "application/json",
+    "etag": "\"826ca-10lJx7LD7CH/A+yCpIBffP+bPSA\"",
+    "mtime": "2026-05-16T15:57:00.220Z",
+    "size": 534218,
+    "path": "index.mjs.map"
+  }
+};
 
 function readAsset (id) {
   const serverDir = dirname$1(fileURLToPath(globalThis._importMeta_.url));
@@ -1615,7 +1630,7 @@ function createAdminWriteClient(config) {
     auth: { autoRefreshToken: false, persistSession: false }
   });
 }
-function parseJwtSub(token) {
+function parseJwtSub$1(token) {
   var _a;
   try {
     return (_a = JSON.parse(Buffer.from(token.split(".")[1], "base64").toString()).sub) != null ? _a : null;
@@ -2435,7 +2450,7 @@ const status_post = defineEventHandler(async (event) => {
   }
   const updatePayload = { status: targetStatus };
   if (targetStatus === "approved") {
-    updatePayload.approved_by = parseJwtSub(token);
+    updatePayload.approved_by = parseJwtSub$1(token);
     updatePayload.approved_at = (/* @__PURE__ */ new Date()).toISOString();
   }
   const { data, error } = await supabase.from("algorithm_versions").update(updatePayload).eq("id", versionId).select().single();
@@ -2491,7 +2506,7 @@ const index_post = defineEventHandler(async (event) => {
   const token = (_c = getRequestHeader(event, "authorization")) == null ? void 0 : _c.replace("Bearer ", "");
   if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
   const supabase = createAdminWriteClient(config);
-  const createdBy = parseJwtSub(token);
+  const createdBy = parseJwtSub$1(token);
   const { data, error } = await supabase.from("algorithm_versions").insert({
     version: parsed.data.version,
     params_json: {
@@ -3248,7 +3263,7 @@ const validate_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePro
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const confirmSession_post = defineEventHandler(async (event) => {
-  var _a, _b, _c, _d, _e, _f;
+  var _a, _b, _c, _d, _e, _f, _g, _h;
   const raw = await readBody(event);
   const sessionId = raw == null ? void 0 : raw.sessionId;
   if (!sessionId) throw createError({ statusCode: 400, statusMessage: "sessionId requis" });
@@ -3269,6 +3284,7 @@ const confirmSession_post = defineEventHandler(async (event) => {
   }
   const ongId = (_a = session.metadata) == null ? void 0 : _a.ong_id;
   const idempotencyKey = (_b = session.metadata) == null ? void 0 : _b.idempotency_key;
+  const donorId = (_d = (_c = session.metadata) == null ? void 0 : _c.donor_id) != null ? _d : null;
   const paymentIntentId = session.payment_intent;
   const amountCents = session.amount_total;
   if (!ongId || !idempotencyKey || !paymentIntentId) {
@@ -3292,10 +3308,11 @@ const confirmSession_post = defineEventHandler(async (event) => {
     status: "completed",
     transaction_type: "donation",
     provider: "stripe",
-    donor_email: (_d = (_c = session.customer_details) == null ? void 0 : _c.email) != null ? _d : null,
+    donor_id: donorId,
+    donor_email: (_f = (_e = session.customer_details) == null ? void 0 : _e.email) != null ? _f : null,
     metadata: {
       stripe_session_id: sessionId,
-      customer_name: (_f = (_e = session.customer_details) == null ? void 0 : _e.name) != null ? _f : null
+      customer_name: (_h = (_g = session.customer_details) == null ? void 0 : _g.name) != null ? _h : null
     }
   });
   if (error) {
@@ -3337,7 +3354,10 @@ async function createCheckoutSession(params) {
       cancel_url: params.cancelUrl,
       metadata: {
         ong_id: params.ongId,
-        idempotency_key: params.idempotencyKey
+        idempotency_key: params.idempotencyKey,
+        // donor_id stocké dans les metadata Stripe pour être récupéré
+        // à la fois par confirm-session ET par le webhook
+        ...params.donorId ? { donor_id: params.donorId } : {}
       }
     },
     { idempotencyKey: params.idempotencyKey }
@@ -3354,8 +3374,16 @@ const BodySchema$1 = z.object({
   ongName: z.string().min(1).max(200),
   amountEuros: z.number().positive().min(1).max(1e4)
 });
-const createCheckout_post = defineEventHandler(async (event) => {
+function parseJwtSub(token) {
   var _a;
+  try {
+    return (_a = JSON.parse(Buffer.from(token.split(".")[1], "base64").toString()).sub) != null ? _a : null;
+  } catch {
+    return null;
+  }
+}
+const createCheckout_post = defineEventHandler(async (event) => {
+  var _a, _b;
   const raw = await readBody(event);
   const parsed = BodySchema$1.safeParse(raw);
   if (!parsed.success) {
@@ -3366,6 +3394,9 @@ const createCheckout_post = defineEventHandler(async (event) => {
   if (!config.stripeSecretKey) {
     throw createError({ statusCode: 500, statusMessage: "NUXT_STRIPE_SECRET_KEY non configur\xE9e" });
   }
+  const authHeader = getRequestHeader(event, "authorization");
+  const token = (_b = authHeader == null ? void 0 : authHeader.replace("Bearer ", "")) != null ? _b : null;
+  const donorId = token ? parseJwtSub(token) : null;
   const idempotencyKey = crypto.randomUUID();
   const configuredUrl = config.public.appUrl;
   const requestUrl = getRequestURL(event);
@@ -3378,7 +3409,8 @@ const createCheckout_post = defineEventHandler(async (event) => {
       amountCents,
       successUrl: `${appUrl}/ongs/${body.ongId}?donation=success&session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${appUrl}/ongs/${body.ongId}?donation=cancelled`,
-      idempotencyKey
+      idempotencyKey,
+      donorId
     });
     return { url };
   } catch (err) {
@@ -3551,7 +3583,7 @@ const _id__get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const stripe_post = defineEventHandler(async (event) => {
-  var _a, _b, _c, _d, _e, _f;
+  var _a, _b, _c, _d, _e, _f, _g, _h;
   const sig = getRequestHeader(event, "stripe-signature");
   if (!sig) throw createError({ statusCode: 400, statusMessage: "Header Stripe-Signature manquant" });
   const rawBody = await readRawBody(event);
@@ -3567,6 +3599,7 @@ const stripe_post = defineEventHandler(async (event) => {
     const session = stripeEvent.data.object;
     const ongId = (_a = session.metadata) == null ? void 0 : _a.ong_id;
     const idempotencyKey = (_b = session.metadata) == null ? void 0 : _b.idempotency_key;
+    const donorId = (_d = (_c = session.metadata) == null ? void 0 : _c.donor_id) != null ? _d : null;
     const amountCents = session.amount_total;
     const paymentIntentId = session.payment_intent;
     if (!ongId || !idempotencyKey || !amountCents || !paymentIntentId) {
@@ -3588,10 +3621,11 @@ const stripe_post = defineEventHandler(async (event) => {
         status: "completed",
         transaction_type: "donation",
         provider: "stripe",
-        donor_email: (_d = (_c = session.customer_details) == null ? void 0 : _c.email) != null ? _d : null,
+        donor_id: donorId,
+        donor_email: (_f = (_e = session.customer_details) == null ? void 0 : _e.email) != null ? _f : null,
         metadata: {
           stripe_session_id: session.id,
-          customer_name: (_f = (_e = session.customer_details) == null ? void 0 : _e.name) != null ? _f : null
+          customer_name: (_h = (_g = session.customer_details) == null ? void 0 : _g.name) != null ? _h : null
         }
       });
       if (error) {

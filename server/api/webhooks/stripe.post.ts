@@ -18,11 +18,12 @@ export default defineEventHandler(async (event) => {
   }
 
   if (stripeEvent.type === 'checkout.session.completed') {
-    const session = stripeEvent.data.object as any
-    const ongId: string | undefined = session.metadata?.ong_id
+    const session        = stripeEvent.data.object as any
+    const ongId: string | undefined          = session.metadata?.ong_id
     const idempotencyKey: string | undefined = session.metadata?.idempotency_key
-    const amountCents: number = session.amount_total
-    const paymentIntentId: string = session.payment_intent
+    const donorId: string | null             = session.metadata?.donor_id ?? null
+    const amountCents: number                = session.amount_total
+    const paymentIntentId: string            = session.payment_intent
 
     if (!ongId || !idempotencyKey || !amountCents || !paymentIntentId) {
       return { received: true }
@@ -42,18 +43,19 @@ export default defineEventHandler(async (event) => {
 
     if (!existing) {
       const { error } = await supabase.from('financial_transactions').insert({
-        ong_id: ongId,
+        ong_id:                   ongId,
         stripe_payment_intent_id: paymentIntentId,
-        idempotency_key: idempotencyKey,
-        amount: amountCents,
-        currency: 'eur',
-        status: 'completed',
-        transaction_type: 'donation',
-        provider: 'stripe',
-        donor_email: session.customer_details?.email ?? null,
+        idempotency_key:          idempotencyKey,
+        amount:                   amountCents,
+        currency:                 'eur',
+        status:                   'completed',
+        transaction_type:         'donation',
+        provider:                 'stripe',
+        donor_id:                 donorId,
+        donor_email:              session.customer_details?.email ?? null,
         metadata: {
           stripe_session_id: session.id,
-          customer_name: session.customer_details?.name ?? null,
+          customer_name:     session.customer_details?.name ?? null,
         },
       })
 
