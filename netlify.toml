@@ -6,6 +6,7 @@ NODE_VERSION = "22"
 NITRO_PRESET = "netlify"
 NPM_FLAGS = "--legacy-peer-deps"
 NUXT_TELEMETRY_DISABLED = "1"
+NODE_ENV = "development"
 
 [functions]
 node_bundler = "esbuild"
