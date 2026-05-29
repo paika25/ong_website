@@ -16,6 +16,7 @@ export async function uploadDocumentWithProgress(
   ongId: string,
   file: File,
   name: string,
+  docKey: string,
   category: DocumentCategory,
   onProgress: (pct: number) => void
 ): Promise<{ fileUrl: string; docId: string }> {
@@ -51,16 +52,30 @@ export async function uploadDocumentWithProgress(
 
   onProgress(70)
 
-  // URL publique
-  const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(filePath)
-  if (!urlData?.publicUrl) throw new Error('Impossible de récupérer l\'URL du document')
+  // URL signée (1h)
+  const { data: signed } = await supabase.storage.from(BUCKET).createSignedUrl(filePath, 3600)
+  if (!signed?.signedUrl) {
+    await supabase.storage.from(BUCKET).remove([filePath])
+    throw new Error('Impossible de générer l\'URL signée')
+  }
 
   onProgress(85)
 
-  // Enregistrement en base
+  // Enregistrement en base (storage_path pour regénérer les URLs ultérieurement)
+  // Les documents de dossier sont privés par défaut (seuls ONG + back-office y accèdent)
   const { data: doc, error: insertError } = await supabase
     .from('ong_documents')
-    .insert({ ong_id: ongId, name, category, file_url: urlData.publicUrl, file_size: file.size, mime_type: file.type })
+    .insert({
+      ong_id: ongId,
+      name,
+      doc_key: docKey,
+      category,
+      visibility: 'private',
+      storage_path: filePath,
+      file_url: signed.signedUrl,
+      file_size: file.size,
+      mime_type: file.type,
+    })
     .select('id')
     .single()
 
@@ -70,5 +85,5 @@ export async function uploadDocumentWithProgress(
   }
 
   onProgress(100)
-  return { fileUrl: urlData.publicUrl, docId: doc.id }
+  return { fileUrl: signed.signedUrl, docId: doc.id }
 }

@@ -29,6 +29,10 @@ export interface SignUpData {
   firstName?: string | null
   lastName?: string | null
   companyName?: string | null
+  /** Nom de l'organisation (bailleur institutionnel) */
+  organizationName?: string | null
+  /** Fonction/poste au sein de l'organisation */
+  jobTitle?: string | null
   bio?: string | null
   location?: string | null
   website?: string | null

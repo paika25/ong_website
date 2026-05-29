@@ -9,6 +9,7 @@
       :users="users"
       :loading="loading"
       @filter="onFilter"
+      @verified="onVerified"
     />
   </div>
 </template>
@@ -36,6 +37,10 @@ async function load(filter: AdminUsersFilter = {}) {
 
 function onFilter(filter: AdminUsersFilter) {
   load(filter)
+}
+
+function onVerified(id: string, verified: boolean) {
+  users.value = users.value.map(u => u.id === id ? { ...u, verified } : u)
 }
 
 onMounted(() => load())

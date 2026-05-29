@@ -23,20 +23,47 @@ export default defineEventHandler(async (event) => {
   if (error) throw createError({ statusCode: 500, statusMessage: error.message })
   if (!ong)  throw createError({ statusCode: 404, statusMessage: 'ONG introuvable' })
 
-  // Documents — URL signées 1h (nécessite service role pour Storage, sinon liste vide)
+  // Documents — URL signées 1h via storage_path stocké en base
   let documents: any[] = []
   if (config.supabaseServiceRoleKey) {
     const { createClient: createAdmin } = await import('@supabase/supabase-js')
     const admin = createAdmin(config.public.supabaseUrl, config.supabaseServiceRoleKey, {
       auth: { autoRefreshToken: false, persistSession: false }
     })
-    const { data: files } = await admin.storage.from('ong-documents').list(`${ongId}/`, { limit: 50 })
+    const { data: rows } = await admin
+      .from('ong_documents')
+      .select('id, name, category, visibility, storage_path, file_url, file_size, mime_type, created_at')
+      .eq('ong_id', ongId)
+      .order('created_at', { ascending: false })
+
     documents = await Promise.all(
-      (files ?? []).map(async (f: any) => {
-        const { data: signed } = await admin.storage.from('ong-documents').createSignedUrl(`${ongId}/${f.name}`, 3600)
-        return { name: f.name, url: signed?.signedUrl ?? null }
+      (rows ?? []).map(async (row: any) => {
+        const path: string | null = row.storage_path ?? extractPublicPath(row.file_url, ongId)
+        let signedUrl: string | null = null
+        if (path) {
+          const { data: s } = await admin.storage.from('ong-documents').createSignedUrl(path, 3600)
+          signedUrl = s?.signedUrl ?? null
+        }
+        return {
+          id: row.id,
+          name: row.name,
+          category: row.category,
+          visibility: row.visibility,
+          fileSize: row.file_size,
+          mimeType: row.mime_type,
+          createdAt: row.created_at,
+          url: signedUrl,
+        }
       })
     )
+  }
+
+  function extractPublicPath(fileUrl: string | null, ongId: string): string | null {
+    if (!fileUrl) return null
+    const marker = '/storage/v1/object/public/ong-documents/'
+    const idx = fileUrl.indexOf(marker)
+    if (idx === -1) return null
+    return decodeURIComponent(fileUrl.substring(idx + marker.length))
   }
 
   return { ong, documents }

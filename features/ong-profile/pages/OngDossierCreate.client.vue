@@ -163,7 +163,7 @@ async function nextStep() {
         const res = await createOng(authStore.currentUser!.id, {
           name: identite.value.nomOng,
           description: mission.value.missionPrincipale || identite.value.nomOng,
-          category: 'social',
+          category: mission.value.secteurs[0] ?? 'social',
           location: identite.value.adresseSiege,
           email: identite.value.email,
           phone: identite.value.telephone,
@@ -182,7 +182,7 @@ async function nextStep() {
       await updateOng(ongId.value, {
         name: identite.value.nomOng,
         description: mission.value.missionPrincipale,
-        category: 'social',
+        category: mission.value.secteurs[0] ?? 'social',
         location: identite.value.adresseSiege,
         email: identite.value.email,
       })

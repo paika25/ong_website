@@ -1,5 +1,8 @@
 import { applyStatusTransition } from '../../../services/ong-status.service'
+import { createAdminReadClient } from '../../../utils/supabase-admin'
 import { createClient } from '@supabase/supabase-js'
+
+const REQUIRED_DOC_KEYS = ['statuts', 'recepisse', 'rapport_financier']
 
 export default defineEventHandler(async (event) => {
   const ongId  = getRouterParam(event, 'id')
@@ -18,6 +21,22 @@ export default defineEventHandler(async (event) => {
   const { data: ong } = await supabase.from('ongs').select('account_id').eq('id', ongId).maybeSingle()
   if (!ong) throw createError({ statusCode: 404, statusMessage: 'ONG introuvable' })
   if (ong.account_id !== userId) throw createError({ statusCode: 403, statusMessage: 'Accès non autorisé' })
+
+  // Vérifier la présence des documents obligatoires (côté serveur)
+  const adminDb = createAdminReadClient(config, token)
+  const { data: docs } = await adminDb
+    .from('ong_documents')
+    .select('doc_key')
+    .eq('ong_id', ongId)
+
+  const uploadedKeys = (docs ?? []).map((d: { doc_key: string }) => d.doc_key)
+  const missing = REQUIRED_DOC_KEYS.filter(key => !uploadedKeys.includes(key))
+  if (missing.length > 0) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: `Documents obligatoires manquants : ${missing.join(', ')}`,
+    })
+  }
 
   const result = await applyStatusTransition(ongId, 'submit', token, userId)
   if (!result.success) throw createError({ statusCode: 422, statusMessage: result.error })

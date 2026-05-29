@@ -130,13 +130,15 @@ export const useAuthService = () => {
 
       // Préparer les métadonnées pour le trigger
       const metadata = {
-        account_type: signUpData.accountType,
-        first_name: signUpData.firstName || null,
-        last_name: signUpData.lastName || null,
-        company_name: signUpData.companyName || null,
-        bio: signUpData.bio || null,
-        location: signUpData.location || null,
-        website: signUpData.website || null
+        account_type:      signUpData.accountType,
+        first_name:        signUpData.firstName || null,
+        last_name:         signUpData.lastName  || null,
+        company_name:      signUpData.companyName      || null,
+        organization_name: signUpData.organizationName || null,
+        job_title:         signUpData.jobTitle         || null,
+        bio:               signUpData.bio      || null,
+        location:          signUpData.location || null,
+        website:           signUpData.website  || null,
       }
 
       console.log('📝 Inscription avec metadata:', metadata)
@@ -195,18 +197,20 @@ export const useAuthService = () => {
       const { data: insertedAccount, error: insertError } = await supabase
         .from('accounts')
         .insert({
-          id: authData.user.id,
-          email: signUpData.email,
-          account_type: signUpData.accountType,
-          first_name: signUpData.firstName || null,
-          last_name: signUpData.lastName || null,
-          company_name: signUpData.companyName || null,
-          bio: signUpData.bio || null,
-          location: signUpData.location || null,
-          website: signUpData.website || null,
-          verified: false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          id:                authData.user.id,
+          email:             signUpData.email,
+          account_type:      signUpData.accountType,
+          first_name:        signUpData.firstName        || null,
+          last_name:         signUpData.lastName         || null,
+          company_name:      signUpData.companyName      || null,
+          organization_name: signUpData.organizationName || null,
+          job_title:         signUpData.jobTitle         || null,
+          bio:               signUpData.bio              || null,
+          location:          signUpData.location         || null,
+          website:           signUpData.website          || null,
+          verified:          false,
+          created_at:        new Date().toISOString(),
+          updated_at:        new Date().toISOString(),
         })
         .select()
         .single()

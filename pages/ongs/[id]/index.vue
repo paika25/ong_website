@@ -41,9 +41,9 @@
 import OngDetail from '~/features/ong/components/OngDetail.client.vue'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.client.vue'
+import { fromSupabaseRow } from '@/features/ong/services/ong.mapper'
 
 definePageMeta({ layout: false })
-import { getOngById } from '@/features/ong/services/ongService'
 import { onMounted, ref } from 'vue'
 import type { ONG } from '@/features/ong/type'
 import { useRoute } from '#app'
@@ -57,24 +57,25 @@ const handleBack = () => {
   navigateTo('/')
 }
 
-// ✅ Charger les données côté client uniquement pour éviter SSR
 onMounted(async () => {
   try {
     isLoading.value = true
     error.value = null
-    
-    // Récupérer l'ID depuis la route Nuxt (SSR-safe)
+
     const id = route.params.id as string
-    
-    if (!id) {
-      error.value = 'ID de l\'ONG manquant'
-      return
-    }
-    
-    const result = await getOngById(id)
-    
-    if (result) {
-      ong.value = result
+    if (!id) { error.value = 'ID de l\'ONG manquant'; return }
+
+    // Utiliser le token si disponible (pour accès aux données financières des partenaires validés)
+    const supabase = useSupabase()
+    const { data: { session } } = supabase ? await supabase.auth.getSession() : { data: { session: null } }
+    const token = session?.access_token
+
+    const raw = await $fetch<any>(`/api/ongs/${id}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    }).catch(() => null)
+
+    if (raw) {
+      ong.value = fromSupabaseRow(raw)
     } else {
       error.value = 'Cette ONG n\'existe pas'
     }

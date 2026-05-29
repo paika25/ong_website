@@ -219,11 +219,11 @@ watch(currentStep, (step) => {
 // ── Computed : docs + soumission ─────────────────────────────
 const hasRequiredDocs = computed(() =>
   REQUIRED_DOCS.filter(d => d.required).every(req =>
-    documents.value.some(d => d.name.toLowerCase().includes(req.key.replace('_', '')))
+    documents.value.some(d => d.docKey === req.key)
   )
 )
 
-const canSubmit = computed(() => score.value >= 40)
+const canSubmit = computed(() => score.value >= 40 && hasRequiredDocs.value)
 
 // ── Auto-save toutes les 30s ─────────────────────────────────
 let autoSaveTimer: ReturnType<typeof setInterval> | null = null
@@ -264,7 +264,7 @@ async function silentSave() {
     await updateOng(currentOngId.value, {
       name: identite.value.nomOng,
       description: mission.value.missionPrincipale || identite.value.nomOng,
-      category: 'social',
+      category: mission.value.secteurs[0] ?? 'social',
       location: identite.value.adresseSiege,
       email: identite.value.email,
     })
@@ -310,7 +310,7 @@ async function nextStep() {
         const res = await createOng(authStore.currentUser!.id, {
           name: identite.value.nomOng,
           description: identite.value.nomOng,
-          category: 'social',
+          category: mission.value.secteurs[0] ?? 'social',
           location: identite.value.adresseSiege,
           email: identite.value.email,
           phone: identite.value.telephone,

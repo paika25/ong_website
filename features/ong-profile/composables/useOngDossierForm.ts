@@ -25,6 +25,7 @@ export interface DossierMission {
 export interface DossierDocument {
   id: string
   name: string
+  docKey: string
   category: 'legal' | 'activity'
   fileUrl: string
   fileSize: number
@@ -45,7 +46,7 @@ export const ZONES = [
 export const REQUIRED_DOCS = [
   { key: 'statuts',          label: 'Statuts de l\'association',       required: true  },
   { key: 'recepisse',        label: 'Récépissé officiel d\'enregistrement', required: true  },
-  { key: 'rapport_financier', label: 'Dernier rapport financier audité',  required: false },
+  { key: 'rapport_financier', label: 'Dernier rapport financier audité',  required: true  },
 ]
 
 export function useOngDossierForm(ongId?: string) {
@@ -85,16 +86,14 @@ export function useOngDossierForm(ongId?: string) {
 
   function validateDocuments(): boolean {
     const requiredDocs = REQUIRED_DOCS.filter(d => d.required)
-    const uploadedKeys = documents.value.map(d => d.name.toLowerCase())
-    errors.documents = requiredDocs.every(d =>
-      uploadedKeys.some(k => k.includes(d.key.replace('_', ' ')))
-    ) ? '' : 'Les documents obligatoires (statuts + récépissé) sont requis'
+    errors.documents = requiredDocs.every(req =>
+      documents.value.some(d => d.docKey === req.key)
+    ) ? '' : 'Les documents obligatoires (statuts, récépissé et rapport financier audité) sont requis'
     return !errors.documents
   }
 
   function addDocument(doc: DossierDocument) {
-    // Remplacer si même catégorie + même type de document
-    const idx = documents.value.findIndex(d => d.category === doc.category && d.name === doc.name)
+    const idx = documents.value.findIndex(d => d.docKey === doc.docKey)
     if (idx >= 0) documents.value[idx] = doc
     else documents.value.push(doc)
   }

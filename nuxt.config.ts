@@ -15,6 +15,9 @@ export default defineNuxtConfig({
     supabaseServiceRoleKey: '', // NUXT_SUPABASE_SERVICE_ROLE_KEY
     stripeSecretKey: '',        // NUXT_STRIPE_SECRET_KEY
     stripeWebhookSecret: '',    // NUXT_STRIPE_WEBHOOK_SECRET
+    brevoApiKey: '',            // NUXT_BREVO_API_KEY
+    emailSenderName: 'Paika',   // NUXT_EMAIL_SENDER_NAME
+    emailSenderAddress: '',     // NUXT_EMAIL_SENDER_ADDRESS
     public: {
       supabaseUrl: '',
       supabaseAnonKey: '',

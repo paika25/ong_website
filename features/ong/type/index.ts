@@ -98,12 +98,14 @@ export interface Project {
 // ── Documents ONG ──────────────────────────
 
 export type DocumentCategory = 'legal' | 'activity'
+export type DocumentVisibility = 'public' | 'partners' | 'private'
 
 export interface OngDocument {
   id: string
   ongId: string
   name: string
   category: DocumentCategory
+  visibility: DocumentVisibility
   fileUrl: string
   fileSize: number
   mimeType: string

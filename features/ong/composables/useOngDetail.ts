@@ -1,8 +1,14 @@
 import { ref, computed, onMounted } from 'vue'
 import type { ONG, OngDocument } from '../type'
 import { getOngDocuments } from '../services'
+import { useAuthStore } from '~/features/auth/stores/auth.client'
 
 export function useOngDetail(ong: () => ONG) {
+  const authStore = useAuthStore()
+  // Finances visibles : partenaire validé, agent ONG, ou back-office
+  const canSeeFinancials = computed(() =>
+    (authStore.isPartner && authStore.isVerified) || authStore.isAgent
+  )
   // État
   const activeTab = ref(0)
   const documents = ref<OngDocument[]>([])
@@ -33,13 +39,15 @@ export function useOngDetail(ong: () => ONG) {
       baseTabs.push({ label: 'Projets', key: 'projects' })
     }
 
-    if (o.financials) {
+    if (o.financials && canSeeFinancials.value) {
       baseTabs.push({ label: 'Finances', key: 'financials' })
     }
     if (o.impact) {
       baseTabs.push({ label: 'Impact', key: 'impact' })
     }
-    baseTabs.push({ label: 'Dons', key: 'donation' })
+    if (o.status === 'verified' || o.status === 'active') {
+      baseTabs.push({ label: 'Dons', key: 'donation' })
+    }
     if (o.legal || o.monitoring) {
       baseTabs.push({ label: 'Administratif', key: 'transparency' })
     }
@@ -163,6 +171,8 @@ export function useOngDetail(ong: () => ONG) {
   }
 
   const handleDonate = (_opportunity?: any) => {
+    const o = ong()
+    if (o.status !== 'verified' && o.status !== 'active') return
     showDonationModal.value = true
   }
 

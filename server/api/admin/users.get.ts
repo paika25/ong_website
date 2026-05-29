@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
 
   let q = supabase
     .from('accounts')
-    .select('id, email, account_type, first_name, last_name, company_name, verified, created_at')
+    .select('id, email, account_type, first_name, last_name, company_name, organization_name, job_title, mandate_doc_path, verified, created_at')
     .order('created_at', { ascending: false })
 
   if (type === 'user_agent' || type === 'user_partner') {
@@ -31,13 +31,16 @@ export default defineEventHandler(async (event) => {
   if (error) throw createError({ statusCode: 500, statusMessage: error.message })
 
   return (data ?? []).map((row: any) => ({
-    id:          row.id,
-    email:       row.email,
-    accountType: row.account_type,
-    firstName:   row.first_name,
-    lastName:    row.last_name,
-    companyName: row.company_name,
-    verified:    row.verified ?? false,
-    createdAt:   row.created_at,
+    id:              row.id,
+    email:           row.email,
+    accountType:     row.account_type,
+    firstName:       row.first_name,
+    lastName:        row.last_name,
+    companyName:     row.company_name,
+    organizationName: row.organization_name ?? null,
+    jobTitle:        row.job_title ?? null,
+    mandateDocPath:  row.mandate_doc_path ?? null,
+    verified:        row.verified ?? false,
+    createdAt:       row.created_at,
   }))
 })

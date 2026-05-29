@@ -193,6 +193,12 @@ declare module 'nuxt/schema' {
 
    stripeWebhookSecret: string,
 
+   brevoApiKey: string,
+
+   emailSenderName: string,
+
+   emailSenderAddress: string,
+
    nitro: {
       envPrefix: string,
    },

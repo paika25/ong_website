@@ -46,11 +46,22 @@
         <UButton
           color="primary"
           size="lg"
-          :disabled="ong.status !== 'active'"
+          :disabled="!canDonate"
+          :title="!canDonate ? 'Cette ONG n\'est pas encore habilitée à recevoir des dons' : undefined"
           @click="$emit('donate')"
         >
           <Icon name="i-heroicons-heart" class="w-5 h-5 mr-2" />
           Faire un don
+        </UButton>
+        <UButton
+          v-if="isPartner && (ong.status === 'verified' || ong.status === 'active')"
+          variant="outline"
+          size="lg"
+          class="bg-white/90 text-gray-900 hover:bg-white backdrop-blur-sm border-gray-800/40"
+          @click="$emit('contact')"
+        >
+          <Icon name="i-heroicons-envelope" class="w-5 h-5 mr-2" />
+          Contacter
         </UButton>
         <UButton
           variant="primary"
@@ -122,6 +133,7 @@
 <script setup lang="ts">
 import type { ONG } from '../type'
 import BadgeVerifie from '~/features/verification/components/BadgeVerifie.vue'
+import { useAuthStore } from '~/features/auth/stores/auth.client'
 
 const props = defineProps<{
   ong: ONG;
@@ -136,5 +148,14 @@ const props = defineProps<{
 defineEmits<{
   donate: []
   shareDonation: []
+  contact: []
 }>()
+
+const authStore = useAuthStore()
+
+const canDonate = computed(() =>
+  props.ong.status === 'verified' || props.ong.status === 'active'
+)
+
+const isPartner = computed(() => authStore.isPartner)
 </script>

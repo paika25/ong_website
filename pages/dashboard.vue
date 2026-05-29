@@ -9,6 +9,21 @@
       <p class="text-sm text-muted-foreground mt-1">Suivez vos dons et découvrez des ONGs à soutenir.</p>
     </div>
 
+    <!-- Bannière : partenaire non encore validé -->
+    <div
+      v-if="user && user.accountType === 'user_partner' && !user.verified"
+      class="mb-6 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 rounded-xl px-5 py-4 flex items-start gap-3"
+    >
+      <Icon name="i-heroicons-clock" class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-amber-800 dark:text-amber-300 text-sm">Compte en attente de validation</p>
+        <p class="text-xs text-amber-700 dark:text-amber-400 mt-0.5 leading-relaxed">
+          Votre profil partenaire est en cours de vérification par notre équipe (sous 48 h ouvrées).
+          En attendant, vous naviguez comme visiteur public : les données financières des ONGs ne sont pas encore accessibles.
+        </p>
+      </div>
+    </div>
+
     <!-- Stats -->
     <div class="grid grid-cols-3 gap-4 mb-8">
       <div
@@ -47,6 +62,73 @@
         </div>
       </NuxtLink>
     </div>
+
+    <!-- Conversations avec les ONGs -->
+    <div class="bg-card border border-border rounded-xl overflow-hidden mb-6">
+      <div class="px-5 py-4 border-b border-border flex items-center justify-between">
+        <div>
+          <h2 class="font-semibold">Mes conversations</h2>
+          <p class="text-xs text-muted-foreground mt-0.5">Échanges avec les ONGs</p>
+        </div>
+      </div>
+      <div v-if="loadingConvs" class="divide-y divide-border">
+        <div v-for="i in 3" :key="i" class="flex items-center gap-4 px-5 py-4 animate-pulse">
+          <div class="w-9 h-9 rounded-full bg-muted shrink-0" />
+          <div class="flex-1 space-y-1.5">
+            <div class="h-3 bg-muted rounded w-1/3" />
+            <div class="h-2.5 bg-muted rounded w-2/3" />
+          </div>
+        </div>
+      </div>
+      <div v-else-if="!conversations.length" class="px-5 py-10 text-center text-muted-foreground">
+        <Icon name="i-heroicons-chat-bubble-left-right" class="w-8 h-8 mx-auto mb-2 opacity-30" />
+        <p class="text-sm">Aucune conversation</p>
+        <p class="text-xs mt-1">Contactez une ONG depuis son profil public</p>
+      </div>
+      <div v-else class="divide-y divide-border">
+        <button
+          v-for="conv in conversations"
+          :key="conv.ongId"
+          class="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-muted/30 transition-colors text-left"
+          @click="openConversation(conv)"
+        >
+          <div class="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center shrink-0 text-sm font-bold text-emerald-700 dark:text-emerald-300">
+            {{ conv.ongName[0]?.toUpperCase() ?? '?' }}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-1">
+              <p class="text-sm font-medium truncate">{{ conv.ongName }}</p>
+              <span v-if="conv.unreadCount > 0" class="shrink-0 inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold">
+                {{ conv.unreadCount }}
+              </span>
+            </div>
+            <p class="text-xs text-muted-foreground truncate">{{ conv.lastMessage }}</p>
+          </div>
+          <Icon name="i-heroicons-chevron-right" class="w-4 h-4 text-muted-foreground shrink-0" />
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal conversation ouverte -->
+    <UModal v-model="showConvModal">
+      <div class="flex flex-col" style="height: 480px">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
+          <div class="flex items-center gap-2">
+            <Icon name="i-heroicons-chat-bubble-left-right" class="w-4 h-4 text-primary" />
+            <span class="text-sm font-semibold">{{ activeConv?.ongName }}</span>
+          </div>
+          <UButton variant="ghost" icon="i-heroicons-x-mark" size="xs" @click="showConvModal = false" />
+        </div>
+        <PartnerMessagerie
+          v-if="activeConv"
+          :key="activeConv.ongId"
+          :ong-id="activeConv.ongId"
+          viewer-role="partner"
+          class="flex-1 min-h-0"
+          @unread-count="onConvUnreadCount(activeConv.ongId, $event)"
+        />
+      </div>
+    </UModal>
 
     <!-- Historique dons -->
     <div class="bg-card border border-border rounded-xl overflow-hidden">
@@ -113,6 +195,7 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/features/auth/stores/auth.client'
 import { useStats } from '~/features/user/composables/useStats'
+import PartnerMessagerie from '~/features/messaging/components/PartnerMessagerie.vue'
 
 definePageMeta({ middleware: ['auth'] })
 
@@ -123,6 +206,57 @@ const user = computed(() => authStore.currentUser)
 const firstName = computed(() => user.value?.firstName?.split(' ')[0] || user.value?.fullName?.split(' ')[0] || '')
 
 const { donations, stats, isLoading, load } = useStats()
+
+// ── Conversations partenaire ──────────────────────────────────────────────────
+interface ConvSummary { ongId: string; ongName: string; lastMessage: string; unreadCount: number }
+const conversations = ref<ConvSummary[]>([])
+const loadingConvs  = ref(false)
+const showConvModal = ref(false)
+const activeConv    = ref<ConvSummary | null>(null)
+
+function openConversation(conv: ConvSummary) {
+  activeConv.value = conv
+  showConvModal.value = true
+}
+
+function onConvUnreadCount(ongId: string, count: number) {
+  const c = conversations.value.find(x => x.ongId === ongId)
+  if (c) c.unreadCount = count
+}
+
+async function loadConversations() {
+  const supabase = useSupabase()
+  if (!supabase) return
+  loadingConvs.value = true
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    // Récupère les messages distincts par ONG pour ce partenaire
+    const { data } = await supabase
+      .from('ong_partner_messages')
+      .select('ong_id, sender_role, content, read_at, created_at, ongs(name)')
+      .eq('partner_id', user.id)
+      .order('created_at', { ascending: false })
+
+    if (!data) return
+
+    const map = new Map<string, ConvSummary>()
+    for (const row of data) {
+      const ongId = row.ong_id
+      const ongName = (row.ongs as any)?.name ?? ongId.slice(0, 8)
+      if (!map.has(ongId)) {
+        map.set(ongId, { ongId, ongName, lastMessage: row.content, unreadCount: 0 })
+      }
+      if (row.sender_role === 'agent' && !row.read_at) {
+        map.get(ongId)!.unreadCount++
+      }
+    }
+    conversations.value = Array.from(map.values())
+  } finally {
+    loadingConvs.value = false
+  }
+}
 
 const QUICK_ACTIONS = [
   {
@@ -209,7 +343,7 @@ onMounted(async () => {
     return
   }
   try {
-    await load()
+    await Promise.all([load(), loadConversations()])
   } catch (e) {
     console.error('[dashboard]', e)
   }

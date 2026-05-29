@@ -1,5 +1,8 @@
 import { z } from 'zod'
+import { createClient } from '@supabase/supabase-js'
 import { createCheckoutSession } from '~/server/services/stripe.service'
+
+const DONATION_ALLOWED_STATUSES = ['verified', 'active']
 
 const BodySchema = z.object({
   ongId:       z.string().uuid(),
@@ -26,6 +29,26 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   if (!config.stripeSecretKey) {
     throw createError({ statusCode: 500, statusMessage: 'NUXT_STRIPE_SECRET_KEY non configurée' })
+  }
+
+  // Vérifier que l'ONG est validée avant de créer la session de paiement
+  const supabase = createClient(
+    config.public.supabaseUrl as string,
+    config.public.supabaseAnonKey as string,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  )
+  const { data: ong, error: ongError } = await supabase
+    .from('ongs')
+    .select('id, status')
+    .eq('id', body.ongId)
+    .single()
+
+  if (ongError || !ong) {
+    throw createError({ statusCode: 404, statusMessage: 'ONG introuvable' })
+  }
+
+  if (!DONATION_ALLOWED_STATUSES.includes(ong.status)) {
+    throw createError({ statusCode: 403, statusMessage: 'Cette ONG n\'est pas habilitée à recevoir des dons' })
   }
 
   // Extraction optionnelle du donor_id depuis le JWT (null si invité non connecté)

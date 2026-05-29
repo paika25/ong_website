@@ -56,6 +56,15 @@ declare module "nitropack/types" {
     '/api/admin/users': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/users.get').default>>>>
     }
+    '/api/admin/users/:id/mandate-url': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/users/[id]/mandate-url.get').default>>>>
+    }
+    '/api/admin/users/:id/verify': {
+      'patch': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/users/[id]/verify.patch').default>>>>
+    }
+    '/api/auth/mandate-upload': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/auth/mandate-upload.post').default>>>>
+    }
     '/api/back-office/dossiers': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/back-office/dossiers.get').default>>>>
     }
@@ -86,9 +95,19 @@ declare module "nitropack/types" {
     '/api/donations/create-checkout': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/donations/create-checkout.post').default>>>>
     }
+    '/api/ongs/:id': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/ongs/[id]/index.get').default>>>>
+    }
     '/api/ongs/:id/messages': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/ongs/[id]/messages.get').default>>>>
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/ongs/[id]/messages.post').default>>>>
+    }
+    '/api/ongs/:id/partner-conversations': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/ongs/[id]/partner-conversations.get').default>>>>
+    }
+    '/api/ongs/:id/partner-messages': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/ongs/[id]/partner-messages.get').default>>>>
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/ongs/[id]/partner-messages.post').default>>>>
     }
     '/api/ongs/:id/resubmit': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/ongs/[id]/resubmit.post').default>>>>

@@ -1,19 +1,31 @@
 import { getToken } from '~/features/auth/utils/getToken'
 
 export interface AdminUser {
-  id:          string
-  email:       string
-  accountType: 'user_agent' | 'user_partner'
-  firstName:   string | null
-  lastName:    string | null
-  companyName: string | null
-  verified:    boolean
-  createdAt:   string
+  id:               string
+  email:            string
+  accountType:      'user_agent' | 'user_partner'
+  firstName:        string | null
+  lastName:         string | null
+  companyName:      string | null
+  organizationName: string | null
+  jobTitle:         string | null
+  mandateDocPath:   string | null
+  verified:         boolean
+  createdAt:        string
 }
 
 export interface AdminUsersFilter {
   search?: string
   type?:   'user_agent' | 'user_partner' | ''
+}
+
+export async function verifyAdminUser(id: string, verified: boolean): Promise<void> {
+  const token = await getToken()
+  await $fetch(`/api/admin/users/${id}/verify`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` },
+    body: { verified },
+  })
 }
 
 export async function getAdminUsers(filter: AdminUsersFilter = {}): Promise<AdminUser[]> {
@@ -27,6 +39,7 @@ export async function getAdminUsers(filter: AdminUsersFilter = {}): Promise<Admi
 }
 
 export function userDisplayName(user: AdminUser): string {
+  if (user.accountType === 'user_partner' && user.organizationName) return user.organizationName
   if (user.companyName) return user.companyName
   const full = [user.firstName, user.lastName].filter(Boolean).join(' ')
   return full || user.email.split('@')[0]

@@ -10,7 +10,7 @@
  */
 
 import { isClient } from './ong.helpers'
-import type { OngDocument, DocumentCategory } from '../type'
+import type { OngDocument, DocumentCategory, DocumentVisibility } from '../type'
 
 const BUCKET = 'ong-documents'
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 Mo
@@ -42,8 +42,10 @@ function validateDocumentFile(file: File): string | null {
   return null
 }
 
+const SIGNED_URL_TTL = 3600 // 1 heure
+
 /**
- * Récupère tous les documents d'une ONG.
+ * Récupère tous les documents d'une ONG avec URLs signées.
  */
 export const getOngDocuments = async (ongId: string): Promise<OngDocument[]> => {
   if (!isClient()) return []
@@ -62,16 +64,37 @@ export const getOngDocuments = async (ongId: string): Promise<OngDocument[]> => 
     return []
   }
 
-  return (data || []).map((row: any) => ({
-    id: row.id,
-    ongId: row.ong_id,
-    name: row.name,
-    category: row.category as DocumentCategory,
-    fileUrl: row.file_url,
-    fileSize: row.file_size,
-    mimeType: row.mime_type,
-    createdAt: row.created_at,
+  return Promise.all((data || []).map(async (row: any) => {
+    const storagePath: string | null = row.storage_path ?? extractStoragePath(row.file_url)
+    let fileUrl = row.file_url
+
+    if (storagePath) {
+      const { data: signed } = await supabase.storage
+        .from(BUCKET)
+        .createSignedUrl(storagePath, SIGNED_URL_TTL)
+      if (signed?.signedUrl) fileUrl = signed.signedUrl
+    }
+
+    return {
+      id: row.id,
+      ongId: row.ong_id,
+      name: row.name,
+      category: row.category as DocumentCategory,
+      visibility: (row.visibility ?? 'public') as DocumentVisibility,
+      fileUrl,
+      fileSize: row.file_size,
+      mimeType: row.mime_type,
+      createdAt: row.created_at,
+    }
   }))
+}
+
+function extractStoragePath(fileUrl: string | null): string | null {
+  if (!fileUrl) return null
+  const marker = `/storage/v1/object/public/${BUCKET}/`
+  const idx = fileUrl.indexOf(marker)
+  if (idx === -1) return null
+  return decodeURIComponent(fileUrl.substring(idx + marker.length))
 }
 
 /**
@@ -86,7 +109,8 @@ export const uploadOngDocument = async (
   ongId: string,
   file: File,
   name: string,
-  category: DocumentCategory
+  category: DocumentCategory,
+  visibility: DocumentVisibility = 'private'
 ): Promise<DocumentResult> => {
   if (!isClient()) {
     return { success: false, data: null, error: 'Opération client-only' }
@@ -125,24 +149,26 @@ export const uploadOngDocument = async (
       return { success: false, data: null, error: uploadError.message }
     }
 
-    // URL publique
-    const { data: urlData } = supabase.storage
+    // URL signée (1h) pour retour immédiat
+    const { data: signed } = await supabase.storage
       .from(BUCKET)
-      .getPublicUrl(filePath)
+      .createSignedUrl(filePath, SIGNED_URL_TTL)
 
-    const publicUrl = urlData.publicUrl
-    if (!publicUrl) {
-      return { success: false, data: null, error: "Impossible de récupérer l'URL publique" }
+    if (!signed?.signedUrl) {
+      await supabase.storage.from(BUCKET).remove([filePath])
+      return { success: false, data: null, error: "Impossible de générer l'URL signée" }
     }
 
-    // Insérer dans la table ong_documents
+    // Insérer dans la table ong_documents (storage_path pour regénérer les URLs)
     const { data: insertData, error: insertError } = await supabase
       .from('ong_documents')
       .insert({
         ong_id: ongId,
         name,
         category,
-        file_url: publicUrl,
+        visibility,
+        storage_path: filePath,
+        file_url: signed.signedUrl,
         file_size: file.size,
         mime_type: file.type,
       })
@@ -151,7 +177,6 @@ export const uploadOngDocument = async (
 
     if (insertError) {
       console.error('❌ [uploadOngDocument] Erreur insert:', insertError.message)
-      // Nettoyage : supprimer le fichier uploadé
       await supabase.storage.from(BUCKET).remove([filePath])
       return { success: false, data: null, error: insertError.message }
     }
@@ -161,13 +186,14 @@ export const uploadOngDocument = async (
       ongId: insertData.ong_id,
       name: insertData.name,
       category: insertData.category,
-      fileUrl: insertData.file_url,
+      visibility: insertData.visibility,
+      fileUrl: signed.signedUrl,
       fileSize: insertData.file_size,
       mimeType: insertData.mime_type,
       createdAt: insertData.created_at,
     }
 
-    console.log(`✅ [uploadOngDocument] Document uploadé → ${publicUrl}`)
+    console.log(`✅ [uploadOngDocument] Document uploadé → ${filePath}`)
     return { success: true, data: doc, error: null }
   } catch (err: any) {
     console.error('❌ [uploadOngDocument] Exception:', err)
@@ -183,7 +209,7 @@ export const uploadOngDocument = async (
  */
 export const deleteOngDocument = async (
   docId: string,
-  fileUrl: string
+  fileUrlOrPath: string
 ): Promise<{ success: boolean; error: string | null }> => {
   if (!isClient()) {
     return { success: false, error: 'Opération client-only' }
@@ -195,17 +221,18 @@ export const deleteOngDocument = async (
   }
 
   try {
-    console.log(`🗑️ [deleteOngDocument] Suppression doc ${docId}...`)
+    // Récupérer storage_path depuis la table (plus fiable que l'URL)
+    const { data: docRow } = await supabase
+      .from('ong_documents')
+      .select('storage_path, file_url')
+      .eq('id', docId)
+      .maybeSingle()
 
-    // Extraire le chemin relatif depuis l'URL publique
-    const bucketSegment = `/storage/v1/object/public/${BUCKET}/`
-    const idx = fileUrl.indexOf(bucketSegment)
-    if (idx !== -1) {
-      const storagePath = decodeURIComponent(fileUrl.substring(idx + bucketSegment.length))
+    const storagePath = docRow?.storage_path ?? extractStoragePath(docRow?.file_url ?? fileUrlOrPath)
+    if (storagePath) {
       await supabase.storage.from(BUCKET).remove([storagePath])
     }
 
-    // Supprimer de la table
     const { error: deleteError } = await supabase
       .from('ong_documents')
       .delete()
@@ -216,7 +243,6 @@ export const deleteOngDocument = async (
       return { success: false, error: deleteError.message }
     }
 
-    console.log('✅ [deleteOngDocument] Document supprimé')
     return { success: true, error: null }
   } catch (err: any) {
     console.error('❌ [deleteOngDocument] Exception:', err)

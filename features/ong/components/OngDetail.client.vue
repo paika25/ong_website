@@ -10,6 +10,7 @@
       :share-copied="shareCopied"
       @donate="handleDonate"
       @shareDonation="handleShare"
+      @contact="showContactModal = true"
     />
 
     <UTabs :items="tabs" v-model="activeTab">
@@ -84,6 +85,24 @@
         :ong="ong"
         @close="showVolunteerModal = false"
       />
+
+      <!-- Modal messagerie partenaire -->
+      <UModal v-model="showContactModal">
+        <div class="flex flex-col" style="height: 480px">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
+            <div class="flex items-center gap-2">
+              <Icon name="i-heroicons-chat-bubble-left-right" class="w-4 h-4 text-primary" />
+              <span class="text-sm font-semibold">Contacter {{ ong.name }}</span>
+            </div>
+            <UButton variant="ghost" icon="i-heroicons-x-mark" size="xs" @click="showContactModal = false" />
+          </div>
+          <PartnerMessagerie
+            :ong-id="ong.id"
+            viewer-role="partner"
+            class="flex-1 min-h-0"
+          />
+        </div>
+      </UModal>
     </Teleport>
   </div>
 </template>
@@ -102,6 +121,7 @@ import OngDetailTabDocuments from './OngDetailTabDocuments.vue'
 import OngDetailTabVolunteers from './OngDetailTabVolunteers.vue'
 import OngDonationModal from './OngDonationModal.vue'
 import OngVolunteerModal from './OngVolunteerModal.vue'
+import PartnerMessagerie from '~/features/messaging/components/PartnerMessagerie.vue'
 
 const props = defineProps<{ ong: ONG }>()
 
@@ -136,6 +156,8 @@ const {
   handleShare,
   handleDonate,
 } = useOngDetail(() => props.ong)
+
+const showContactModal = ref(false)
 
 import { getOngScore } from '~/features/score/services/score.service'
 

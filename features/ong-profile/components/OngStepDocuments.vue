@@ -97,24 +97,24 @@ const emit = defineEmits<{
 }>()
 
 function getUploadedDoc(key: string) {
-  return props.documents.find(d =>
-    d.name.toLowerCase().includes(key.replace('_', ' ')) ||
-    d.name.toLowerCase().includes(key)
-  )
+  return props.documents.find(d => d.docKey === key)
 }
 
 async function handleUpload(file: File, docKey: string, onProgress: (pct: number) => void) {
+  const category = docKey === 'rapport_financier' ? 'activity' : 'legal'
   const result = await uploadDocumentWithProgress(
     props.ongId,
     file,
     file.name,
-    docKey === 'rapport_financier' ? 'activity' : 'legal',
+    docKey,
+    category,
     onProgress
   )
   emit('add-document', {
     id: result.docId,
     name: file.name,
-    category: docKey === 'rapport_financier' ? 'activity' : 'legal',
+    docKey,
+    category,
     fileUrl: result.fileUrl,
     fileSize: file.size,
     mimeType: file.type,

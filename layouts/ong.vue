@@ -41,18 +41,67 @@
 
       <!-- Content -->
       <main class="flex-1 p-6 overflow-auto min-w-0">
-        <slot />
+        <!-- Accès restreint pour les ONGs rejetées ou suspendues -->
+        <div
+          v-if="restrictedStatus"
+          class="flex flex-col items-center justify-center min-h-[60vh] text-center gap-6 max-w-lg mx-auto"
+        >
+          <div :class="['w-16 h-16 rounded-full flex items-center justify-center', restrictedStatus === 'rejected' ? 'bg-red-100 dark:bg-red-900' : 'bg-amber-100 dark:bg-amber-900']">
+            <Icon
+              :name="restrictedStatus === 'rejected' ? 'i-heroicons-x-circle' : 'i-heroicons-pause-circle'"
+              class="w-9 h-9"
+              :class="restrictedStatus === 'rejected' ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'"
+            />
+          </div>
+          <div>
+            <h2 class="text-xl font-bold mb-2">
+              {{ restrictedStatus === 'rejected' ? 'Dossier rejeté' : 'Badge suspendu' }}
+            </h2>
+            <p class="text-muted-foreground text-sm leading-relaxed">
+              <template v-if="restrictedStatus === 'rejected'">
+                Votre dossier de certification a été rejeté. Vous pouvez le corriger et le soumettre à nouveau depuis la section <strong>Mon dossier</strong>.
+              </template>
+              <template v-else>
+                Le badge de certification de votre ONG est actuellement suspendu. Contactez notre équipe pour plus d'informations.
+              </template>
+            </p>
+          </div>
+          <div class="flex gap-3">
+            <NuxtLink v-if="restrictedStatus === 'rejected'" to="/ong-dashboard/dossier">
+              <UButton color="primary">Voir mon dossier</UButton>
+            </NuxtLink>
+            <NuxtLink to="/">
+              <UButton variant="outline">Retour au site</UButton>
+            </NuxtLink>
+          </div>
+        </div>
+        <slot v-else />
       </main>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { fetchOwnerOng } from '~/features/ong-dashboard/services/ong-dashboard.service'
+
 const route = useRoute()
+
+const BLOCKED_STATUSES = ['rejected', 'suspended'] as const
+const restrictedStatus = ref<'rejected' | 'suspended' | null>(null)
+
+onMounted(async () => {
+  try {
+    const ong = await fetchOwnerOng()
+    if (ong && BLOCKED_STATUSES.includes(ong.status as any)) {
+      restrictedStatus.value = ong.status as 'rejected' | 'suspended'
+    }
+  } catch { /* silencieux — l'accès sera refusé par le middleware agent-only si non connecté */ }
+})
 
 const NAV_ITEMS = [
   { label: 'Vue d\'ensemble', to: '/ong-dashboard',            icon: 'i-heroicons-squares-2x2' },
   { label: 'Dons reçus',      to: '/ong-dashboard/donations',  icon: 'i-heroicons-heart' },
+  { label: 'Messages',        to: '/ong-dashboard/messages',   icon: 'i-heroicons-chat-bubble-left-right' },
   { label: 'Documents',       to: '/ong-dashboard/documents',  icon: 'i-heroicons-document-text' },
   { label: 'Visibilité',      to: '/ong-dashboard/visibilite', icon: 'i-heroicons-eye' },
   { label: 'Mon dossier',     to: '/ong-dashboard/dossier',    icon: 'i-heroicons-clipboard-document-check' },

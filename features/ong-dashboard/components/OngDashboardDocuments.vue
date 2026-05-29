@@ -35,6 +35,17 @@
         </div>
       </div>
       <div>
+        <label class="text-xs font-medium text-muted-foreground mb-1 block">Visibilité</label>
+        <select
+          v-model="uploadForm.visibility"
+          class="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/40"
+        >
+          <option value="public">Public — visible par tous</option>
+          <option value="partners">Partenaires — utilisateurs connectés uniquement</option>
+          <option value="private">Privé — ONG et administrateurs uniquement</option>
+        </select>
+      </div>
+      <div>
         <label class="text-xs font-medium text-muted-foreground mb-1 block">Fichier (PDF, DOC, JPG, PNG — max 10 Mo)</label>
         <input
           ref="fileInput"
@@ -77,8 +88,14 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="text-sm font-medium truncate">{{ doc.name }}</div>
-          <div class="text-xs text-muted-foreground">
-            {{ categoryLabel(doc.category) }} · {{ formatSize(doc.fileSize) }} · {{ formatDateShort(doc.createdAt) }}
+          <div class="flex items-center gap-2 flex-wrap mt-0.5">
+            <span class="text-xs text-muted-foreground">
+              {{ categoryLabel(doc.category) }} · {{ formatSize(doc.fileSize) }} · {{ formatDateShort(doc.createdAt) }}
+            </span>
+            <span :class="['inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded-full font-medium', visibilityClass(doc.visibility)]">
+              <Icon :name="visibilityIcon(doc.visibility)" class="w-3 h-3" />
+              {{ visibilityLabel(doc.visibility) }}
+            </span>
           </div>
         </div>
         <div class="flex items-center gap-2 shrink-0">
@@ -97,7 +114,7 @@
 </template>
 
 <script setup lang="ts">
-import type { OngDocument, DocumentCategory } from '~/features/ong/type'
+import type { OngDocument, DocumentCategory, DocumentVisibility } from '~/features/ong/type'
 import { getOngDocuments, uploadOngDocument, deleteOngDocument } from '~/features/ong/services/ong.documents'
 
 const props = defineProps<{ ongId: string }>()
@@ -113,8 +130,9 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const selectedFile = ref<File | null>(null)
 
 const uploadForm = reactive({
-  name:     '',
-  category: 'legal' as DocumentCategory,
+  name:       '',
+  category:   'legal' as DocumentCategory,
+  visibility: 'private' as DocumentVisibility,
 })
 
 const canUpload = computed(() =>
@@ -131,6 +149,7 @@ function resetUpload() {
   showUpload.value = false
   uploadForm.name = ''
   uploadForm.category = 'legal'
+  uploadForm.visibility = 'private'
   selectedFile.value = null
   uploadError.value = null
   if (fileInput.value) fileInput.value.value = ''
@@ -141,7 +160,13 @@ async function doUpload() {
   uploading.value = true
   uploadError.value = null
 
-  const result = await uploadOngDocument(props.ongId, selectedFile.value, uploadForm.name.trim(), uploadForm.category)
+  const result = await uploadOngDocument(
+    props.ongId,
+    selectedFile.value,
+    uploadForm.name.trim(),
+    uploadForm.category,
+    uploadForm.visibility,
+  )
 
   if (!result.success || !result.data) {
     uploadError.value = result.error ?? 'Erreur lors de l\'upload'
@@ -197,6 +222,24 @@ function categoryColor(cat: DocumentCategory): string {
   return cat === 'legal'
     ? 'text-blue-600 dark:text-blue-400'
     : 'text-amber-600 dark:text-amber-400'
+}
+
+function visibilityLabel(v: DocumentVisibility): string {
+  if (v === 'partners') return 'Partenaires'
+  if (v === 'private')  return 'Privé'
+  return 'Public'
+}
+
+function visibilityIcon(v: DocumentVisibility): string {
+  if (v === 'partners') return 'i-heroicons-user-group'
+  if (v === 'private')  return 'i-heroicons-lock-closed'
+  return 'i-heroicons-globe-alt'
+}
+
+function visibilityClass(v: DocumentVisibility): string {
+  if (v === 'partners') return 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+  if (v === 'private')  return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
+  return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
 }
 
 onMounted(async () => {
