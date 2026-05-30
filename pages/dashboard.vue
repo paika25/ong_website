@@ -46,7 +46,7 @@
     </div>
 
     <!-- Actions rapides -->
-    <div class="grid grid-cols-3 gap-3 mb-8">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
       <NuxtLink
         v-for="action in QUICK_ACTIONS"
         :key="action.to"
@@ -266,6 +266,14 @@ const QUICK_ACTIONS = [
     icon:     'i-heroicons-magnifying-glass',
     iconBg:   'bg-blue-100 dark:bg-blue-900',
     iconColor:'text-blue-600 dark:text-blue-400',
+  },
+  {
+    label:    'Messages',
+    sub:      'Vos échanges avec les ONGs',
+    to:       '/dashboard/messages',
+    icon:     'i-heroicons-chat-bubble-left-right',
+    iconBg:   'bg-emerald-100 dark:bg-emerald-900',
+    iconColor:'text-emerald-600 dark:text-emerald-400',
   },
   {
     label:    'Mon profil',
