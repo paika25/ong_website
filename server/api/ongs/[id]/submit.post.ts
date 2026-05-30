@@ -1,5 +1,5 @@
 import { applyStatusTransition } from '../../../services/ong-status.service'
-import { createAdminReadClient } from '../../../utils/supabase-admin'
+import { createAdminReadClient } from '../../../utils/admin-supabase'
 import { createClient } from '@supabase/supabase-js'
 
 const REQUIRED_DOC_KEYS = ['statuts', 'recepisse', 'rapport_financier']
