@@ -59,6 +59,7 @@ const NAV_ITEMS = [
   { label: 'ONGs',            to: '/admin/ongs',         icon: 'i-heroicons-building-office-2' },
   { label: 'Vérification',    to: '/admin/verification', icon: 'i-heroicons-shield-check' },
   { label: 'Dons',            to: '/admin/donations',    icon: 'i-heroicons-heart' },
+  { label: 'Messages',        to: '/admin/messages',     icon: 'i-heroicons-chat-bubble-left-right' },
   { label: 'Utilisateurs',    to: '/admin/utilisateurs', icon: 'i-heroicons-users' },
   { label: 'Algorithme',      to: '/admin/algorithme',   icon: 'i-heroicons-cpu-chip' },
   { label: 'Historique',      to: '/admin/historique',   icon: 'i-heroicons-clock' },
