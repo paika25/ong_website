@@ -276,6 +276,14 @@ const QUICK_ACTIONS = [
     iconColor:'text-emerald-600 dark:text-emerald-400',
   },
   {
+    label:    'Portefeuille',
+    sub:      'Dons effectués et remboursements',
+    to:       '/dashboard/portefeuille',
+    icon:     'i-heroicons-banknotes',
+    iconBg:   'bg-orange-100 dark:bg-orange-900',
+    iconColor:'text-orange-600 dark:text-orange-400',
+  },
+  {
     label:    'Mon profil',
     sub:      'Gérer mes informations',
     to:       '/profil',
