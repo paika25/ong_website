@@ -25,70 +25,83 @@
         </div>
       </div>
 
-      <!-- Body -->
-      <div class="p-6 space-y-4">
-        <!-- Montant sélectionné -->
-        <div v-if="displayAmount" class="bg-primary/10 border border-primary/20 rounded-xl p-4 text-center">
-          <p class="text-sm text-muted-foreground mb-1">Montant souhaité</p>
-          <p class="text-3xl font-bold text-primary">{{ displayAmount }}€</p>
-        </div>
-
-        <!-- Message bientôt disponible -->
-        <div class="bg-muted/50 border border-border rounded-xl p-4">
-          <div class="flex gap-3">
-            <Icon name="i-heroicons-clock" class="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
-            <div>
-              <p class="text-sm font-semibold mb-1">Paiement en ligne bientôt disponible</p>
-              <p class="text-sm text-muted-foreground">
-                Le système de don en ligne est en cours de développement.
-                Pour soutenir cette ONG dès maintenant, contactez-la directement.
-              </p>
+      <!-- Body : formulaire Stripe -->
+      <div class="p-6">
+        <div class="space-y-5">
+          <!-- Sélection du montant -->
+          <div>
+            <p class="text-sm font-medium text-muted-foreground mb-3">Choisissez votre montant</p>
+            <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+              <button
+                v-for="amount in PRESET_AMOUNTS"
+                :key="amount"
+                type="button"
+                @click="selectAmount(amount)"
+                :class="[
+                  'py-2.5 rounded-lg border-2 font-semibold text-sm transition-all',
+                  selectedAmount === amount
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border hover:border-primary/40 hover:bg-muted'
+                ]"
+              >
+                {{ amount }}€
+              </button>
+              <button
+                type="button"
+                @click="selectAmount('custom')"
+                :class="[
+                  'py-2.5 rounded-lg border-2 font-medium text-sm transition-all',
+                  selectedAmount === 'custom'
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border hover:border-primary/40 hover:bg-muted'
+                ]"
+              >
+                Autre
+              </button>
             </div>
           </div>
-        </div>
 
-        <!-- Coordonnées de l'ONG -->
-        <div v-if="hasContact" class="space-y-2">
-          <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Contacter l'ONG</p>
-          <a
-            v-if="ong.email"
-            :href="`mailto:${ong.email}`"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl border border-border hover:border-primary/50 hover:bg-muted/50 transition-all group"
-          >
-            <Icon name="i-heroicons-envelope" class="w-4 h-4 text-primary" />
-            <span class="text-sm group-hover:text-primary transition-colors">{{ ong.email }}</span>
-          </a>
-          <a
-            v-if="ong.phone"
-            :href="`tel:${ong.phone}`"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl border border-border hover:border-primary/50 hover:bg-muted/50 transition-all group"
-          >
-            <Icon name="i-heroicons-phone" class="w-4 h-4 text-primary" />
-            <span class="text-sm group-hover:text-primary transition-colors">{{ ong.phone }}</span>
-          </a>
-          <a
-            v-if="ong.website"
-            :href="ong.website"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl border border-border hover:border-primary/50 hover:bg-muted/50 transition-all group"
-          >
-            <Icon name="i-heroicons-globe-alt" class="w-4 h-4 text-primary" />
-            <span class="text-sm group-hover:text-primary transition-colors truncate">{{ ong.website }}</span>
-            <Icon name="i-heroicons-arrow-top-right-on-square" class="w-3 h-3 text-muted-foreground ml-auto shrink-0" />
-          </a>
-        </div>
+          <!-- Montant personnalisé -->
+          <div v-if="selectedAmount === 'custom'" class="relative">
+            <input
+              v-model.number="customAmount"
+              type="number"
+              min="1"
+              max="10000"
+              placeholder="Montant"
+              class="w-full px-4 py-3 pr-10 rounded-lg border-2 border-primary bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
+            />
+            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">€</span>
+          </div>
 
-        <div v-else class="text-sm text-muted-foreground text-center py-2">
-          Aucune coordonnée disponible pour cette ONG.
-        </div>
-      </div>
+          <!-- Erreur -->
+          <div
+            v-if="error"
+            class="bg-destructive/10 border border-destructive/30 rounded-lg p-3 text-sm text-destructive flex items-center gap-2"
+          >
+            <Icon name="i-heroicons-exclamation-circle" class="w-4 h-4 flex-shrink-0" />
+            {{ error }}
+          </div>
 
-      <!-- Footer -->
-      <div class="px-6 pb-6">
-        <UButton block variant="outline" @click="$emit('close')">
-          Fermer
-        </UButton>
+          <!-- Bouton de paiement -->
+          <UButton
+            color="primary"
+            block
+            size="lg"
+            :loading="isLoading"
+            :disabled="!finalAmount || finalAmount < 1"
+            @click="checkout"
+          >
+            <Icon v-if="!isLoading" name="i-heroicons-lock-closed" class="w-4 h-4 mr-2" />
+            {{ isLoading ? 'Redirection...' : `Payer ${finalAmount ? finalAmount + ' €' : ''}` }}
+          </UButton>
+
+          <!-- Badge Stripe -->
+          <p class="text-xs text-muted-foreground text-center flex items-center justify-center gap-1.5">
+            <Icon name="i-heroicons-shield-check" class="w-3.5 h-3.5" />
+            Paiement 100 % sécurisé · Carte bancaire via Stripe
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -96,6 +109,9 @@
 
 <script setup lang="ts">
 import type { ONG } from '../type'
+import { createCheckout } from '~/features/donations/services/donation.service'
+
+const PRESET_AMOUNTS = [5, 10, 25, 50, 100] as const
 
 const props = defineProps<{
   ong: ONG
@@ -105,10 +121,34 @@ const props = defineProps<{
 
 defineEmits<{ close: [] }>()
 
-const displayAmount = computed(() => {
-  if (props.amount === 'custom') return props.customAmount ?? null
-  return props.amount ?? null
+const selectedAmount = ref<number | 'custom'>(
+  typeof props.amount === 'number' ? props.amount : 25
+)
+const customAmount = ref<number | null>(props.customAmount ?? null)
+const isLoading = ref(false)
+const error = ref<string | null>(null)
+
+const finalAmount = computed<number | null>(() => {
+  if (selectedAmount.value === 'custom') return customAmount.value ?? null
+  return selectedAmount.value
 })
 
-const hasContact = computed(() => !!(props.ong.email || props.ong.phone || props.ong.website))
+function selectAmount(amount: number | 'custom') {
+  selectedAmount.value = amount
+  error.value = null
+}
+
+async function checkout() {
+  const amount = finalAmount.value
+  if (!amount || amount < 1) return
+  isLoading.value = true
+  error.value = null
+  try {
+    const { url } = await createCheckout(props.ong.id, props.ong.name, amount)
+    window.location.href = url
+  } catch (err: any) {
+    error.value = err?.data?.statusMessage ?? 'Une erreur est survenue. Réessayez.'
+    isLoading.value = false
+  }
+}
 </script>

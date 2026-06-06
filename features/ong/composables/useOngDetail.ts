@@ -45,7 +45,7 @@ export function useOngDetail(ong: () => ONG) {
     if (o.impact) {
       baseTabs.push({ label: 'Impact', key: 'impact' })
     }
-    if (o.status === 'verified' || o.status === 'active') {
+    if ((o.status === 'verified' || o.status === 'active') && !authStore.isPartner) {
       baseTabs.push({ label: 'Dons', key: 'donation' })
     }
     if (o.legal || o.monitoring) {
