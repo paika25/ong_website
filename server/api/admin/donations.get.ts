@@ -12,7 +12,12 @@ export default defineEventHandler(async (event) => {
 
   const { data, error } = await supabase
     .from('financial_transactions')
-    .select('id, ong_id, amount, currency, status, provider, donor_email, created_at, metadata, stripe_payment_intent_id')
+    .select(`
+      id, ong_id, amount, currency, status, provider, donor_email, created_at,
+      commission_cents, net_amount_cents, commission_rate,
+      stripe_payment_intent_id, metadata,
+      ongs(name)
+    `)
     .eq('transaction_type', 'donation')
     .order('created_at', { ascending: false })
     .limit(200)
