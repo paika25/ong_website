@@ -11,16 +11,14 @@ export default defineEventHandler(async (event) => {
   })
 
   const { data, error } = await supabase
-    .from('financial_transactions')
+    .from('ong_partner_messages')
     .select(`
-      id, ong_id, amount, currency, status, provider, donor_email, created_at,
-      commission_cents, net_amount_cents, commission_rate,
-      stripe_payment_intent_id, metadata,
-      ongs(name)
+      id, ong_id, partner_id, sender_role, content, read_at, created_at,
+      ongs(id, name),
+      accounts!ong_partner_messages_partner_id_fkey(id, first_name, last_name, email)
     `)
-    .eq('transaction_type', 'donation')
     .order('created_at', { ascending: false })
-    .limit(200)
+    .limit(500)
 
   if (error) throw createError({ statusCode: 500, statusMessage: error.message })
   return data ?? []

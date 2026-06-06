@@ -42,6 +42,10 @@ export default defineEventHandler(async (event) => {
       .maybeSingle()
 
     if (!existing) {
+      const COMMISSION_RATE = 0.05
+      const commissionCents = Math.round(amountCents * COMMISSION_RATE)
+      const netAmountCents  = amountCents - commissionCents
+
       const { error } = await supabase.from('financial_transactions').insert({
         ong_id:                   ongId,
         stripe_payment_intent_id: paymentIntentId,
@@ -53,6 +57,9 @@ export default defineEventHandler(async (event) => {
         provider:                 'stripe',
         donor_id:                 donorId,
         donor_email:              session.customer_details?.email ?? null,
+        commission_rate:          COMMISSION_RATE,
+        commission_cents:         commissionCents,
+        net_amount_cents:         netAmountCents,
         metadata: {
           stripe_session_id: session.id,
           customer_name:     session.customer_details?.name ?? null,

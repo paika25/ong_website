@@ -44,12 +44,14 @@
           <button
             v-for="conv in conversations"
             :key="conv.ongId"
+            type="button"
             class="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/40 transition-colors text-left"
             :class="selectedOngId === conv.ongId ? 'bg-muted/60' : ''"
             @click="selectedOngId = conv.ongId"
           >
-            <div class="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center shrink-0 text-sm font-bold text-emerald-700 dark:text-emerald-300">
-              {{ conv.ongName[0]?.toUpperCase() ?? '?' }}
+            <div class="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center shrink-0 text-sm font-bold text-emerald-700 dark:text-emerald-300 overflow-hidden">
+              <img v-if="conv.ongImage" :src="conv.ongImage" :alt="conv.ongName" class="w-full h-full object-cover" />
+              <span v-else>{{ conv.ongName[0]?.toUpperCase() ?? '?' }}</span>
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center justify-between gap-1">
@@ -76,8 +78,9 @@
 
         <template v-else>
           <div class="px-4 py-3 border-b border-border flex items-center gap-3 shrink-0">
-            <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-sm font-bold text-emerald-700 dark:text-emerald-300">
-              {{ selectedConversation?.ongName[0]?.toUpperCase() ?? '?' }}
+            <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-sm font-bold text-emerald-700 dark:text-emerald-300 overflow-hidden">
+              <img v-if="selectedConversation?.ongImage" :src="selectedConversation.ongImage" :alt="selectedConversation.ongName" class="w-full h-full object-cover" />
+              <span v-else>{{ selectedConversation?.ongName[0]?.toUpperCase() ?? '?' }}</span>
             </div>
             <p class="text-sm font-semibold">{{ selectedConversation?.ongName }}</p>
           </div>
@@ -97,51 +100,41 @@
 
 <script setup lang="ts">
 import PartnerMessagerie from '~/features/messaging/components/PartnerMessagerie.vue'
+import { getToken } from '~/features/auth/utils/getToken'
 
 definePageMeta({ middleware: ['auth'] })
 
-interface ConvSummary { ongId: string; ongName: string; lastMessage: string; unreadCount: number }
+interface ConvSummary {
+  ongId: string
+  ongName: string
+  ongImage: string | null
+  lastMessage: string
+  lastMessageAt: string
+  unreadCount: number
+}
 
 const conversations = ref<ConvSummary[]>([])
-const loading = ref(true)
+const loading       = ref(true)
 const selectedOngId = ref<string | null>(null)
 
 const selectedConversation = computed(() =>
   conversations.value.find(c => c.ongId === selectedOngId.value) ?? null
 )
 
-function onUnreadCount(ongId: string, count: number) {
+function onUnreadCount(ongId: string | null, count: number) {
+  if (!ongId) return
   const c = conversations.value.find(x => x.ongId === ongId)
   if (c) c.unreadCount = count
 }
 
 onMounted(async () => {
-  const supabase = useSupabase()
-  if (!supabase) return
   try {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-
-    const { data } = await supabase
-      .from('ong_partner_messages')
-      .select('ong_id, sender_role, content, read_at, created_at, ongs(name)')
-      .eq('partner_id', user.id)
-      .order('created_at', { ascending: false })
-
-    if (!data) return
-
-    const map = new Map<string, ConvSummary>()
-    for (const row of data) {
-      const ongId = row.ong_id
-      const ongName = (row.ongs as any)?.name ?? ongId.slice(0, 8)
-      if (!map.has(ongId)) {
-        map.set(ongId, { ongId, ongName, lastMessage: row.content, unreadCount: 0 })
-      }
-      if (row.sender_role === 'agent' && !row.read_at) {
-        map.get(ongId)!.unreadCount++
-      }
-    }
-    conversations.value = Array.from(map.values())
+    const token = await getToken()
+    conversations.value = await $fetch<ConvSummary[]>('/api/partner/conversations', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+  } catch (e: any) {
+    useToast().add({ title: 'Erreur chargement messages', description: e?.data?.statusMessage ?? e.message, color: 'red' })
   } finally {
     loading.value = false
   }

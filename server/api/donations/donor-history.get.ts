@@ -10,17 +10,20 @@ export default defineEventHandler(async (event) => {
     global: { headers: { Authorization: `Bearer ${token}` } },
   })
 
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw createError({ statusCode: 401, statusMessage: 'Non authentifié' })
+
   const { data, error } = await supabase
     .from('financial_transactions')
     .select(`
-      id, ong_id, amount, currency, status, provider, donor_email, created_at,
+      id, amount, currency, status, provider, created_at,
       commission_cents, net_amount_cents, commission_rate,
       stripe_payment_intent_id, metadata,
-      ongs(name)
+      ongs(id, name, image)
     `)
+    .eq('donor_id', user.id)
     .eq('transaction_type', 'donation')
     .order('created_at', { ascending: false })
-    .limit(200)
 
   if (error) throw createError({ statusCode: 500, statusMessage: error.message })
   return data ?? []
