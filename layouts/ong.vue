@@ -99,12 +99,13 @@ onMounted(async () => {
 })
 
 const NAV_ITEMS = [
-  { label: 'Vue d\'ensemble', to: '/ong-dashboard',            icon: 'i-heroicons-squares-2x2' },
-  { label: 'Dons reçus',      to: '/ong-dashboard/donations',  icon: 'i-heroicons-heart' },
-  { label: 'Messages',        to: '/ong-dashboard/messages',   icon: 'i-heroicons-chat-bubble-left-right' },
-  { label: 'Documents',       to: '/ong-dashboard/documents',  icon: 'i-heroicons-document-text' },
-  { label: 'Visibilité',      to: '/ong-dashboard/visibilite', icon: 'i-heroicons-eye' },
-  { label: 'Mon dossier',     to: '/ong-dashboard/dossier',    icon: 'i-heroicons-clipboard-document-check' },
+  { label: 'Vue d\'ensemble', to: '/ong-dashboard',               icon: 'i-heroicons-squares-2x2' },
+  { label: 'Portefeuille',    to: '/ong-dashboard/portefeuille',  icon: 'i-heroicons-banknotes' },
+  { label: 'Dons reçus',      to: '/ong-dashboard/donations',     icon: 'i-heroicons-heart' },
+  { label: 'Messages',        to: '/ong-dashboard/messages',      icon: 'i-heroicons-chat-bubble-left-right' },
+  { label: 'Documents',       to: '/ong-dashboard/documents',     icon: 'i-heroicons-document-text' },
+  { label: 'Visibilité',      to: '/ong-dashboard/visibilite',    icon: 'i-heroicons-eye' },
+  { label: 'Mon dossier',     to: '/ong-dashboard/dossier',       icon: 'i-heroicons-clipboard-document-check' },
 ]
 
 function isActive(to: string): boolean {
