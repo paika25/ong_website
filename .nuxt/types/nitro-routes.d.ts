@@ -47,6 +47,9 @@ declare module "nitropack/types" {
     '/api/admin/historique': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/historique.get').default>>>>
     }
+    '/api/admin/messages': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/messages.get').default>>>>
+    }
     '/api/admin/ongs/:id/visibility': {
       'patch': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/ongs/[id]/visibility.patch').default>>>>
     }
@@ -89,11 +92,20 @@ declare module "nitropack/types" {
     '/api/back-office/dossiers/:id/validate': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/back-office/dossiers/[id]/validate.post').default>>>>
     }
+    '/api/donations/:id/refund-request': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/donations/[id]/refund-request.post').default>>>>
+    }
     '/api/donations/confirm-session': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/donations/confirm-session.post').default>>>>
     }
     '/api/donations/create-checkout': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/donations/create-checkout.post').default>>>>
+    }
+    '/api/donations/donor-history': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/donations/donor-history.get').default>>>>
+    }
+    '/api/ong-dashboard/portefeuille': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/ong-dashboard/portefeuille.get').default>>>>
     }
     '/api/ongs/:id': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/ongs/[id]/index.get').default>>>>
@@ -114,6 +126,13 @@ declare module "nitropack/types" {
     }
     '/api/ongs/:id/submit': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/ongs/[id]/submit.post').default>>>>
+    }
+    '/api/partner/conversations': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/partner/conversations.get').default>>>>
+    }
+    '/api/partners/:id/admin-messages': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/partners/[id]/admin-messages.get').default>>>>
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/partners/[id]/admin-messages.post').default>>>>
     }
     '/api/score/criteria': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/score/criteria.get').default>>>>

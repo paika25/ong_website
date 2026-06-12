@@ -2,118 +2,155 @@
   <div class="space-y-6">
     <div>
       <h1 class="text-2xl font-bold">Messagerie</h1>
-      <p class="text-sm text-muted-foreground mt-0.5">Supervision de toutes les conversations Bailleur ↔ ONG</p>
+      <p class="text-sm text-muted-foreground mt-0.5">Échangez avec les ONGs et supervisez leurs conversations avec les bailleurs</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4" style="height: 640px">
-      <!-- Colonne 1 : Liste des ONGs -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" style="height: 640px">
+      <!-- Annuaire ONGs + bailleurs -->
       <div class="bg-card border border-border rounded-xl overflow-hidden flex flex-col">
-        <div class="px-4 py-3 border-b border-border">
-          <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">ONGs</p>
+        <div class="px-4 py-3 border-b border-border space-y-2.5">
+          <p class="text-sm font-semibold">Conversations</p>
+          <RechercheInput v-model="searchQuery" placeholder="Rechercher une ONG ou un bailleur…" />
         </div>
-        <div v-if="loading" class="p-4 space-y-3 animate-pulse flex-1">
-          <div v-for="i in 5" :key="i" class="h-8 bg-muted rounded" />
-        </div>
-        <div v-else-if="!ongs.length" class="flex-1 flex items-center justify-center text-muted-foreground text-sm p-4 text-center">
-          Aucune conversation
-        </div>
-        <div v-else class="flex-1 overflow-y-auto divide-y divide-border">
-          <button
-            v-for="ong in ongs"
-            :key="ong.id"
-            class="w-full flex items-center gap-2.5 px-4 py-3 hover:bg-muted/40 transition-colors text-left"
-            :class="selectedOngId === ong.id ? 'bg-muted/60' : ''"
-            @click="selectOng(ong.id)"
-          >
-            <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center shrink-0 text-xs font-bold text-emerald-700 dark:text-emerald-300">
-              {{ ong.name[0]?.toUpperCase() }}
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium truncate">{{ ong.name }}</p>
-              <p class="text-xs text-muted-foreground">{{ ong.partnerCount }} bailleur{{ ong.partnerCount > 1 ? 's' : '' }}</p>
-            </div>
-          </button>
-        </div>
+
+        <ConversationList
+          :items="conversationItems"
+          :selected-id="selectedKey"
+          :loading="loading"
+          empty-title="Aucun résultat"
+          :empty-hint="searchQuery ? 'Aucune ONG ni bailleur ne correspond à cette recherche' : ''"
+          @select="selectedKey = $event"
+        />
       </div>
 
-      <!-- Colonne 2 : Bailleurs de l'ONG sélectionnée -->
-      <div class="bg-card border border-border rounded-xl overflow-hidden flex flex-col">
-        <div class="px-4 py-3 border-b border-border">
-          <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Bailleurs</p>
-        </div>
-        <div v-if="!selectedOngId" class="flex-1 flex items-center justify-center text-muted-foreground text-sm p-4 text-center">
-          Sélectionnez une ONG
-        </div>
-        <div v-else class="flex-1 overflow-y-auto divide-y divide-border">
-          <button
-            v-for="partner in partnersForOng"
-            :key="partner.id"
-            class="w-full flex items-center gap-2.5 px-4 py-3 hover:bg-muted/40 transition-colors text-left"
-            :class="selectedPartnerId === partner.id ? 'bg-muted/60' : ''"
-            @click="selectedPartnerId = partner.id"
-          >
-            <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center shrink-0 text-xs font-bold text-blue-700 dark:text-blue-300">
-              {{ initials(partner.name) }}
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium truncate">{{ partner.name }}</p>
-              <p class="text-xs text-muted-foreground truncate">{{ partner.email }}</p>
-            </div>
-          </button>
-        </div>
-      </div>
-
-      <!-- Colonne 3-4 : Conversation (lecture seule) -->
+      <!-- Conversation sélectionnée -->
       <div class="md:col-span-2 bg-card border border-border rounded-xl overflow-hidden flex flex-col">
-        <div v-if="!selectedPartnerId" class="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground">
+        <div v-if="!selectedKey" class="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground">
           <Icon name="i-heroicons-chat-bubble-left-right" class="w-12 h-12 opacity-20 mb-3" />
-          <p class="text-sm">Sélectionnez une conversation</p>
+          <p class="text-sm">Sélectionnez une ONG ou un bailleur</p>
         </div>
-        <template v-else>
-          <div class="px-4 py-3 border-b border-border flex items-center gap-2 shrink-0">
-            <Icon name="i-heroicons-eye" class="w-4 h-4 text-muted-foreground" />
-            <p class="text-sm font-semibold">{{ selectedPartnerName }} ↔ {{ selectedOngName }}</p>
-            <UBadge color="orange" variant="soft" size="xs" class="ml-auto">Lecture seule</UBadge>
-          </div>
-          <div ref="scrollEl" class="flex-1 overflow-y-auto p-4 space-y-3">
-            <div v-if="loadingMessages" class="animate-pulse space-y-3">
-              <div v-for="i in 4" :key="i" class="h-12 bg-muted rounded-xl w-3/4" :class="i % 2 ? '' : 'ml-auto'" />
+
+        <!-- Conversation directe back-office ↔ ONG (lecture/écriture) -->
+        <template v-else-if="selectedKind === 'ong' && selectedOng">
+          <div class="px-4 py-3 border-b border-border flex items-center gap-3 shrink-0">
+            <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-sm font-bold text-emerald-700 dark:text-emerald-300">
+              {{ selectedOng.name[0]?.toUpperCase() }}
             </div>
-            <template v-else-if="conversationMessages.length">
-              <div
-                v-for="msg in conversationMessages"
-                :key="msg.id"
-                class="flex gap-2.5"
-                :class="msg.sender_role === 'partner' ? 'flex-row-reverse' : ''"
+            <div>
+              <p class="text-sm font-semibold">{{ selectedOng.name }}</p>
+              <p class="text-xs text-muted-foreground">{{ selectedOng.agentEmail }}</p>
+            </div>
+          </div>
+
+          <DossierMessagerie
+            :key="selectedOng.id"
+            :ong-id="selectedOng.id"
+            viewer-role="back_office"
+            api-base="/api/admin/dossiers"
+            hide-header
+            class="flex-1 min-h-0"
+          />
+        </template>
+
+        <!-- Bailleur : message direct (back-office) ou supervision conversations ONG -->
+        <template v-else-if="selectedKind === 'partner' && selectedPartner">
+          <div class="px-4 py-3 border-b border-border shrink-0 space-y-2">
+            <div class="flex items-center gap-2">
+              <p class="text-sm font-semibold">{{ selectedPartner.name }}</p>
+              <p class="text-xs text-muted-foreground">{{ selectedPartner.email }}</p>
+            </div>
+            <div class="flex gap-1.5">
+              <button
+                class="px-2.5 py-1 text-xs rounded-full border transition-colors"
+                :class="partnerView === 'direct'
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'border-border text-muted-foreground hover:bg-muted/40'"
+                @click="partnerView = 'direct'"
               >
+                Message direct
+              </button>
+              <button
+                class="px-2.5 py-1 text-xs rounded-full border transition-colors"
+                :class="partnerView === 'ongs'
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'border-border text-muted-foreground hover:bg-muted/40'"
+                @click="partnerView = 'ongs'"
+              >
+                Conversations ONG
+              </button>
+            </div>
+          </div>
+
+          <!-- Message direct back-office ↔ bailleur (lecture/écriture) -->
+          <PartnerAdminMessagerie
+            v-if="partnerView === 'direct'"
+            :key="selectedPartner.id"
+            :partner-id="selectedPartner.id"
+            viewer-role="back_office"
+            hide-header
+            class="flex-1 min-h-0"
+          />
+
+          <!-- Supervision bailleur ↔ ONG (lecture seule) -->
+          <template v-else>
+            <div v-if="selectedPartnerOngs.length > 1" class="px-4 py-2.5 border-b border-border shrink-0 flex flex-wrap items-center gap-1.5">
+              <UBadge color="orange" variant="soft" size="xs">Lecture seule</UBadge>
+              <button
+                v-for="o in selectedPartnerOngs"
+                :key="o.ongId"
+                class="px-2.5 py-1 text-xs rounded-full border transition-colors"
+                :class="selectedPartnerOngId === o.ongId
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'border-border text-muted-foreground hover:bg-muted/40'"
+                @click="selectedPartnerOngId = o.ongId"
+              >
+                {{ o.ongName }}
+              </button>
+            </div>
+            <div v-else class="px-4 py-2.5 border-b border-border shrink-0 flex items-center gap-2">
+              <UBadge color="orange" variant="soft" size="xs">Lecture seule</UBadge>
+              <p v-if="selectedPartnerOngs.length === 1" class="text-xs text-muted-foreground">
+                Conversation avec {{ selectedPartnerOngs[0].ongName }}
+              </p>
+            </div>
+
+            <div ref="scrollEl" class="flex-1 overflow-y-auto p-4 space-y-3">
+              <template v-if="partnerConversationMessages.length">
                 <div
-                  class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold"
-                  :class="msg.sender_role === 'agent'
-                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300'
-                    : 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'"
+                  v-for="msg in partnerConversationMessages"
+                  :key="msg.id"
+                  class="flex gap-2.5"
+                  :class="msg.sender_role === 'partner' ? 'flex-row-reverse' : ''"
                 >
-                  {{ msg.sender_role === 'agent' ? 'ONG' : 'BP' }}
-                </div>
-                <div class="flex flex-col gap-0.5 max-w-[75%]" :class="msg.sender_role === 'partner' ? 'items-end' : ''">
-                  <span class="text-xs text-muted-foreground">
-                    {{ msg.sender_role === 'agent' ? 'ONG' : 'Bailleur' }} · {{ formatTime(msg.created_at) }}
-                  </span>
                   <div
-                    class="px-3 py-2 rounded-2xl text-sm leading-relaxed break-words"
-                    :class="msg.sender_role === 'partner'
-                      ? 'bg-blue-100 text-blue-900 dark:bg-blue-900 dark:text-blue-100 rounded-tr-sm'
-                      : 'bg-muted text-foreground rounded-tl-sm'"
+                    class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold"
+                    :class="msg.sender_role === 'agent'
+                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300'
+                      : 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'"
                   >
-                    {{ msg.content }}
+                    {{ msg.sender_role === 'agent' ? 'ONG' : 'BP' }}
+                  </div>
+                  <div class="flex flex-col gap-0.5 max-w-[75%]" :class="msg.sender_role === 'partner' ? 'items-end' : ''">
+                    <span class="text-xs text-muted-foreground">
+                      {{ msg.sender_role === 'agent' ? 'ONG' : 'Bailleur' }} · {{ formatTime(msg.created_at) }}
+                    </span>
+                    <div
+                      class="px-3 py-2 rounded-2xl text-sm leading-relaxed break-words"
+                      :class="msg.sender_role === 'partner'
+                        ? 'bg-blue-100 text-blue-900 dark:bg-blue-900 dark:text-blue-100 rounded-tr-sm'
+                        : 'bg-muted text-foreground rounded-tl-sm'"
+                    >
+                      {{ msg.content }}
+                    </div>
                   </div>
                 </div>
+              </template>
+              <div v-else class="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground py-8">
+                <Icon name="i-heroicons-chat-bubble-left-right" class="w-8 h-8 opacity-30 mb-2" />
+                <p class="text-sm">{{ selectedPartnerOngs.length ? 'Aucun message' : "Ce bailleur n'a encore échangé avec aucune ONG" }}</p>
               </div>
-            </template>
-            <div v-else class="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground py-8">
-              <Icon name="i-heroicons-chat-bubble-left-right" class="w-8 h-8 opacity-30 mb-2" />
-              <p class="text-sm">Aucun message</p>
             </div>
-          </div>
+          </template>
         </template>
       </div>
     </div>
@@ -122,6 +159,11 @@
 
 <script setup lang="ts">
 import { getToken } from '~/features/auth/utils/getToken'
+import DossierMessagerie from '~/features/verification/components/DossierMessagerie.vue'
+import ConversationList from '~/features/messaging/components/ConversationList.vue'
+import RechercheInput from '~/features/messaging/components/RechercheInput.vue'
+import PartnerAdminMessagerie from '~/features/messaging/components/PartnerAdminMessagerie.vue'
+import type { ConversationListItem } from '~/features/messaging/components/ConversationList.vue'
 
 definePageMeta({ layout: 'admin', middleware: ['auth', 'back-office'] })
 
@@ -137,64 +179,100 @@ interface RawMessage {
   accounts: { id: string; first_name: string; last_name: string; email: string } | null
 }
 
-interface OngSummary  { id: string; name: string; partnerCount: number }
-interface PartnerInfo { id: string; name: string; email: string }
+interface DossierRow {
+  id: string
+  ongName: string
+  status: string
+  agentEmail: string
+}
 
-const loading        = ref(true)
-const loadingMessages = ref(false)
-const allMessages    = ref<RawMessage[]>([])
-const selectedOngId  = ref<string | null>(null)
-const selectedPartnerId = ref<string | null>(null)
-const scrollEl       = ref<HTMLElement | null>(null)
+interface UserRow {
+  id: string
+  email: string
+  accountType: string
+  firstName: string | null
+  lastName: string | null
+  companyName: string | null
+}
 
-const ongs = computed<OngSummary[]>(() => {
-  const map = new Map<string, OngSummary>()
+interface OngEntry     { id: string; name: string; agentEmail: string }
+interface PartnerEntry { id: string; name: string; email: string }
+
+const loading     = ref(true)
+const allMessages = ref<RawMessage[]>([])
+const allOngs     = ref<OngEntry[]>([])
+const allPartners = ref<PartnerEntry[]>([])
+const selectedKey = ref<string | null>(null)
+const searchQuery = ref('')
+const scrollEl    = ref<HTMLElement | null>(null)
+
+const selectedPartnerOngId = ref<string | null>(null)
+const partnerView = ref<'direct' | 'ongs'>('direct')
+
+// Clé = "ong:<id>" ou "partner:<id>" — préfixe pour distinguer les deux annuaires fusionnés
+const selectedKind = computed<'ong' | 'partner' | null>(() => {
+  if (!selectedKey.value) return null
+  return selectedKey.value.startsWith('ong:') ? 'ong' : 'partner'
+})
+const selectedId = computed(() => selectedKey.value ? selectedKey.value.slice(selectedKey.value.indexOf(':') + 1) : null)
+
+const selectedOng     = computed(() => selectedKind.value === 'ong' ? allOngs.value.find(o => o.id === selectedId.value) ?? null : null)
+const selectedPartner = computed(() => selectedKind.value === 'partner' ? allPartners.value.find(p => p.id === selectedId.value) ?? null : null)
+
+// Toutes les ONGs avec lesquelles le bailleur sélectionné a échangé (issu des messages déjà chargés)
+const selectedPartnerOngs = computed(() => {
+  if (!selectedPartner.value) return []
+  const map = new Map<string, { ongId: string; ongName: string }>()
   for (const m of allMessages.value) {
-    if (!map.has(m.ong_id)) {
-      map.set(m.ong_id, { id: m.ong_id, name: m.ongs?.name ?? m.ong_id.slice(0, 8), partnerCount: 0 })
-    }
-    const ong = map.get(m.ong_id)!
-    // compter les partenaires distincts
-    const partners = new Set(allMessages.value.filter(x => x.ong_id === m.ong_id).map(x => x.partner_id))
-    ong.partnerCount = partners.size
+    if (m.partner_id !== selectedPartner.value.id) continue
+    if (!map.has(m.ong_id)) map.set(m.ong_id, { ongId: m.ong_id, ongName: m.ongs?.name ?? m.ong_id.slice(0, 8) })
   }
   return Array.from(map.values())
 })
 
-const partnersForOng = computed<PartnerInfo[]>(() => {
-  if (!selectedOngId.value) return []
-  const map = new Map<string, PartnerInfo>()
-  for (const m of allMessages.value.filter(x => x.ong_id === selectedOngId.value)) {
-    if (!map.has(m.partner_id)) {
-      const acc = m.accounts
-      map.set(m.partner_id, {
-        id: m.partner_id,
-        name: acc ? `${acc.first_name} ${acc.last_name}`.trim() || acc.email : m.partner_id.slice(0, 8),
-        email: acc?.email ?? '',
-      })
-    }
-  }
-  return Array.from(map.values())
-})
-
-const conversationMessages = computed(() => {
-  if (!selectedOngId.value || !selectedPartnerId.value) return []
+const partnerConversationMessages = computed(() => {
+  if (!selectedPartner.value || !selectedPartnerOngId.value) return []
   return allMessages.value
-    .filter(m => m.ong_id === selectedOngId.value && m.partner_id === selectedPartnerId.value)
+    .filter(m => m.partner_id === selectedPartner.value!.id && m.ong_id === selectedPartnerOngId.value)
     .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
 })
 
-const selectedOngName = computed(() => ongs.value.find(o => o.id === selectedOngId.value)?.name ?? '')
-const selectedPartnerName = computed(() => partnersForOng.value.find(p => p.id === selectedPartnerId.value)?.name ?? '')
+// Au changement de bailleur sélectionné, pointer sur sa conversation la plus récente
+watch(selectedPartner, () => {
+  selectedPartnerOngId.value = selectedPartnerOngs.value[0]?.ongId ?? null
+  partnerView.value = 'direct'
+})
 
-function selectOng(id: string) {
-  selectedOngId.value = id
-  selectedPartnerId.value = null
-}
+const conversationItems = computed<ConversationListItem[]>(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  const matches = (...vals: (string | null | undefined)[]) =>
+    !q || vals.some(v => v?.toLowerCase().includes(q))
 
-function initials(name: string) {
-  return name.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase() || '?'
-}
+  const ongItems: ConversationListItem[] = allOngs.value
+    .filter(o => matches(o.name, o.agentEmail))
+    .map(o => ({
+      id: `ong:${o.id}`,
+      name: o.name,
+      preview: o.agentEmail,
+      badge: 'ONG',
+      avatarColor: 'emerald',
+    }))
+
+  const partnerItems: ConversationListItem[] = allPartners.value
+    .filter(p => matches(p.name, p.email))
+    .map((p) => {
+      const lastMsg = allMessages.value.find(m => m.partner_id === p.id)
+      return {
+        id: `partner:${p.id}`,
+        name: p.name,
+        preview: lastMsg?.content ?? p.email,
+        badge: 'Bailleur',
+        avatarColor: 'blue',
+      }
+    })
+
+  return [...ongItems, ...partnerItems].sort((a, b) => a.name.localeCompare(b.name, 'fr'))
+})
 
 function formatTime(iso: string) {
   return new Date(iso).toLocaleString('fr-FR', {
@@ -203,7 +281,7 @@ function formatTime(iso: string) {
   })
 }
 
-watch([selectedOngId, selectedPartnerId], () => {
+watch([selectedPartnerOngId, selectedKey], () => {
   nextTick(() => {
     if (scrollEl.value) scrollEl.value.scrollTop = scrollEl.value.scrollHeight
   })
@@ -211,10 +289,21 @@ watch([selectedOngId, selectedPartnerId], () => {
 
 onMounted(async () => {
   const token = await getToken()
+  const headers = { Authorization: `Bearer ${token}` }
   try {
-    allMessages.value = await $fetch<RawMessage[]>('/api/admin/messages', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const [messages, dossiers, partners] = await Promise.all([
+      $fetch<RawMessage[]>('/api/admin/messages', { headers }),
+      $fetch<DossierRow[]>('/api/admin/dossiers', { headers }),
+      $fetch<UserRow[]>('/api/admin/users', { headers, query: { type: 'user_partner' } }),
+    ])
+
+    allMessages.value = messages
+    allOngs.value = dossiers.map(d => ({ id: d.id, name: d.ongName, agentEmail: d.agentEmail }))
+    allPartners.value = partners.map(p => ({
+      id: p.id,
+      name: [p.firstName, p.lastName].filter(Boolean).join(' ').trim() || p.companyName || p.email,
+      email: p.email,
+    }))
   } catch (e: any) {
     useToast().add({ title: 'Erreur', description: e.data?.statusMessage ?? e.message, color: 'red' })
   } finally {

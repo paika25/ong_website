@@ -1,49 +1,49 @@
 import process from 'node:process';globalThis._importMeta_={url:import.meta.url,env:process.env};import { tmpdir } from 'node:os';
-import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, getResponseStatus, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getRouterParam, readMultipartFormData, readRawBody, getResponseStatusText } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/h3/dist/index.mjs';
+import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, getResponseStatus, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getRouterParam, readMultipartFormData, readRawBody, getResponseStatusText } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/h3/dist/index.mjs';
 import { Server } from 'node:http';
 import { resolve, dirname, join } from 'node:path';
 import nodeCrypto from 'node:crypto';
 import { parentPort, threadId } from 'node:worker_threads';
-import { escapeHtml } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/@vue/shared/dist/shared.cjs.js';
-import { z } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/zod/index.js';
-import { createClient } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/@supabase/supabase-js/dist/index.mjs';
-import Stripe from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/stripe/esm/stripe.esm.node.js';
-import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/vue-bundle-renderer/dist/runtime.mjs';
-import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, joinRelativeURL } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/ufo/dist/index.mjs';
-import { renderToString } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/vue/server-renderer/index.mjs';
-import destr, { destr as destr$1 } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/destr/dist/index.mjs';
-import { createHooks } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/hookable/dist/index.mjs';
-import { createFetch, Headers as Headers$1 } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/ofetch/dist/node.mjs';
-import { fetchNodeRequestHandler, callNodeRequestHandler } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/node-mock-http/dist/index.mjs';
-import { createStorage, prefixStorage } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/unstorage/dist/index.mjs';
-import unstorage_47drivers_47fs from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/unstorage/drivers/fs.mjs';
-import { digest } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/nitropack/node_modules/ohash/dist/index.mjs';
-import { klona } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/klona/dist/index.mjs';
-import defu, { defuFn } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/defu/dist/defu.mjs';
-import { snakeCase } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/scule/dist/index.mjs';
-import { getContext } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/unctx/dist/index.mjs';
-import { toRouteMatcher, createRouter } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/radix3/dist/index.mjs';
+import { escapeHtml } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/@vue/shared/dist/shared.cjs.js';
+import { z } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/zod/index.js';
+import { createClient } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/@supabase/supabase-js/dist/index.mjs';
+import Stripe from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/stripe/esm/stripe.esm.node.js';
+import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/vue-bundle-renderer/dist/runtime.mjs';
+import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, joinRelativeURL } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/ufo/dist/index.mjs';
+import { renderToString } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/vue/server-renderer/index.mjs';
+import destr, { destr as destr$1 } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/destr/dist/index.mjs';
+import { createHooks } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/hookable/dist/index.mjs';
+import { createFetch, Headers as Headers$1 } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/ofetch/dist/node.mjs';
+import { fetchNodeRequestHandler, callNodeRequestHandler } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/node-mock-http/dist/index.mjs';
+import { createStorage, prefixStorage } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/unstorage/dist/index.mjs';
+import unstorage_47drivers_47fs from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/unstorage/drivers/fs.mjs';
+import { digest } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/nitropack/node_modules/ohash/dist/index.mjs';
+import { klona } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/klona/dist/index.mjs';
+import defu, { defuFn } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/defu/dist/defu.mjs';
+import { snakeCase } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/scule/dist/index.mjs';
+import { getContext } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/unctx/dist/index.mjs';
+import { toRouteMatcher, createRouter } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/radix3/dist/index.mjs';
 import { readFile } from 'node:fs/promises';
-import consola, { consola as consola$1 } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/consola/dist/index.mjs';
-import { ErrorParser } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/youch-core/build/index.js';
-import { Youch } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/youch/build/index.js';
-import { SourceMapConsumer } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/source-map/source-map.js';
+import consola, { consola as consola$1 } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/consola/dist/index.mjs';
+import { ErrorParser } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/youch-core/build/index.js';
+import { Youch } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/youch/build/index.js';
+import { SourceMapConsumer } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/source-map/source-map.js';
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { stringify, uneval } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/devalue/index.js';
-import { captureRawStackTrace, parseRawStackTrace } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/errx/dist/index.js';
-import { isVNode, toValue, isRef } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/vue/index.mjs';
+import { stringify, uneval } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/devalue/index.js';
+import { captureRawStackTrace, parseRawStackTrace } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/errx/dist/index.js';
+import { isVNode, toValue, isRef } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/vue/index.mjs';
 import { promises } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname as dirname$1, resolve as resolve$1 } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/pathe/dist/index.mjs';
-import { basename } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/@nuxt/icon/node_modules/pathe/dist/index.mjs';
-import { getIcons } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/@iconify/utils/lib/index.mjs';
-import { hash as hash$1 } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/@nuxt/icon/node_modules/ohash/dist/index.mjs';
-import { collections } from 'file:///Users/valdo/Desktop/paika/ong_website/.nuxt/nuxt-icon-server-bundle.mjs';
-import { createHead as createHead$1, propsToString, renderSSRHead } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/unhead/dist/server.mjs';
-import { DeprecationsPlugin, PromisesPlugin, TemplateParamsPlugin, AliasSortingPlugin } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/unhead/dist/plugins.mjs';
-import { walkResolver } from 'file:///Users/valdo/Desktop/paika/ong_website/node_modules/unhead/dist/utils.mjs';
+import { dirname as dirname$1, resolve as resolve$1 } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/pathe/dist/index.mjs';
+import { basename } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/@nuxt/icon/node_modules/pathe/dist/index.mjs';
+import { getIcons } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/@iconify/utils/lib/index.mjs';
+import { hash as hash$1 } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/@nuxt/icon/node_modules/ohash/dist/index.mjs';
+import { collections } from 'file:///Users/marius/Documents/Proffessionnel/ONG/.nuxt/nuxt-icon-server-bundle.mjs';
+import { createHead as createHead$1, propsToString, renderSSRHead } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/unhead/dist/server.mjs';
+import { DeprecationsPlugin, PromisesPlugin, TemplateParamsPlugin, AliasSortingPlugin } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/unhead/dist/plugins.mjs';
+import { walkResolver } from 'file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/unhead/dist/utils.mjs';
 
-const serverAssets = [{"baseName":"server","dir":"/Users/valdo/Desktop/paika/ong_website/server/assets"}];
+const serverAssets = [{"baseName":"server","dir":"/Users/marius/Documents/Proffessionnel/ONG/server/assets"}];
 
 const assets$1 = createStorage();
 
@@ -55,11 +55,11 @@ const storage = createStorage({});
 
 storage.mount('/assets', assets$1);
 
-storage.mount('root', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/Users/valdo/Desktop/paika/ong_website","watchOptions":{"ignored":[null]}}));
-storage.mount('src', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/Users/valdo/Desktop/paika/ong_website/server","watchOptions":{"ignored":[null]}}));
-storage.mount('build', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/Users/valdo/Desktop/paika/ong_website/.nuxt"}));
-storage.mount('cache', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/Users/valdo/Desktop/paika/ong_website/.nuxt/cache"}));
-storage.mount('data', unstorage_47drivers_47fs({"driver":"fs","base":"/Users/valdo/Desktop/paika/ong_website/.data/kv"}));
+storage.mount('root', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/Users/marius/Documents/Proffessionnel/ONG","watchOptions":{"ignored":[null]}}));
+storage.mount('src', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/Users/marius/Documents/Proffessionnel/ONG/server","watchOptions":{"ignored":[null]}}));
+storage.mount('build', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/Users/marius/Documents/Proffessionnel/ONG/.nuxt"}));
+storage.mount('cache', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/Users/marius/Documents/Proffessionnel/ONG/.nuxt/cache"}));
+storage.mount('data', unstorage_47drivers_47fs({"driver":"fs","base":"/Users/marius/Documents/Proffessionnel/ONG/.data/kv"}));
 
 function useStorage(base = "") {
   return base ? prefixStorage(storage, base) : storage;
@@ -1268,13 +1268,13 @@ if (!window.__NUXT_DEVTOOLS_TIME_METRIC__) {
 window.__NUXT_DEVTOOLS_TIME_METRIC__.appInit = Date.now()
 `;
 
-const _Irp1tPs5NuSF38ZWzTG1_FwQTtxGq3Cf7laPHYq4fE = (function(nitro) {
+const _dG5kCBnq249uk2TRSIh62j52S5SUVfkros44gnQg8E = (function(nitro) {
   nitro.hooks.hook("render:html", (htmlContext) => {
     htmlContext.head.push(`<script>${script$1}<\/script>`);
   });
 });
 
-const rootDir = "/Users/valdo/Desktop/paika/ong_website";
+const rootDir = "/Users/marius/Documents/Proffessionnel/ONG";
 
 const appHead = {"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"hid":"description","name":"description","content":"Projet Paika Ong "}],"link":[{"rel":"icon","type":"image/x-icon","href":"/favicon.ico"}],"style":[],"script":[],"noscript":[],"title":"Soutenez nos ONG"};
 
@@ -1293,7 +1293,7 @@ const devReducers = {
   URL: (data) => data instanceof URL ? data.toString() : void 0
 };
 const asyncContext = getContext("nuxt-dev", { asyncContext: true, AsyncLocalStorage });
-const _Z_tKWDaTpDHLJnhkIZPtd3uKKhNfWa_kLkJcBBEDI = (nitroApp) => {
+const _QsHGK4cVKJECU974xO65FOyg1RE1_XTueHXil9TKqSg = (nitroApp) => {
   const handler = nitroApp.h3App.handler;
   nitroApp.h3App.handler = (event) => {
     return asyncContext.callAsync({ logs: [], event }, () => handler(event));
@@ -1364,16 +1364,16 @@ function onConsoleLog(callback) {
 
 const script = "\"use strict\";(()=>{const t=window,e=document.documentElement,c=[\"dark\",\"light\"],n=getStorageValue(\"localStorage\",\"nuxt-color-mode\")||\"dark\";let i=n===\"system\"?u():n;const r=e.getAttribute(\"data-color-mode-forced\");r&&(i=r),l(i),t[\"__NUXT_COLOR_MODE__\"]={preference:n,value:i,getColorScheme:u,addColorScheme:l,removeColorScheme:d};function l(o){const s=\"\"+o+\"\",a=\"\";e.classList?e.classList.add(s):e.className+=\" \"+s,a&&e.setAttribute(\"data-\"+a,o)}function d(o){const s=\"\"+o+\"\",a=\"\";e.classList?e.classList.remove(s):e.className=e.className.replace(new RegExp(s,\"g\"),\"\"),a&&e.removeAttribute(\"data-\"+a)}function f(o){return t.matchMedia(\"(prefers-color-scheme\"+o+\")\")}function u(){if(t.matchMedia&&f(\"\").media!==\"not all\"){for(const o of c)if(f(\":\"+o).matches)return o}return\"light\"}})();function getStorageValue(t,e){switch(t){case\"localStorage\":return window.localStorage.getItem(e);case\"sessionStorage\":return window.sessionStorage.getItem(e);case\"cookie\":return getCookie(e);default:return null}}function getCookie(t){const c=(\"; \"+window.document.cookie).split(\"; \"+t+\"=\");if(c.length===2)return c.pop()?.split(\";\").shift()}";
 
-const _ApdPMVSn7iGAndobjCihsG3ZEiz4IZQDm9y8OyMKCs = (function(nitro) {
+const _ErdtmwJcqqpQ5PD4b4UyI856ixhiUzsheifQwM0kEwY = (function(nitro) {
   nitro.hooks.hook("render:html", (htmlContext) => {
     htmlContext.head.push(`<script>${script}<\/script>`);
   });
 });
 
 const plugins = [
-  _Irp1tPs5NuSF38ZWzTG1_FwQTtxGq3Cf7laPHYq4fE,
-_Z_tKWDaTpDHLJnhkIZPtd3uKKhNfWa_kLkJcBBEDI,
-_ApdPMVSn7iGAndobjCihsG3ZEiz4IZQDm9y8OyMKCs
+  _dG5kCBnq249uk2TRSIh62j52S5SUVfkros44gnQg8E,
+_QsHGK4cVKJECU974xO65FOyg1RE1_XTueHXil9TKqSg,
+_ErdtmwJcqqpQ5PD4b4UyI856ixhiUzsheifQwM0kEwY
 ];
 
 const assets = {};
@@ -1401,7 +1401,7 @@ function getAsset (id) {
 
 const METHODS = /* @__PURE__ */ new Set(["HEAD", "GET"]);
 const EncodingMap = { gzip: ".gz", br: ".br" };
-const _Bgaued = eventHandler((event) => {
+const _DyLm2U = eventHandler((event) => {
   if (event.method && !METHODS.has(event.method)) {
     return;
   }
@@ -1472,7 +1472,7 @@ function parseJWT(token) {
     return null;
   }
 }
-const _82hfr6 = defineEventHandler(async (event) => {
+const _yDW0oZ = defineEventHandler(async (event) => {
   var _a, _b;
   const path = getRequestURL(event).pathname;
   const publicRoutes = [
@@ -1646,7 +1646,7 @@ class ServiceError extends Error {
 
 const warnOnceSet = /* @__PURE__ */ new Set();
 const DEFAULT_ENDPOINT = "https://api.iconify.design";
-const _eseEVZ = defineCachedEventHandler(async (event) => {
+const _3jmRZG = defineCachedEventHandler(async (event) => {
   const url = getRequestURL(event);
   if (!url)
     return createError({ status: 400, message: "Invalid icon request" });
@@ -1766,8 +1766,8 @@ function setSSRError(ssrContext, error) {
 
 const APP_ROOT_OPEN_TAG = `<${appRootTag}${propsToString(appRootAttrs)}>`;
 const APP_ROOT_CLOSE_TAG = `</${appRootTag}>`;
-const getServerEntry = () => import('file:///Users/valdo/Desktop/paika/ong_website/.nuxt//dist/server/server.mjs').then((r) => r.default || r);
-const getClientManifest = () => import('file:///Users/valdo/Desktop/paika/ong_website/.nuxt//dist/server/client.manifest.mjs').then((r) => r.default || r).then((r) => typeof r === "function" ? r() : r);
+const getServerEntry = () => import('file:///Users/marius/Documents/Proffessionnel/ONG/.nuxt//dist/server/server.mjs').then((r) => r.default || r);
+const getClientManifest = () => import('file:///Users/marius/Documents/Proffessionnel/ONG/.nuxt//dist/server/client.manifest.mjs').then((r) => r.default || r).then((r) => typeof r === "function" ? r() : r);
 const getSSRRenderer = lazyCachedFunction(async () => {
   const manifest = await getClientManifest();
   if (!manifest) {
@@ -2016,103 +2016,117 @@ async function getIslandContext(event) {
   return ctx;
 }
 
-const _lazy_aiQtdz = () => Promise.resolve().then(function () { return _id__patch$1; });
-const _lazy_D8o8Hm = () => Promise.resolve().then(function () { return status_post$1; });
-const _lazy_IK0s8N = () => Promise.resolve().then(function () { return index_get$7; });
-const _lazy_Hkw9H3 = () => Promise.resolve().then(function () { return index_post$1; });
-const _lazy_t5TCBr = () => Promise.resolve().then(function () { return donations_get$1; });
-const _lazy_dD6rAo = () => Promise.resolve().then(function () { return dossiers_get$3; });
-const _lazy_CV3ch7 = () => Promise.resolve().then(function () { return audit_get$3; });
-const _lazy_noAA5o = () => Promise.resolve().then(function () { return complement_post$3; });
-const _lazy_78avSa = () => Promise.resolve().then(function () { return index_get$5; });
-const _lazy_udrdBN = () => Promise.resolve().then(function () { return messages_get$3; });
-const _lazy_iZztH4 = () => Promise.resolve().then(function () { return messages_post$3; });
-const _lazy_SpjyO1 = () => Promise.resolve().then(function () { return reject_post$3; });
-const _lazy_qIwBGx = () => Promise.resolve().then(function () { return startReview_post$3; });
-const _lazy_Eqc1xB = () => Promise.resolve().then(function () { return suspend_post$3; });
-const _lazy_tKGojK = () => Promise.resolve().then(function () { return validate_post$3; });
-const _lazy_PrdiQk = () => Promise.resolve().then(function () { return historique_get$1; });
-const _lazy_LD2vCu = () => Promise.resolve().then(function () { return visibility_patch$1; });
-const _lazy_Z7hbiY = () => Promise.resolve().then(function () { return overview_get$1; });
-const _lazy_2HBfeB = () => Promise.resolve().then(function () { return users_get$1; });
-const _lazy_ZGQazD = () => Promise.resolve().then(function () { return mandateUrl_get$1; });
-const _lazy_AbETtq = () => Promise.resolve().then(function () { return verify_patch$1; });
-const _lazy_T0z1jm = () => Promise.resolve().then(function () { return mandateUpload_post$1; });
-const _lazy_YvJXOr = () => Promise.resolve().then(function () { return dossiers_get$1; });
-const _lazy_XKWfQJ = () => Promise.resolve().then(function () { return audit_get$1; });
-const _lazy_rn5IuT = () => Promise.resolve().then(function () { return complement_post$1; });
-const _lazy_3rNv_W = () => Promise.resolve().then(function () { return index_get$3; });
-const _lazy_vJrHxp = () => Promise.resolve().then(function () { return reject_post$1; });
-const _lazy_icXuC8 = () => Promise.resolve().then(function () { return startReview_post$1; });
-const _lazy_j9QUQJ = () => Promise.resolve().then(function () { return suspend_post$1; });
-const _lazy_d33UVD = () => Promise.resolve().then(function () { return validate_post$1; });
-const _lazy_KYWO9f = () => Promise.resolve().then(function () { return confirmSession_post$1; });
-const _lazy_lGUdHE = () => Promise.resolve().then(function () { return createCheckout_post$1; });
-const _lazy_glnN8P = () => Promise.resolve().then(function () { return index_get$1; });
-const _lazy_fUdl2s = () => Promise.resolve().then(function () { return messages_get$1; });
-const _lazy_A0ZXYa = () => Promise.resolve().then(function () { return messages_post$1; });
-const _lazy_OBo_pH = () => Promise.resolve().then(function () { return partnerConversations_get$1; });
-const _lazy_s4Ag_t = () => Promise.resolve().then(function () { return partnerMessages_get$1; });
-const _lazy_bgxgqX = () => Promise.resolve().then(function () { return partnerMessages_post$1; });
-const _lazy_Un6BBW = () => Promise.resolve().then(function () { return resubmit_post$1; });
-const _lazy_iyhg_M = () => Promise.resolve().then(function () { return submit_post$1; });
-const _lazy_Q89szU = () => Promise.resolve().then(function () { return criteria_get$1; });
-const _lazy_FzPDMZ = () => Promise.resolve().then(function () { return _id__get$1; });
-const _lazy_BSKBKK = () => Promise.resolve().then(function () { return stripe_post$1; });
-const _lazy_lhvZqR = () => Promise.resolve().then(function () { return vanillaPay_post$1; });
-const _lazy_NMISC_ = () => Promise.resolve().then(function () { return renderer$1; });
+const _lazy_DaxJy4 = () => Promise.resolve().then(function () { return _id__patch$1; });
+const _lazy_dQUsqU = () => Promise.resolve().then(function () { return status_post$1; });
+const _lazy_4xtLv1 = () => Promise.resolve().then(function () { return index_get$7; });
+const _lazy_cf7rxe = () => Promise.resolve().then(function () { return index_post$1; });
+const _lazy_A7Ft5_ = () => Promise.resolve().then(function () { return donations_get$1; });
+const _lazy_1k2zDw = () => Promise.resolve().then(function () { return dossiers_get$3; });
+const _lazy_S2B3SZ = () => Promise.resolve().then(function () { return audit_get$3; });
+const _lazy_3fSMyW = () => Promise.resolve().then(function () { return complement_post$3; });
+const _lazy_QNQ9Ab = () => Promise.resolve().then(function () { return index_get$5; });
+const _lazy_WyVmFv = () => Promise.resolve().then(function () { return messages_get$5; });
+const _lazy_XTAKmQ = () => Promise.resolve().then(function () { return messages_post$3; });
+const _lazy_bIMvQa = () => Promise.resolve().then(function () { return reject_post$3; });
+const _lazy_7xtcc0 = () => Promise.resolve().then(function () { return startReview_post$3; });
+const _lazy_C0iMdk = () => Promise.resolve().then(function () { return suspend_post$3; });
+const _lazy_fxB5OF = () => Promise.resolve().then(function () { return validate_post$3; });
+const _lazy_wn_l1H = () => Promise.resolve().then(function () { return historique_get$1; });
+const _lazy_NBLkrH = () => Promise.resolve().then(function () { return messages_get$3; });
+const _lazy_3aPZDt = () => Promise.resolve().then(function () { return visibility_patch$1; });
+const _lazy_oZdLM3 = () => Promise.resolve().then(function () { return overview_get$1; });
+const _lazy_VhqqhD = () => Promise.resolve().then(function () { return users_get$1; });
+const _lazy_XEQD9C = () => Promise.resolve().then(function () { return mandateUrl_get$1; });
+const _lazy_UTH5od = () => Promise.resolve().then(function () { return verify_patch$1; });
+const _lazy_8fSgOA = () => Promise.resolve().then(function () { return mandateUpload_post$1; });
+const _lazy_TNVXua = () => Promise.resolve().then(function () { return dossiers_get$1; });
+const _lazy_qq4Efz = () => Promise.resolve().then(function () { return audit_get$1; });
+const _lazy_BU_lEt = () => Promise.resolve().then(function () { return complement_post$1; });
+const _lazy_QTZosB = () => Promise.resolve().then(function () { return index_get$3; });
+const _lazy_xuymcz = () => Promise.resolve().then(function () { return reject_post$1; });
+const _lazy_4u7bRh = () => Promise.resolve().then(function () { return startReview_post$1; });
+const _lazy_NHwT2z = () => Promise.resolve().then(function () { return suspend_post$1; });
+const _lazy_rvBnF9 = () => Promise.resolve().then(function () { return validate_post$1; });
+const _lazy_pfHtIL = () => Promise.resolve().then(function () { return refundRequest_post$1; });
+const _lazy_Jf3Ww3 = () => Promise.resolve().then(function () { return confirmSession_post$1; });
+const _lazy_ZR1hI1 = () => Promise.resolve().then(function () { return createCheckout_post$1; });
+const _lazy_GbDkqT = () => Promise.resolve().then(function () { return donorHistory_get$1; });
+const _lazy_BVbLvn = () => Promise.resolve().then(function () { return portefeuille_get$1; });
+const _lazy_kFi2eC = () => Promise.resolve().then(function () { return index_get$1; });
+const _lazy_zt2g8J = () => Promise.resolve().then(function () { return messages_get$1; });
+const _lazy_cHj71g = () => Promise.resolve().then(function () { return messages_post$1; });
+const _lazy_yE2LzS = () => Promise.resolve().then(function () { return partnerConversations_get$1; });
+const _lazy_pnKXBM = () => Promise.resolve().then(function () { return partnerMessages_get$1; });
+const _lazy_DFxXRr = () => Promise.resolve().then(function () { return partnerMessages_post$1; });
+const _lazy_wh3blU = () => Promise.resolve().then(function () { return resubmit_post$1; });
+const _lazy_mPBlQ3 = () => Promise.resolve().then(function () { return submit_post$1; });
+const _lazy_FpjCwq = () => Promise.resolve().then(function () { return conversations_get$1; });
+const _lazy_PypaiE = () => Promise.resolve().then(function () { return adminMessages_get$1; });
+const _lazy_b7NGPu = () => Promise.resolve().then(function () { return adminMessages_post$1; });
+const _lazy_L_SRCu = () => Promise.resolve().then(function () { return criteria_get$1; });
+const _lazy_OL1ghg = () => Promise.resolve().then(function () { return _id__get$1; });
+const _lazy_Xy9SYX = () => Promise.resolve().then(function () { return stripe_post$1; });
+const _lazy_GyPkfz = () => Promise.resolve().then(function () { return vanillaPay_post$1; });
+const _lazy_7RYPIX = () => Promise.resolve().then(function () { return renderer$1; });
 
 const handlers = [
-  { route: '', handler: _Bgaued, lazy: false, middleware: true, method: undefined },
-  { route: '', handler: _82hfr6, lazy: false, middleware: true, method: undefined },
-  { route: '/api/admin/algorithm/:id', handler: _lazy_aiQtdz, lazy: true, middleware: false, method: "patch" },
-  { route: '/api/admin/algorithm/:id/status', handler: _lazy_D8o8Hm, lazy: true, middleware: false, method: "post" },
-  { route: '/api/admin/algorithm', handler: _lazy_IK0s8N, lazy: true, middleware: false, method: "get" },
-  { route: '/api/admin/algorithm', handler: _lazy_Hkw9H3, lazy: true, middleware: false, method: "post" },
-  { route: '/api/admin/donations', handler: _lazy_t5TCBr, lazy: true, middleware: false, method: "get" },
-  { route: '/api/admin/dossiers', handler: _lazy_dD6rAo, lazy: true, middleware: false, method: "get" },
-  { route: '/api/admin/dossiers/:id/audit', handler: _lazy_CV3ch7, lazy: true, middleware: false, method: "get" },
-  { route: '/api/admin/dossiers/:id/complement', handler: _lazy_noAA5o, lazy: true, middleware: false, method: "post" },
-  { route: '/api/admin/dossiers/:id', handler: _lazy_78avSa, lazy: true, middleware: false, method: "get" },
-  { route: '/api/admin/dossiers/:id/messages', handler: _lazy_udrdBN, lazy: true, middleware: false, method: "get" },
-  { route: '/api/admin/dossiers/:id/messages', handler: _lazy_iZztH4, lazy: true, middleware: false, method: "post" },
-  { route: '/api/admin/dossiers/:id/reject', handler: _lazy_SpjyO1, lazy: true, middleware: false, method: "post" },
-  { route: '/api/admin/dossiers/:id/start-review', handler: _lazy_qIwBGx, lazy: true, middleware: false, method: "post" },
-  { route: '/api/admin/dossiers/:id/suspend', handler: _lazy_Eqc1xB, lazy: true, middleware: false, method: "post" },
-  { route: '/api/admin/dossiers/:id/validate', handler: _lazy_tKGojK, lazy: true, middleware: false, method: "post" },
-  { route: '/api/admin/historique', handler: _lazy_PrdiQk, lazy: true, middleware: false, method: "get" },
-  { route: '/api/admin/ongs/:id/visibility', handler: _lazy_LD2vCu, lazy: true, middleware: false, method: "patch" },
-  { route: '/api/admin/overview', handler: _lazy_Z7hbiY, lazy: true, middleware: false, method: "get" },
-  { route: '/api/admin/users', handler: _lazy_2HBfeB, lazy: true, middleware: false, method: "get" },
-  { route: '/api/admin/users/:id/mandate-url', handler: _lazy_ZGQazD, lazy: true, middleware: false, method: "get" },
-  { route: '/api/admin/users/:id/verify', handler: _lazy_AbETtq, lazy: true, middleware: false, method: "patch" },
-  { route: '/api/auth/mandate-upload', handler: _lazy_T0z1jm, lazy: true, middleware: false, method: "post" },
-  { route: '/api/back-office/dossiers', handler: _lazy_YvJXOr, lazy: true, middleware: false, method: "get" },
-  { route: '/api/back-office/dossiers/:id/audit', handler: _lazy_XKWfQJ, lazy: true, middleware: false, method: "get" },
-  { route: '/api/back-office/dossiers/:id/complement', handler: _lazy_rn5IuT, lazy: true, middleware: false, method: "post" },
-  { route: '/api/back-office/dossiers/:id', handler: _lazy_3rNv_W, lazy: true, middleware: false, method: "get" },
-  { route: '/api/back-office/dossiers/:id/reject', handler: _lazy_vJrHxp, lazy: true, middleware: false, method: "post" },
-  { route: '/api/back-office/dossiers/:id/start-review', handler: _lazy_icXuC8, lazy: true, middleware: false, method: "post" },
-  { route: '/api/back-office/dossiers/:id/suspend', handler: _lazy_j9QUQJ, lazy: true, middleware: false, method: "post" },
-  { route: '/api/back-office/dossiers/:id/validate', handler: _lazy_d33UVD, lazy: true, middleware: false, method: "post" },
-  { route: '/api/donations/confirm-session', handler: _lazy_KYWO9f, lazy: true, middleware: false, method: "post" },
-  { route: '/api/donations/create-checkout', handler: _lazy_lGUdHE, lazy: true, middleware: false, method: "post" },
-  { route: '/api/ongs/:id', handler: _lazy_glnN8P, lazy: true, middleware: false, method: "get" },
-  { route: '/api/ongs/:id/messages', handler: _lazy_fUdl2s, lazy: true, middleware: false, method: "get" },
-  { route: '/api/ongs/:id/messages', handler: _lazy_A0ZXYa, lazy: true, middleware: false, method: "post" },
-  { route: '/api/ongs/:id/partner-conversations', handler: _lazy_OBo_pH, lazy: true, middleware: false, method: "get" },
-  { route: '/api/ongs/:id/partner-messages', handler: _lazy_s4Ag_t, lazy: true, middleware: false, method: "get" },
-  { route: '/api/ongs/:id/partner-messages', handler: _lazy_bgxgqX, lazy: true, middleware: false, method: "post" },
-  { route: '/api/ongs/:id/resubmit', handler: _lazy_Un6BBW, lazy: true, middleware: false, method: "post" },
-  { route: '/api/ongs/:id/submit', handler: _lazy_iyhg_M, lazy: true, middleware: false, method: "post" },
-  { route: '/api/score/criteria', handler: _lazy_Q89szU, lazy: true, middleware: false, method: "get" },
-  { route: '/api/score/ong/:id', handler: _lazy_FzPDMZ, lazy: true, middleware: false, method: "get" },
-  { route: '/api/webhooks/stripe', handler: _lazy_BSKBKK, lazy: true, middleware: false, method: "post" },
-  { route: '/api/webhooks/vanilla-pay', handler: _lazy_lhvZqR, lazy: true, middleware: false, method: "post" },
-  { route: '/__nuxt_error', handler: _lazy_NMISC_, lazy: true, middleware: false, method: undefined },
-  { route: '/api/_nuxt_icon/:collection', handler: _eseEVZ, lazy: false, middleware: false, method: undefined },
+  { route: '', handler: _DyLm2U, lazy: false, middleware: true, method: undefined },
+  { route: '', handler: _yDW0oZ, lazy: false, middleware: true, method: undefined },
+  { route: '/api/admin/algorithm/:id', handler: _lazy_DaxJy4, lazy: true, middleware: false, method: "patch" },
+  { route: '/api/admin/algorithm/:id/status', handler: _lazy_dQUsqU, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/algorithm', handler: _lazy_4xtLv1, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/algorithm', handler: _lazy_cf7rxe, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/donations', handler: _lazy_A7Ft5_, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/dossiers', handler: _lazy_1k2zDw, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/dossiers/:id/audit', handler: _lazy_S2B3SZ, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/dossiers/:id/complement', handler: _lazy_3fSMyW, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/dossiers/:id', handler: _lazy_QNQ9Ab, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/dossiers/:id/messages', handler: _lazy_WyVmFv, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/dossiers/:id/messages', handler: _lazy_XTAKmQ, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/dossiers/:id/reject', handler: _lazy_bIMvQa, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/dossiers/:id/start-review', handler: _lazy_7xtcc0, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/dossiers/:id/suspend', handler: _lazy_C0iMdk, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/dossiers/:id/validate', handler: _lazy_fxB5OF, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/historique', handler: _lazy_wn_l1H, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/messages', handler: _lazy_NBLkrH, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/ongs/:id/visibility', handler: _lazy_3aPZDt, lazy: true, middleware: false, method: "patch" },
+  { route: '/api/admin/overview', handler: _lazy_oZdLM3, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/users', handler: _lazy_VhqqhD, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/users/:id/mandate-url', handler: _lazy_XEQD9C, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/users/:id/verify', handler: _lazy_UTH5od, lazy: true, middleware: false, method: "patch" },
+  { route: '/api/auth/mandate-upload', handler: _lazy_8fSgOA, lazy: true, middleware: false, method: "post" },
+  { route: '/api/back-office/dossiers', handler: _lazy_TNVXua, lazy: true, middleware: false, method: "get" },
+  { route: '/api/back-office/dossiers/:id/audit', handler: _lazy_qq4Efz, lazy: true, middleware: false, method: "get" },
+  { route: '/api/back-office/dossiers/:id/complement', handler: _lazy_BU_lEt, lazy: true, middleware: false, method: "post" },
+  { route: '/api/back-office/dossiers/:id', handler: _lazy_QTZosB, lazy: true, middleware: false, method: "get" },
+  { route: '/api/back-office/dossiers/:id/reject', handler: _lazy_xuymcz, lazy: true, middleware: false, method: "post" },
+  { route: '/api/back-office/dossiers/:id/start-review', handler: _lazy_4u7bRh, lazy: true, middleware: false, method: "post" },
+  { route: '/api/back-office/dossiers/:id/suspend', handler: _lazy_NHwT2z, lazy: true, middleware: false, method: "post" },
+  { route: '/api/back-office/dossiers/:id/validate', handler: _lazy_rvBnF9, lazy: true, middleware: false, method: "post" },
+  { route: '/api/donations/:id/refund-request', handler: _lazy_pfHtIL, lazy: true, middleware: false, method: "post" },
+  { route: '/api/donations/confirm-session', handler: _lazy_Jf3Ww3, lazy: true, middleware: false, method: "post" },
+  { route: '/api/donations/create-checkout', handler: _lazy_ZR1hI1, lazy: true, middleware: false, method: "post" },
+  { route: '/api/donations/donor-history', handler: _lazy_GbDkqT, lazy: true, middleware: false, method: "get" },
+  { route: '/api/ong-dashboard/portefeuille', handler: _lazy_BVbLvn, lazy: true, middleware: false, method: "get" },
+  { route: '/api/ongs/:id', handler: _lazy_kFi2eC, lazy: true, middleware: false, method: "get" },
+  { route: '/api/ongs/:id/messages', handler: _lazy_zt2g8J, lazy: true, middleware: false, method: "get" },
+  { route: '/api/ongs/:id/messages', handler: _lazy_cHj71g, lazy: true, middleware: false, method: "post" },
+  { route: '/api/ongs/:id/partner-conversations', handler: _lazy_yE2LzS, lazy: true, middleware: false, method: "get" },
+  { route: '/api/ongs/:id/partner-messages', handler: _lazy_pnKXBM, lazy: true, middleware: false, method: "get" },
+  { route: '/api/ongs/:id/partner-messages', handler: _lazy_DFxXRr, lazy: true, middleware: false, method: "post" },
+  { route: '/api/ongs/:id/resubmit', handler: _lazy_wh3blU, lazy: true, middleware: false, method: "post" },
+  { route: '/api/ongs/:id/submit', handler: _lazy_mPBlQ3, lazy: true, middleware: false, method: "post" },
+  { route: '/api/partner/conversations', handler: _lazy_FpjCwq, lazy: true, middleware: false, method: "get" },
+  { route: '/api/partners/:id/admin-messages', handler: _lazy_PypaiE, lazy: true, middleware: false, method: "get" },
+  { route: '/api/partners/:id/admin-messages', handler: _lazy_b7NGPu, lazy: true, middleware: false, method: "post" },
+  { route: '/api/score/criteria', handler: _lazy_L_SRCu, lazy: true, middleware: false, method: "get" },
+  { route: '/api/score/ong/:id', handler: _lazy_OL1ghg, lazy: true, middleware: false, method: "get" },
+  { route: '/api/webhooks/stripe', handler: _lazy_Xy9SYX, lazy: true, middleware: false, method: "post" },
+  { route: '/api/webhooks/vanilla-pay', handler: _lazy_GyPkfz, lazy: true, middleware: false, method: "post" },
+  { route: '/__nuxt_error', handler: _lazy_7RYPIX, lazy: true, middleware: false, method: undefined },
+  { route: '/api/_nuxt_icon/:collection', handler: _3jmRZG, lazy: false, middleware: false, method: undefined },
   { route: '/__nuxt_island/**', handler: _SxA8c9, lazy: false, middleware: false, method: undefined },
-  { route: '/**', handler: _lazy_NMISC_, lazy: true, middleware: false, method: undefined }
+  { route: '/**', handler: _lazy_7RYPIX, lazy: true, middleware: false, method: undefined }
 ];
 
 function createNitroApp() {
@@ -2374,7 +2388,7 @@ const WeightsSchema$1 = z.object({
   financial_reports: z.number().int().min(0).max(100),
   projects_declared: z.number().int().min(0).max(100)
 });
-const BodySchema$8 = z.object({
+const BodySchema$9 = z.object({
   weights: WeightsSchema$1.optional(),
   thresholds: z.object({
     submission_minimum: z.number().int().min(0).max(100),
@@ -2387,7 +2401,7 @@ const _id__patch = defineEventHandler(async (event) => {
   const versionId = getRouterParam(event, "id");
   if (!versionId) throw createError({ statusCode: 400, statusMessage: "ID manquant" });
   const raw = await readBody(event);
-  const parsed = BodySchema$8.safeParse(raw);
+  const parsed = BodySchema$9.safeParse(raw);
   if (!parsed.success) throw createError({ statusCode: 400, statusMessage: "Donn\xE9es invalides" });
   const config = useRuntimeConfig();
   const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
@@ -2420,7 +2434,7 @@ const VALID_TRANSITIONS = {
   approved: ["active", "deprecated"],
   active: ["deprecated"]
 };
-const BodySchema$7 = z.object({
+const BodySchema$8 = z.object({
   status: z.enum(["approved", "active", "deprecated"])
 });
 const status_post = defineEventHandler(async (event) => {
@@ -2428,7 +2442,7 @@ const status_post = defineEventHandler(async (event) => {
   const versionId = getRouterParam(event, "id");
   if (!versionId) throw createError({ statusCode: 400, statusMessage: "ID manquant" });
   const raw = await readBody(event);
-  const parsed = BodySchema$7.safeParse(raw);
+  const parsed = BodySchema$8.safeParse(raw);
   if (!parsed.success) throw createError({ statusCode: 400, statusMessage: "Statut invalide" });
   const targetStatus = parsed.data.status;
   const config = useRuntimeConfig();
@@ -2488,7 +2502,7 @@ const WeightsSchema = z.object({
   financial_reports: z.number().int().min(0).max(100),
   projects_declared: z.number().int().min(0).max(100)
 });
-const BodySchema$6 = z.object({
+const BodySchema$7 = z.object({
   version: z.string().regex(/^\d+\.\d+\.\d+$/, "Format semver requis (ex: 1.2.0)"),
   weights: WeightsSchema,
   thresholds: z.object({
@@ -2500,7 +2514,7 @@ const BodySchema$6 = z.object({
 const index_post = defineEventHandler(async (event) => {
   var _a, _b, _c;
   const raw = await readBody(event);
-  const parsed = BodySchema$6.safeParse(raw);
+  const parsed = BodySchema$7.safeParse(raw);
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: (_b = (_a = parsed.error.errors[0]) == null ? void 0 : _a.message) != null ? _b : "Donn\xE9es invalides" });
   }
@@ -2537,7 +2551,12 @@ const donations_get = defineEventHandler(async (event) => {
     auth: { autoRefreshToken: false, persistSession: false },
     global: { headers: { Authorization: `Bearer ${token}` } }
   });
-  const { data, error } = await supabase.from("financial_transactions").select("id, ong_id, amount, currency, status, provider, donor_email, created_at, metadata, stripe_payment_intent_id").eq("transaction_type", "donation").order("created_at", { ascending: false }).limit(200);
+  const { data, error } = await supabase.from("financial_transactions").select(`
+      id, ong_id, amount, currency, status, provider, donor_email, created_at,
+      commission_cents, net_amount_cents, commission_rate,
+      stripe_payment_intent_id, metadata,
+      ongs(name)
+    `).eq("transaction_type", "donation").order("created_at", { ascending: false }).limit(200);
   if (error) throw createError({ statusCode: 500, statusMessage: error.message });
   return data != null ? data : [];
 });
@@ -2903,7 +2922,7 @@ const index_get$4 = defineEventHandler(async (event) => {
   if (!ong) throw createError({ statusCode: 404, statusMessage: "ONG introuvable" });
   let documents = [];
   if (config.supabaseServiceRoleKey) {
-    const { createClient: createAdmin } = await import('file:///Users/valdo/Desktop/paika/ong_website/node_modules/@supabase/supabase-js/dist/index.mjs');
+    const { createClient: createAdmin } = await import('file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/@supabase/supabase-js/dist/index.mjs');
     const admin = createAdmin(config.public.supabaseUrl, config.supabaseServiceRoleKey, {
       auth: { autoRefreshToken: false, persistSession: false }
     });
@@ -2945,7 +2964,7 @@ const index_get$5 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePropert
   default: index_get$4
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const messages_get$2 = defineEventHandler(async (event) => {
+const messages_get$4 = defineEventHandler(async (event) => {
   var _a;
   const ongId = getRouterParam(event, "id");
   if (!ongId) throw createError({ statusCode: 400, statusMessage: "ID manquant" });
@@ -2961,12 +2980,12 @@ const messages_get$2 = defineEventHandler(async (event) => {
   return data != null ? data : [];
 });
 
-const messages_get$3 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+const messages_get$5 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
-  default: messages_get$2
+  default: messages_get$4
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const BodySchema$5 = z.object({
+const BodySchema$6 = z.object({
   content: z.string().min(1).max(2e3)
 });
 const messages_post$2 = defineEventHandler(async (event) => {
@@ -2976,7 +2995,7 @@ const messages_post$2 = defineEventHandler(async (event) => {
   const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
   if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
   const raw = await readBody(event);
-  const parsed = BodySchema$5.safeParse(raw);
+  const parsed = BodySchema$6.safeParse(raw);
   if (!parsed.success) throw createError({ statusCode: 400, statusMessage: "Contenu invalide" });
   const config = useRuntimeConfig();
   const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
@@ -3111,7 +3130,30 @@ const historique_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePr
   default: historique_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const BodySchema$4 = z.object({
+const messages_get$2 = defineEventHandler(async (event) => {
+  var _a;
+  const config = useRuntimeConfig();
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${token}` } }
+  });
+  const { data, error } = await supabase.from("ong_partner_messages").select(`
+      id, ong_id, partner_id, sender_role, content, read_at, created_at,
+      ongs(id, name),
+      accounts!ong_partner_messages_partner_id_fkey(id, first_name, last_name, email)
+    `).order("created_at", { ascending: false }).limit(500);
+  if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+  return data != null ? data : [];
+});
+
+const messages_get$3 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: messages_get$2
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const BodySchema$5 = z.object({
   identite: z.boolean(),
   mission: z.boolean(),
   documents: z.boolean(),
@@ -3123,7 +3165,7 @@ const visibility_patch = defineEventHandler(async (event) => {
   const ongId = getRouterParam(event, "id");
   if (!ongId) throw createError({ statusCode: 400, statusMessage: "ID manquant" });
   const raw = await readBody(event);
-  const parsed = BodySchema$4.safeParse(raw);
+  const parsed = BodySchema$5.safeParse(raw);
   if (!parsed.success) throw createError({ statusCode: 400, statusMessage: "Donn\xE9es invalides" });
   const config = useRuntimeConfig();
   const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
@@ -3247,14 +3289,14 @@ const mandateUrl_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePr
   default: mandateUrl_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const BodySchema$3 = z.object({
+const BodySchema$4 = z.object({
   verified: z.boolean()
 });
 const verify_patch = defineEventHandler(async (event) => {
   const userId = getRouterParam(event, "id");
   if (!userId) throw createError({ statusCode: 400, statusMessage: "ID manquant" });
   const raw = await readBody(event);
-  const parsed = BodySchema$3.safeParse(raw);
+  const parsed = BodySchema$4.safeParse(raw);
   if (!parsed.success) throw createError({ statusCode: 400, statusMessage: "Donn\xE9es invalides" });
   const config = useRuntimeConfig();
   const supabase = createAdminWriteClient(config);
@@ -3410,7 +3452,7 @@ const index_get$2 = defineEventHandler(async (event) => {
   if (!ong) throw createError({ statusCode: 404, statusMessage: "ONG introuvable" });
   let documents = [];
   if (config.supabaseServiceRoleKey) {
-    const { createClient: createAdmin } = await import('file:///Users/valdo/Desktop/paika/ong_website/node_modules/@supabase/supabase-js/dist/index.mjs');
+    const { createClient: createAdmin } = await import('file:///Users/marius/Documents/Proffessionnel/ONG/node_modules/@supabase/supabase-js/dist/index.mjs');
     const admin = createAdmin(config.public.supabaseUrl, config.supabaseServiceRoleKey, {
       auth: { autoRefreshToken: false, persistSession: false }
     });
@@ -3516,6 +3558,45 @@ const validate_post = defineEventHandler(async (event) => {
 const validate_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: validate_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const refundRequest_post = defineEventHandler(async (event) => {
+  var _a;
+  const config = useRuntimeConfig();
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const txId = getRouterParam(event, "id");
+  if (!txId) throw createError({ statusCode: 400, statusMessage: "ID transaction manquant" });
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${token}` } }
+  });
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const { data: tx } = await supabase.from("financial_transactions").select("id, donor_id, status, amount, ong_id").eq("id", txId).eq("donor_id", user.id).eq("status", "completed").maybeSingle();
+  if (!tx) throw createError({ statusCode: 404, statusMessage: "Transaction introuvable ou non \xE9ligible" });
+  const serviceSupabase = createClient(
+    config.public.supabaseUrl,
+    config.supabaseServiceRoleKey,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
+  await serviceSupabase.from("audit_trail").insert({
+    actor_id: user.id,
+    action: "refund_request",
+    target_type: "financial_transaction",
+    target_id: txId,
+    metadata: {
+      amount: tx.amount,
+      ong_id: tx.ong_id,
+      donor_id: user.id
+    }
+  });
+  return { success: true };
+});
+
+const refundRequest_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: refundRequest_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const confirmSession_post = defineEventHandler(async (event) => {
@@ -3626,7 +3707,7 @@ function constructWebhookEvent(rawBody, signature, secret) {
 }
 
 const DONATION_ALLOWED_STATUSES = ["verified", "active"];
-const BodySchema$2 = z.object({
+const BodySchema$3 = z.object({
   ongId: z.string().uuid(),
   ongName: z.string().min(1).max(200),
   amountEuros: z.number().positive().min(1).max(1e4)
@@ -3642,7 +3723,7 @@ function parseJwtSub(token) {
 const createCheckout_post = defineEventHandler(async (event) => {
   var _a, _b;
   const raw = await readBody(event);
-  const parsed = BodySchema$2.safeParse(raw);
+  const parsed = BodySchema$3.safeParse(raw);
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: "Donn\xE9es invalides : " + ((_a = parsed.error.errors[0]) == null ? void 0 : _a.message) });
   }
@@ -3691,6 +3772,59 @@ const createCheckout_post = defineEventHandler(async (event) => {
 const createCheckout_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: createCheckout_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const donorHistory_get = defineEventHandler(async (event) => {
+  var _a;
+  const config = useRuntimeConfig();
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${token}` } }
+  });
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const { data, error } = await supabase.from("financial_transactions").select(`
+      id, amount, currency, status, provider, created_at,
+      commission_cents, net_amount_cents, commission_rate,
+      stripe_payment_intent_id, metadata,
+      ongs(id, name, image)
+    `).eq("donor_id", user.id).eq("transaction_type", "donation").order("created_at", { ascending: false });
+  if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+  return data != null ? data : [];
+});
+
+const donorHistory_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: donorHistory_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const portefeuille_get = defineEventHandler(async (event) => {
+  var _a;
+  const config = useRuntimeConfig();
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${token}` } }
+  });
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const { data: ong } = await supabase.from("ongs").select("id").eq("account_id", user.id).maybeSingle();
+  if (!ong) throw createError({ statusCode: 404, statusMessage: "ONG introuvable" });
+  const { data, error } = await supabase.from("financial_transactions").select(`
+      id, amount, currency, status, provider, created_at,
+      commission_cents, net_amount_cents, commission_rate,
+      donor_email, stripe_payment_intent_id
+    `).eq("ong_id", ong.id).eq("transaction_type", "donation").order("created_at", { ascending: false });
+  if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+  return data != null ? data : [];
+});
+
+const portefeuille_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: portefeuille_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const index_get = defineEventHandler(async (event) => {
@@ -3751,7 +3885,7 @@ const messages_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProp
   default: messages_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const BodySchema$1 = z.object({
+const BodySchema$2 = z.object({
   content: z.string().min(1).max(2e3)
 });
 const messages_post = defineEventHandler(async (event) => {
@@ -3760,7 +3894,7 @@ const messages_post = defineEventHandler(async (event) => {
   const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
   if (!ongId || !token) throw createError({ statusCode: 400, statusMessage: "Param\xE8tres manquants" });
   const raw = await readBody(event);
-  const parsed = BodySchema$1.safeParse(raw);
+  const parsed = BodySchema$2.safeParse(raw);
   if (!parsed.success) throw createError({ statusCode: 400, statusMessage: "Contenu invalide" });
   const config = useRuntimeConfig();
   const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
@@ -3827,7 +3961,7 @@ const partnerConversations_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Objec
   default: partnerConversations_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
-function parseJwt$1(token) {
+function parseJwt$4(token) {
   try {
     return JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
   } catch {
@@ -3839,7 +3973,7 @@ const partnerMessages_get = defineEventHandler(async (event) => {
   const ongId = getRouterParam(event, "id");
   const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
   if (!ongId || !token) throw createError({ statusCode: 400, statusMessage: "Param\xE8tres manquants" });
-  const payload = parseJwt$1(token);
+  const payload = parseJwt$4(token);
   if (!(payload == null ? void 0 : payload.sub)) throw createError({ statusCode: 401, statusMessage: "Token invalide" });
   const config = useRuntimeConfig();
   const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
@@ -3860,11 +3994,11 @@ const partnerMessages_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.def
   default: partnerMessages_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const BodySchema = z.object({
+const BodySchema$1 = z.object({
   content: z.string().min(1).max(2e3),
   partnerId: z.string().uuid().optional()
 });
-function parseJwt(token) {
+function parseJwt$3(token) {
   try {
     return JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
   } catch {
@@ -3876,10 +4010,10 @@ const partnerMessages_post = defineEventHandler(async (event) => {
   const ongId = getRouterParam(event, "id");
   const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
   if (!ongId || !token) throw createError({ statusCode: 400, statusMessage: "Param\xE8tres manquants" });
-  const payload = parseJwt(token);
+  const payload = parseJwt$3(token);
   if (!(payload == null ? void 0 : payload.sub)) throw createError({ statusCode: 401, statusMessage: "Token invalide" });
   const raw = await readBody(event);
-  const parsed = BodySchema.safeParse(raw);
+  const parsed = BodySchema$1.safeParse(raw);
   if (!parsed.success) throw createError({ statusCode: 400, statusMessage: "Contenu invalide" });
   const config = useRuntimeConfig();
   const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
@@ -3970,6 +4104,138 @@ const submit_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePrope
   default: submit_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
+function parseJwt$2(token) {
+  try {
+    return JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
+  } catch {
+    return null;
+  }
+}
+const conversations_get = defineEventHandler(async (event) => {
+  var _a, _b, _c;
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!token) throw createError({ statusCode: 401, statusMessage: "Non authentifi\xE9" });
+  const payload = parseJwt$2(token);
+  if (!(payload == null ? void 0 : payload.sub)) throw createError({ statusCode: 401, statusMessage: "Token invalide" });
+  const config = useRuntimeConfig();
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${token}` } }
+  });
+  const { data, error } = await supabase.from("ong_partner_messages").select("ong_id, sender_role, content, read_at, created_at, ongs(id, name, image)").order("created_at", { ascending: false });
+  if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+  const map = /* @__PURE__ */ new Map();
+  for (const row of data != null ? data : []) {
+    const ong = row.ongs;
+    const ongId = row.ong_id;
+    if (!map.has(ongId)) {
+      map.set(ongId, {
+        ongId,
+        ongName: (_b = ong == null ? void 0 : ong.name) != null ? _b : ongId.slice(0, 8),
+        ongImage: (_c = ong == null ? void 0 : ong.image) != null ? _c : null,
+        lastMessage: row.content,
+        lastMessageAt: row.created_at,
+        unreadCount: 0
+      });
+    }
+    if (row.sender_role === "agent" && !row.read_at) {
+      map.get(ongId).unreadCount++;
+    }
+  }
+  return Array.from(map.values()).sort(
+    (a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
+  );
+});
+
+const conversations_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: conversations_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
+function parseJwt$1(token) {
+  try {
+    return JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
+  } catch {
+    return null;
+  }
+}
+const adminMessages_get = defineEventHandler(async (event) => {
+  var _a, _b, _c;
+  const partnerId = getRouterParam(event, "id");
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!partnerId || !token) throw createError({ statusCode: 400, statusMessage: "Param\xE8tres manquants" });
+  const payload = parseJwt$1(token);
+  if (!(payload == null ? void 0 : payload.sub)) throw createError({ statusCode: 401, statusMessage: "Token invalide" });
+  const role = (_c = (_b = payload.app_metadata) == null ? void 0 : _b.role) != null ? _c : payload.role;
+  const isBackOffice = role === "back_office" || role === "admin";
+  if (payload.sub !== partnerId && !isBackOffice) {
+    throw createError({ statusCode: 403, statusMessage: "Acc\xE8s non autoris\xE9" });
+  }
+  const config = useRuntimeConfig();
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${token}` } }
+  });
+  const { data, error } = await supabase.from("partner_admin_messages").select("id, sender_id, sender_role, content, read_at, created_at").eq("partner_id", partnerId).order("created_at", { ascending: true });
+  if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+  return data != null ? data : [];
+});
+
+const adminMessages_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: adminMessages_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const BodySchema = z.object({
+  content: z.string().min(1).max(2e3)
+});
+function parseJwt(token) {
+  try {
+    return JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
+  } catch {
+    return null;
+  }
+}
+const adminMessages_post = defineEventHandler(async (event) => {
+  var _a, _b, _c;
+  const partnerId = getRouterParam(event, "id");
+  const token = (_a = getRequestHeader(event, "authorization")) == null ? void 0 : _a.replace("Bearer ", "");
+  if (!partnerId || !token) throw createError({ statusCode: 400, statusMessage: "Param\xE8tres manquants" });
+  const payload = parseJwt(token);
+  if (!(payload == null ? void 0 : payload.sub)) throw createError({ statusCode: 401, statusMessage: "Token invalide" });
+  const raw = await readBody(event);
+  const parsed = BodySchema.safeParse(raw);
+  if (!parsed.success) throw createError({ statusCode: 400, statusMessage: "Contenu invalide" });
+  const role = (_c = (_b = payload.app_metadata) == null ? void 0 : _b.role) != null ? _c : payload.role;
+  const isBackOffice = role === "back_office" || role === "admin";
+  let senderRole;
+  if (payload.sub === partnerId) {
+    senderRole = "partner";
+  } else if (isBackOffice) {
+    senderRole = "back_office";
+  } else {
+    throw createError({ statusCode: 403, statusMessage: "Acc\xE8s non autoris\xE9" });
+  }
+  const config = useRuntimeConfig();
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+    global: { headers: { Authorization: `Bearer ${token}` } }
+  });
+  const { data, error } = await supabase.from("partner_admin_messages").insert({
+    partner_id: partnerId,
+    sender_id: payload.sub,
+    sender_role: senderRole,
+    content: parsed.data.content
+  }).select("id, sender_id, sender_role, content, read_at, created_at").single();
+  if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+  return data;
+});
+
+const adminMessages_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: adminMessages_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
 const criteria_get = defineEventHandler(async (event) => {
   var _a, _b, _c, _d, _e, _f, _g, _h, _i;
   const config = useRuntimeConfig();
@@ -4055,6 +4321,9 @@ const stripe_post = defineEventHandler(async (event) => {
     );
     const { data: existing } = await supabase.from("financial_transactions").select("id").eq("idempotency_key", idempotencyKey).maybeSingle();
     if (!existing) {
+      const COMMISSION_RATE = 0.05;
+      const commissionCents = Math.round(amountCents * COMMISSION_RATE);
+      const netAmountCents = amountCents - commissionCents;
       const { error } = await supabase.from("financial_transactions").insert({
         ong_id: ongId,
         stripe_payment_intent_id: paymentIntentId,
@@ -4066,6 +4335,9 @@ const stripe_post = defineEventHandler(async (event) => {
         provider: "stripe",
         donor_id: donorId,
         donor_email: (_f = (_e = session.customer_details) == null ? void 0 : _e.email) != null ? _f : null,
+        commission_rate: COMMISSION_RATE,
+        commission_cents: commissionCents,
+        net_amount_cents: netAmountCents,
         metadata: {
           stripe_session_id: session.id,
           customer_name: (_h = (_g = session.customer_details) == null ? void 0 : _g.name) != null ? _h : null

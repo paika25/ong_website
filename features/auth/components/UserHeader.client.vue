@@ -19,7 +19,16 @@
       >
         Mon Espace
       </NuxtLink>
-      
+      <NuxtLink
+        v-if="!isAgent && !isAdmin"
+        :to="'/dashboard/messages'"
+        class="px-3 py-1.5 rounded-md text-sm font-medium hover:text-green-500 transition-colors"
+        inactive-class="text-muted-foreground"
+        active-class="text-green-500"
+      >
+        Messages
+      </NuxtLink>
+
     </nav>
 
     <!-- Séparateur -->

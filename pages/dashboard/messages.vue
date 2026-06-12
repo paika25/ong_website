@@ -11,70 +11,55 @@
 
     <div class="mb-6">
       <h1 class="text-2xl font-bold tracking-tight">Messages</h1>
-      <p class="text-sm text-muted-foreground mt-0.5">Vos échanges avec les ONGs</p>
+      <p class="text-sm text-muted-foreground mt-0.5">Vos échanges avec les ONGs et l'administration Paika</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4" style="height: 600px">
       <!-- Liste des conversations -->
       <div class="bg-card border border-border rounded-xl overflow-hidden flex flex-col">
-        <div class="px-4 py-3 border-b border-border">
-          <p class="text-sm font-semibold">ONGs contactées</p>
+        <div class="px-4 py-3 border-b border-border space-y-2.5">
+          <p class="text-sm font-semibold">Conversations</p>
+          <RechercheInput v-model="searchQuery" placeholder="Rechercher une ONG…" />
         </div>
 
-        <div v-if="loading" class="p-4 space-y-3 animate-pulse flex-1">
-          <div v-for="i in 4" :key="i" class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full bg-muted shrink-0" />
-            <div class="flex-1 space-y-1.5">
-              <div class="h-3 bg-muted rounded w-2/3" />
-              <div class="h-2.5 bg-muted rounded w-full" />
-            </div>
-          </div>
-        </div>
-
-        <div v-else-if="!conversations.length" class="flex-1 flex flex-col items-center justify-center text-center p-6 text-muted-foreground">
-          <Icon name="i-heroicons-chat-bubble-left-right" class="w-10 h-10 opacity-30 mb-2" />
-          <p class="text-sm">Aucune conversation</p>
-          <p class="text-xs mt-1 leading-relaxed">Contactez une ONG depuis son profil public</p>
-          <NuxtLink to="/" class="mt-4">
-            <UButton size="sm" variant="outline">Découvrir les ONGs</UButton>
-          </NuxtLink>
-        </div>
-
-        <div v-else class="flex-1 overflow-y-auto divide-y divide-border">
-          <button
-            v-for="conv in conversations"
-            :key="conv.ongId"
-            type="button"
-            class="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/40 transition-colors text-left"
-            :class="selectedOngId === conv.ongId ? 'bg-muted/60' : ''"
-            @click="selectedOngId = conv.ongId"
-          >
-            <div class="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center shrink-0 text-sm font-bold text-emerald-700 dark:text-emerald-300 overflow-hidden">
-              <img v-if="conv.ongImage" :src="conv.ongImage" :alt="conv.ongName" class="w-full h-full object-cover" />
-              <span v-else>{{ conv.ongName[0]?.toUpperCase() ?? '?' }}</span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center justify-between gap-1">
-                <p class="text-sm font-medium truncate">{{ conv.ongName }}</p>
-                <span
-                  v-if="conv.unreadCount > 0"
-                  class="shrink-0 inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold"
-                >
-                  {{ conv.unreadCount }}
-                </span>
-              </div>
-              <p class="text-xs text-muted-foreground truncate">{{ conv.lastMessage }}</p>
-            </div>
-          </button>
-        </div>
+        <ConversationList
+          :items="conversationItems"
+          :selected-id="selectedId"
+          :loading="loading"
+          empty-title="Aucune conversation"
+          :empty-hint="searchQuery ? 'Aucun résultat pour cette recherche' : 'Contactez une ONG depuis son profil public'"
+          @select="selectedId = $event"
+        />
       </div>
 
       <!-- Fenêtre de conversation -->
       <div class="md:col-span-2 bg-card border border-border rounded-xl overflow-hidden flex flex-col">
-        <div v-if="!selectedOngId" class="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground">
+        <div v-if="!selectedId" class="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground">
           <Icon name="i-heroicons-chat-bubble-left-right" class="w-12 h-12 opacity-20 mb-3" />
           <p class="text-sm">Sélectionnez une conversation</p>
         </div>
+
+        <template v-else-if="selectedId === ADMIN_ID">
+          <div class="px-4 py-3 border-b border-border flex items-center gap-3 shrink-0">
+            <div class="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center text-primary">
+              <Icon name="i-heroicons-shield-check" class="w-4 h-4" />
+            </div>
+            <div>
+              <p class="text-sm font-semibold">Administration Paika</p>
+              <p class="text-xs text-muted-foreground">Support et suivi de votre compte</p>
+            </div>
+          </div>
+
+          <PartnerAdminMessagerie
+            v-if="currentUserId"
+            :key="ADMIN_ID"
+            :partner-id="currentUserId"
+            viewer-role="partner"
+            hide-header
+            class="flex-1 min-h-0"
+            @unread-count="adminUnreadCount = $event"
+          />
+        </template>
 
         <template v-else>
           <div class="px-4 py-3 border-b border-border flex items-center gap-3 shrink-0">
@@ -86,11 +71,11 @@
           </div>
 
           <PartnerMessagerie
-            :key="selectedOngId"
-            :ong-id="selectedOngId"
+            :key="selectedId"
+            :ong-id="selectedId"
             viewer-role="partner"
             class="flex-1 min-h-0"
-            @unread-count="onUnreadCount(selectedOngId, $event)"
+            @unread-count="onUnreadCount(selectedId, $event)"
           />
         </template>
       </div>
@@ -100,6 +85,10 @@
 
 <script setup lang="ts">
 import PartnerMessagerie from '~/features/messaging/components/PartnerMessagerie.vue'
+import PartnerAdminMessagerie from '~/features/messaging/components/PartnerAdminMessagerie.vue'
+import ConversationList from '~/features/messaging/components/ConversationList.vue'
+import RechercheInput from '~/features/messaging/components/RechercheInput.vue'
+import type { ConversationListItem } from '~/features/messaging/components/ConversationList.vue'
 import { getToken } from '~/features/auth/utils/getToken'
 
 definePageMeta({ middleware: ['auth'] })
@@ -113,12 +102,47 @@ interface ConvSummary {
   unreadCount: number
 }
 
-const conversations = ref<ConvSummary[]>([])
-const loading       = ref(true)
-const selectedOngId = ref<string | null>(null)
+const ADMIN_ID = 'admin'
+const ADMIN_NAME = 'Administration Paika'
+
+const conversations  = ref<ConvSummary[]>([])
+const loading        = ref(true)
+const selectedId     = ref<string | null>(null)
+const searchQuery    = ref('')
+const currentUserId  = ref<string | null>(null)
+const adminUnreadCount = ref(0)
+
+const filteredConversations = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) return conversations.value
+  return conversations.value.filter(c => c.ongName.toLowerCase().includes(q))
+})
+
+const conversationItems = computed<ConversationListItem[]>(() => {
+  const ongItems: ConversationListItem[] = filteredConversations.value.map(c => ({
+    id: c.ongId,
+    name: c.ongName,
+    preview: c.lastMessage,
+    avatarUrl: c.ongImage,
+    unreadCount: c.unreadCount,
+    avatarColor: 'emerald',
+  }))
+
+  const q = searchQuery.value.trim().toLowerCase()
+  if (q && !ADMIN_NAME.toLowerCase().includes(q)) return ongItems
+
+  const adminItem: ConversationListItem = {
+    id: ADMIN_ID,
+    name: ADMIN_NAME,
+    preview: 'Posez vos questions à l\'équipe Paika',
+    unreadCount: adminUnreadCount.value,
+    avatarColor: 'primary',
+  }
+  return [adminItem, ...ongItems]
+})
 
 const selectedConversation = computed(() =>
-  conversations.value.find(c => c.ongId === selectedOngId.value) ?? null
+  conversations.value.find(c => c.ongId === selectedId.value) ?? null
 )
 
 function onUnreadCount(ongId: string | null, count: number) {
@@ -128,6 +152,12 @@ function onUnreadCount(ongId: string | null, count: number) {
 }
 
 onMounted(async () => {
+  const supabase = useSupabase()
+  if (supabase) {
+    const { data: { user } } = await supabase.auth.getUser()
+    currentUserId.value = user?.id ?? null
+  }
+
   try {
     const token = await getToken()
     conversations.value = await $fetch<ConvSummary[]>('/api/partner/conversations', {
