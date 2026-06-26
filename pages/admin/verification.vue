@@ -1,11 +1,6 @@
 <template>
   <div>
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <h1 class="text-2xl font-bold">Pipeline de vérification</h1>
-          <p class="text-sm text-muted-foreground">{{ cards.length }} dossier{{ cards.length > 1 ? 's' : '' }} au total</p>
-        </div>
-      </div>
+      <PageHeader title="Pipeline de vérification" :subtitle="`${cards.length} dossier${cards.length > 1 ? 's' : ''} au total`" class="mb-6" />
 
       <!-- Skeleton loader (UX-DR15) -->
       <div v-if="loading" class="flex gap-4">

@@ -1,9 +1,6 @@
 <template>
   <div class="space-y-6">
-    <div>
-      <h1 class="text-2xl font-bold">Messagerie</h1>
-      <p class="text-sm text-muted-foreground mt-0.5">Échangez avec les ONGs et supervisez leurs conversations avec les bailleurs</p>
-    </div>
+    <PageHeader title="Messagerie" subtitle="Échangez avec les ONGs et supervisez leurs conversations avec les bailleurs" />
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4" style="height: 640px">
       <!-- Annuaire ONGs + bailleurs -->

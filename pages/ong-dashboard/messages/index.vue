@@ -1,9 +1,6 @@
 <template>
   <div class="space-y-6 h-full">
-    <div>
-      <h1 class="text-2xl font-bold">Messages</h1>
-      <p class="text-sm text-muted-foreground mt-0.5">Échanges avec vos bailleurs de fonds et l'administration Paika</p>
-    </div>
+    <PageHeader title="Messages" subtitle="Échanges avec vos bailleurs de fonds et l'administration Paika" />
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 min-h-[600px] h-full">
       <!-- Liste des conversations -->

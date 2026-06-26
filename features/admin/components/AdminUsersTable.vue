@@ -1,23 +1,26 @@
 <template>
   <div class="bg-card border border-border rounded-xl overflow-hidden">
     <!-- Bannière file d'attente -->
-    <div
+    <UAlert
       v-if="pendingCount > 0"
-      class="px-5 py-3 bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800 flex items-center gap-3"
+      color="amber"
+      variant="soft"
+      icon="i-heroicons-clock"
+      :title="`${pendingCount} partenaire${pendingCount > 1 ? 's' : ''} en attente de validation manuelle`"
+      :ui="{ rounded: 'rounded-none' }"
+      class="border-b border-border"
     >
-      <Icon name="i-heroicons-clock" class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-      <p class="text-sm text-amber-800 dark:text-amber-300 flex-1">
-        <strong>{{ pendingCount }}</strong> partenaire{{ pendingCount > 1 ? 's' : '' }} en attente de validation manuelle
-      </p>
-      <UButton
-        size="xs"
-        :color="pendingOnly ? 'amber' : 'white'"
-        :variant="pendingOnly ? 'solid' : 'outline'"
-        @click="togglePendingOnly"
-      >
-        {{ pendingOnly ? 'Voir tous' : 'Voir la file d\'attente' }}
-      </UButton>
-    </div>
+      <template #actions>
+        <UButton
+          size="xs"
+          :color="pendingOnly ? 'amber' : 'white'"
+          :variant="pendingOnly ? 'solid' : 'outline'"
+          @click="togglePendingOnly"
+        >
+          {{ pendingOnly ? 'Voir tous' : 'Voir la file d\'attente' }}
+        </UButton>
+      </template>
+    </UAlert>
 
     <!-- Filtres -->
     <div class="px-5 py-4 border-b border-border flex flex-wrap gap-3 items-center">
@@ -40,116 +43,81 @@
     </div>
 
     <!-- Tableau -->
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead class="bg-muted/50 text-muted-foreground text-xs uppercase tracking-wide">
-          <tr>
-            <th class="px-4 py-3 text-left">Utilisateur</th>
-            <th class="px-4 py-3 text-left">Rôle</th>
-            <th class="px-4 py-3 text-left">Email</th>
-            <th class="px-4 py-3 text-left">Organisation</th>
-            <th class="px-4 py-3 text-left">Vérifié</th>
-            <th class="px-4 py-3 text-left">Inscrit le</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-if="loading">
-            <tr v-for="i in 8" :key="i" class="border-t border-border animate-pulse">
-              <td v-for="j in 6" :key="j" class="px-4 py-3">
-                <div class="h-4 bg-muted rounded w-3/4" />
-              </td>
-            </tr>
-          </template>
-
-          <tr v-else-if="!filteredUsers.length">
-            <td colspan="6" class="px-4 py-14 text-center text-muted-foreground">
-              <Icon name="i-heroicons-users" class="w-10 h-10 mx-auto mb-3 opacity-30" />
-              <p>Aucun utilisateur trouvé</p>
-            </td>
-          </tr>
-
-          <tr
-            v-for="user in filteredUsers"
-            :key="user.id"
-            :class="[
-              'border-t border-border hover:bg-muted/30 transition-colors',
-              !user.verified && user.accountType === 'user_partner'
-                ? 'bg-amber-50/50 dark:bg-amber-950/20'
-                : '',
-            ]"
+    <UTable :rows="tableRows" :columns="columns" :loading="loading">
+      <template #empty-state>
+        <EmptyState icon="i-heroicons-users" title="Aucun utilisateur trouvé" />
+      </template>
+      <template #user-data="{ row }">
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 rounded-full bg-primary/15 text-primary flex items-center justify-center text-xs font-bold shrink-0">
+            {{ initials(row) }}
+          </div>
+          <div>
+            <p class="font-medium">{{ displayName(row) }}</p>
+            <p class="text-xs text-muted-foreground font-mono">{{ row.id.slice(0, 8) }}…</p>
+          </div>
+        </div>
+      </template>
+      <template #accountType-data="{ row }">
+        <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', userRoleClass(row.accountType)]">
+          {{ userRoleLabel(row.accountType) }}
+        </span>
+      </template>
+      <template #email-data="{ row }">
+        <span class="text-muted-foreground text-xs">{{ row.email }}</span>
+      </template>
+      <template #organization-data="{ row }">
+        <template v-if="row.accountType === 'user_partner'">
+          <p v-if="row.organizationName" class="text-xs font-medium truncate max-w-[140px]">{{ row.organizationName }}</p>
+          <p v-if="row.jobTitle" class="text-xs text-muted-foreground truncate max-w-[140px]">{{ row.jobTitle }}</p>
+          <UButton
+            v-if="row.mandateDocPath"
+            size="2xs"
+            color="blue"
+            variant="ghost"
+            icon="i-heroicons-paper-clip"
+            class="mt-0.5"
+            :loading="mandateLoading === row.id"
+            @click="viewMandate(row)"
           >
-            <td class="px-4 py-3">
-              <div class="flex items-center gap-2.5">
-                <div class="w-7 h-7 rounded-full bg-primary/15 text-primary flex items-center justify-center text-xs font-bold shrink-0">
-                  {{ initials(user) }}
-                </div>
-                <div>
-                  <p class="font-medium">{{ displayName(user) }}</p>
-                  <p class="text-xs text-muted-foreground font-mono">{{ user.id.slice(0, 8) }}…</p>
-                </div>
-              </div>
-            </td>
-            <td class="px-4 py-3">
-              <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', userRoleClass(user.accountType)]">
-                {{ userRoleLabel(user.accountType) }}
-              </span>
-            </td>
-            <td class="px-4 py-3 text-muted-foreground text-xs">{{ user.email }}</td>
-            <td class="px-4 py-3">
-              <template v-if="user.accountType === 'user_partner'">
-                <p v-if="user.organizationName" class="text-xs font-medium truncate max-w-[140px]">{{ user.organizationName }}</p>
-                <p v-if="user.jobTitle" class="text-xs text-muted-foreground truncate max-w-[140px]">{{ user.jobTitle }}</p>
-                <UButton
-                  v-if="user.mandateDocPath"
-                  size="2xs"
-                  color="blue"
-                  variant="ghost"
-                  icon="i-heroicons-paper-clip"
-                  class="mt-0.5"
-                  :loading="mandateLoading === user.id"
-                  @click="viewMandate(user)"
-                >
-                  Mandat
-                </UButton>
-                <span v-else class="text-xs text-muted-foreground/50 italic">sans mandat</span>
-              </template>
-              <span v-else class="text-xs text-muted-foreground/40">—</span>
-            </td>
-            <td class="px-4 py-3">
-              <div class="flex items-center gap-2">
-                <Icon
-                  :name="user.verified ? 'i-heroicons-check-circle' : 'i-heroicons-x-circle'"
-                  :class="user.verified ? 'text-green-500 w-4 h-4' : 'text-muted-foreground/40 w-4 h-4'"
-                />
-                <UButton
-                  v-if="!user.verified"
-                  size="2xs"
-                  color="green"
-                  variant="outline"
-                  :loading="actionLoading === user.id"
-                  @click="toggleVerify(user)"
-                >
-                  Valider
-                </UButton>
-                <UButton
-                  v-else
-                  size="2xs"
-                  color="red"
-                  variant="ghost"
-                  :loading="actionLoading === user.id"
-                  @click="toggleVerify(user)"
-                >
-                  Invalider
-                </UButton>
-              </div>
-            </td>
-            <td class="px-4 py-3 text-muted-foreground text-xs whitespace-nowrap">
-              {{ formatDate(user.createdAt) }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+            Mandat
+          </UButton>
+          <span v-else class="text-xs text-muted-foreground/50 italic">sans mandat</span>
+        </template>
+        <span v-else class="text-xs text-muted-foreground/40">—</span>
+      </template>
+      <template #verified-data="{ row }">
+        <div class="flex items-center gap-2">
+          <Icon
+            :name="row.verified ? 'i-heroicons-check-circle' : 'i-heroicons-x-circle'"
+            :class="row.verified ? 'text-green-500 w-4 h-4' : 'text-muted-foreground/40 w-4 h-4'"
+          />
+          <UButton
+            v-if="!row.verified"
+            size="2xs"
+            color="green"
+            variant="outline"
+            :loading="actionLoading === row.id"
+            @click="toggleVerify(row)"
+          >
+            Valider
+          </UButton>
+          <UButton
+            v-else
+            size="2xs"
+            color="red"
+            variant="ghost"
+            :loading="actionLoading === row.id"
+            @click="toggleVerify(row)"
+          >
+            Invalider
+          </UButton>
+        </div>
+      </template>
+      <template #createdAt-data="{ row }">
+        <span class="text-muted-foreground text-xs whitespace-nowrap">{{ formatDate(row.createdAt) }}</span>
+      </template>
+    </UTable>
   </div>
 </template>
 
@@ -218,6 +186,20 @@ const filteredUsers = computed(() => {
   if (!pendingOnly.value) return props.users
   return props.users.filter(u => u.accountType === 'user_partner' && !u.verified)
 })
+
+const columns = [
+  { key: 'user', label: 'Utilisateur' },
+  { key: 'accountType', label: 'Rôle' },
+  { key: 'email', label: 'Email' },
+  { key: 'organization', label: 'Organisation' },
+  { key: 'verified', label: 'Vérifié' },
+  { key: 'createdAt', label: 'Inscrit le' },
+]
+
+const tableRows = computed(() => filteredUsers.value.map(u => ({
+  ...u,
+  class: !u.verified && u.accountType === 'user_partner' ? 'bg-amber-50/50 dark:bg-amber-950/20' : undefined,
+})))
 
 function togglePendingOnly() {
   pendingOnly.value = !pendingOnly.value

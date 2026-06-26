@@ -12,55 +12,52 @@
     </div>
 
     <!-- Zone upload -->
-    <div v-if="showUpload" class="px-5 py-4 border-b border-border bg-muted/30 space-y-3">
+    <div v-if="showUpload" class="px-5 py-5 border-b border-border bg-muted/20 space-y-4">
       <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="text-xs font-medium text-muted-foreground mb-1 block">Nom du document</label>
-          <input
-            v-model="uploadForm.name"
-            type="text"
-            placeholder="Ex : Rapport annuel 2024"
-            class="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/40"
-          />
-        </div>
-        <div>
-          <label class="text-xs font-medium text-muted-foreground mb-1 block">Catégorie</label>
-          <select
-            v-model="uploadForm.category"
-            class="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/40"
-          >
-            <option value="legal">Légal</option>
-            <option value="activity">Activité</option>
-          </select>
-        </div>
+        <UFormGroup label="Nom du document">
+          <UInput v-model="uploadForm.name" placeholder="Ex : Rapport annuel 2024" />
+        </UFormGroup>
+        <UFormGroup label="Catégorie">
+          <USelect v-model="uploadForm.category" :options="categoryOptions" />
+        </UFormGroup>
       </div>
-      <div>
-        <label class="text-xs font-medium text-muted-foreground mb-1 block">Visibilité</label>
-        <select
-          v-model="uploadForm.visibility"
-          class="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/40"
-        >
-          <option value="public">Public — visible par tous</option>
-          <option value="partners">Partenaires — utilisateurs connectés uniquement</option>
-          <option value="private">Privé — ONG et administrateurs uniquement</option>
-        </select>
-      </div>
-      <div>
-        <label class="text-xs font-medium text-muted-foreground mb-1 block">Fichier (PDF, DOC, JPG, PNG — max 10 Mo)</label>
+      <UFormGroup label="Visibilité">
+        <USelect v-model="uploadForm.visibility" :options="visibilityOptions" />
+      </UFormGroup>
+
+      <!-- Drop zone -->
+      <div
+        class="relative border-2 border-dashed rounded-xl p-6 text-center transition-colors cursor-pointer"
+        :class="selectedFile
+          ? 'border-green-400 bg-green-50 dark:bg-green-950/20'
+          : 'border-border hover:border-primary/50 bg-muted/20'"
+        @click="fileInput?.click()"
+        @dragover.prevent
+        @drop.prevent="onDrop"
+      >
         <input
           ref="fileInput"
           type="file"
           accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-          class="w-full text-sm text-muted-foreground file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-primary file:text-primary-foreground cursor-pointer"
+          class="sr-only"
           @change="onFileChange"
         />
+        <div v-if="selectedFile" class="flex items-center justify-center gap-2 text-green-700 dark:text-green-400">
+          <Icon name="i-heroicons-check-circle" class="w-5 h-5 shrink-0" />
+          <span class="text-sm font-medium truncate max-w-xs">{{ selectedFile.name }}</span>
+          <button type="button" class="ml-1 text-muted-foreground hover:text-destructive text-xs" @click.stop="selectedFile = null">✕</button>
+        </div>
+        <div v-else class="text-muted-foreground">
+          <Icon name="i-heroicons-arrow-up-tray" class="w-7 h-7 mx-auto mb-2 opacity-40" />
+          <p class="text-sm font-medium mb-0.5">Glissez un fichier ou cliquez pour choisir</p>
+          <p class="text-xs opacity-60">PDF, DOC, JPG, PNG — max 10 Mo</p>
+        </div>
       </div>
-      <div v-if="uploadError" class="text-xs text-destructive flex items-center gap-1.5">
-        <Icon name="i-heroicons-exclamation-circle" class="w-4 h-4" />
-        {{ uploadError }}
-      </div>
+
+      <UAlert v-if="uploadError" color="red" variant="soft" icon="i-heroicons-exclamation-circle" :description="uploadError" />
+
       <div class="flex gap-2">
-        <UButton size="sm" color="primary" :loading="uploading" :disabled="!canUpload" @click="doUpload">
+        <UButton size="sm" :loading="uploading" :disabled="!canUpload" icon="i-heroicons-cloud-arrow-up" @click="doUpload">
           Téléverser
         </UButton>
         <UButton size="sm" variant="ghost" @click="resetUpload">Annuler</UButton>
@@ -73,10 +70,11 @@
         <div v-for="i in 3" :key="i" class="h-12 bg-muted rounded-lg" />
       </div>
 
-      <div v-else-if="!documents.length" class="px-5 py-16 text-center text-muted-foreground">
-        <Icon name="i-heroicons-document-text" class="w-10 h-10 mx-auto mb-3 opacity-30" />
-        <p>Aucun document uploadé</p>
-      </div>
+      <EmptyState
+        v-else-if="!documents.length"
+        icon="i-heroicons-document-text"
+        title="Aucun document uploadé"
+      />
 
       <div
         v-for="doc in documents"
@@ -135,6 +133,17 @@ const uploadForm = reactive({
   visibility: 'private' as DocumentVisibility,
 })
 
+const categoryOptions = [
+  { label: 'Légal', value: 'legal' },
+  { label: 'Activité', value: 'activity' },
+]
+
+const visibilityOptions = [
+  { label: 'Public — visible par tous', value: 'public' },
+  { label: 'Partenaires — utilisateurs connectés uniquement', value: 'partners' },
+  { label: 'Privé — ONG et administrateurs uniquement', value: 'private' },
+]
+
 const canUpload = computed(() =>
   !uploading.value && uploadForm.name.trim().length > 0 && !!selectedFile.value
 )
@@ -143,6 +152,11 @@ function onFileChange(e: Event) {
   const input = e.target as HTMLInputElement
   selectedFile.value = input.files?.[0] ?? null
   uploadError.value = null
+}
+
+function onDrop(e: DragEvent) {
+  const file = e.dataTransfer?.files?.[0]
+  if (file) { selectedFile.value = file; uploadError.value = null }
 }
 
 function resetUpload() {

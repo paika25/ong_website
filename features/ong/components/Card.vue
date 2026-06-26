@@ -1,115 +1,70 @@
 <template>
   <div
-    class="bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full cursor-pointer"
+    class="bg-card rounded-xl border border-border overflow-hidden hover:shadow-md hover:border-border/80 transition-all duration-200 flex flex-col h-full cursor-pointer group"
     @click="onViewDetails"
   >
-    <!-- Image de l'ONG -->
-    <div class="relative h-48 bg-muted">
+    <!-- Image / cover -->
+    <div class="relative h-44 bg-muted overflow-hidden">
       <img
         v-if="ong.image"
         :src="ong.image"
         :alt="ong.name"
-        class="w-full h-full object-cover"
+        class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
         loading="lazy"
       />
-      <div v-else class="w-full h-full flex items-center justify-center">
-        <Icon name="i-heroicons-building-office-2" class="w-16 h-16 text-muted-foreground" />
+      <div v-else class="w-full h-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+        <Icon name="i-heroicons-building-office-2" class="w-14 h-14 text-primary/30" />
       </div>
-      
-      <!-- Badge de statut -->
+
+      <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+
+      <div class="absolute top-3 left-3">
+        <UBadge color="blue" variant="solid" class="shadow-sm text-xs capitalize">{{ ong.category }}</UBadge>
+      </div>
       <div class="absolute top-3 right-3">
         <OngStatus :status="ong.status" />
       </div>
-
-      <!-- Badge de catégorie -->
-      <div class="absolute top-3 left-3">
-        <UBadge color="blue" variant="soft">
-          {{ ong.category }}
-        </UBadge>
-      </div>
     </div>
 
-    <!-- Contenu de la card -->
-    <div class="p-6 flex flex-col flex-1">
-      <!-- Header avec nom et localisation -->
+    <!-- Corps -->
+    <div class="p-5 flex flex-col flex-1">
       <div class="mb-3">
-        <h3 class="font-semibold text-lg mb-1 line-clamp-1">{{ ong.name }}</h3>
-        <div class="flex items-center text-sm text-muted-foreground">
-          <Icon name="i-heroicons-map-pin" class="w-4 h-4 mr-1" />
-          <span>{{ ong.location }}</span>
+        <h3 class="font-semibold text-base mb-1 line-clamp-1 group-hover:text-primary transition-colors">{{ ong.name }}</h3>
+        <div class="flex items-center gap-1 text-xs text-muted-foreground">
+          <Icon name="i-heroicons-map-pin" class="w-3.5 h-3.5 shrink-0" />
+          <span class="truncate">{{ ong.location }}</span>
         </div>
       </div>
 
-      <!-- Description -->
-      <p class="text-sm text-muted-foreground mb-4 line-clamp-3">
+      <p class="text-sm text-muted-foreground mb-4 line-clamp-3 leading-relaxed flex-1">
         {{ ong.description }}
       </p>
 
-      <!-- Statistiques -->
-      <div class="grid grid-cols-2 gap-4 mb-4">
-        <div class="text-center">
-          <div class="font-semibold text-primary">{{ formatNumber(ong.volunteers) }}</div>
+      <!-- Métriques -->
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <div class="bg-muted/50 rounded-lg px-3 py-2">
+          <div class="text-sm font-bold text-foreground">{{ formatNumber(ong.volunteers) }}</div>
           <div class="text-xs text-muted-foreground">Bénévoles</div>
         </div>
-        <div class="text-center">
-          <div class="font-semibold text-primary">{{ formatNumber(getProjectCount(ong)) }}</div>
+        <div class="bg-muted/50 rounded-lg px-3 py-2">
+          <div class="text-sm font-bold text-foreground">{{ formatNumber(getProjectCount(ong)) }}</div>
           <div class="text-xs text-muted-foreground">Projets</div>
         </div>
       </div>
 
-      <!-- Actions -->
-      <div class="flex gap-2 mt-auto">
-        <UButton
-          variant="outline"
-          size="sm"
-          block
-          @click="onViewDetails"
-        >
-          Voir plus
-        </UButton>
-        <!-- <UButton
-          color="primary"
-          size="sm"
-          block
-          @click="$emit('join', ong)"
-          :disabled="ong.status !== 'active'"
-        >
-          Rejoindre
-        </UButton> -->
-      </div>
-
-      <!-- Contact rapide -->
-      <div class="flex items-center justify-center gap-3 mt-4 pt-4 border-t border-border" @click.stop>
-        <UButton
-          v-if="ong.email"
-          variant="ghost"
-          size="xs"
-          color="gray"
-          :to="`mailto:${ong.email}`"
-          external
-        >
-          <Icon name="i-heroicons-envelope" class="w-4 h-4" />
-        </UButton>
-        <UButton
-          v-if="ong.phone"
-          variant="ghost"
-          size="xs"
-          color="gray"
-          :to="`tel:${ong.phone}`"
-          external
-        >
-          <Icon name="i-heroicons-phone" class="w-4 h-4" />
-        </UButton>
-        <UButton
-          v-if="ong.website"
-          variant="ghost"
-          size="xs"
-          color="gray"
-          :to="ong.website"
-          external
-          target="_blank"
-        >
-          <Icon name="i-heroicons-globe-alt" class="w-4 h-4" />
+      <!-- Footer -->
+      <div class="flex items-center justify-between mt-auto pt-4 border-t border-border">
+        <div class="flex items-center gap-1.5" @click.stop>
+          <UButton v-if="ong.email" variant="ghost" size="2xs" color="gray" :to="`mailto:${ong.email}`" external>
+            <Icon name="i-heroicons-envelope" class="w-3.5 h-3.5" />
+          </UButton>
+          <UButton v-if="ong.website" variant="ghost" size="2xs" color="gray" :to="ong.website" external target="_blank">
+            <Icon name="i-heroicons-globe-alt" class="w-3.5 h-3.5" />
+          </UButton>
+        </div>
+        <UButton size="xs" variant="soft" @click.stop="onViewDetails">
+          Voir le profil
+          <Icon name="i-heroicons-arrow-right" class="w-3.5 h-3.5 ml-1" />
         </UButton>
       </div>
     </div>
@@ -149,18 +104,3 @@ const getProjectCount = (ong: ONG) => {
 }
 </script>
 
-<style scoped>
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-</style>

@@ -4,27 +4,27 @@
     <nav class="hidden md:flex items-center gap-0.5 mr-2">
       <NuxtLink
         to="/"
-        class="px-3 py-1.5 rounded-md text-sm font-medium hover:text-green-500 transition-colors"
+        class="px-3 py-1.5 rounded-md text-sm font-medium hover:text-primary transition-colors"
         inactive-class="text-muted-foreground "
-        active-class="text-green-500"
+        active-class="text-primary"
       >
         Accueil
       </NuxtLink>
       <NuxtLink
         v-if="!isAgent"
         :to="'/dashboard'"
-        class="px-3 py-1.5 rounded-md text-sm font-medium hover:text-green-500 transition-colors"
+        class="px-3 py-1.5 rounded-md text-sm font-medium hover:text-primary transition-colors"
         inactive-class="text-muted-foreground"
-        active-class="text-green-500"
+        active-class="text-primary"
       >
         Mon Espace
       </NuxtLink>
       <NuxtLink
         v-if="!isAgent && !isAdmin"
         :to="'/dashboard/messages'"
-        class="px-3 py-1.5 rounded-md text-sm font-medium hover:text-green-500 transition-colors"
+        class="px-3 py-1.5 rounded-md text-sm font-medium hover:text-primary transition-colors"
         inactive-class="text-muted-foreground"
-        active-class="text-green-500"
+        active-class="text-primary"
       >
         Messages
       </NuxtLink>

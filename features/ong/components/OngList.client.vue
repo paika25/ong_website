@@ -1,26 +1,15 @@
 <template>
   <div class="space-y-6">
-    <!-- Filtres et recherche -->
-    <OngListFilter :filter="filters" @filterChange="handleFilterChange" />
+    <!-- Filtres et recherche (masqués en mode preview) -->
+    <OngListFilter v-if="!preview" :filter="filters" @filterChange="handleFilterChange" />
 
-    <!-- Statistiques -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="bg-card p-4 rounded-lg border border-border text-center">
-        <div class="text-2xl font-bold text-primary">{{ stats.total }}</div>
-        <div class="text-sm text-muted-foreground">Total ONGs</div>
-      </div>
-      <div class="bg-card p-4 rounded-lg border border-border text-center">
-        <div class="text-2xl font-bold text-green-600">{{ stats.active }}</div>
-        <div class="text-sm text-muted-foreground">Actives</div>
-      </div>
-      <div class="bg-card p-4 rounded-lg border border-border text-center">
-        <div class="text-2xl font-bold text-blue-600">{{ stats.totalVolunteers }}</div>
-        <div class="text-sm text-muted-foreground">Bénévoles</div>
-      </div>
-      <div class="bg-card p-4 rounded-lg border border-border text-center">
-        <div class="text-2xl font-bold text-purple-600">{{ stats.totalProjects }}</div>
-        <div class="text-sm text-muted-foreground">Projets</div>
-      </div>
+    <!-- Compteur résultats (masqué en mode preview) -->
+    <div v-if="!preview" class="flex items-center justify-between">
+      <p class="text-sm text-muted-foreground">
+        <span v-if="!isLoading" class="font-semibold text-foreground">{{ filteredOngs.length }}</span>
+        <span v-else class="inline-block w-6 h-4 bg-muted rounded animate-pulse align-middle" />
+        {{ isLoading ? '' : ` ONG${filteredOngs.length > 1 ? 's' : ''} trouvée${filteredOngs.length > 1 ? 's' : ''}` }}
+      </p>
     </div>
 
     <!-- Loading state -->
@@ -33,27 +22,23 @@
     </div>
 
     <!-- Empty state -->
-    <div 
+    <EmptyState
       v-else-if="filteredOngs.length === 0"
-      class="text-center py-12"
+      icon="i-heroicons-building-office-2"
+      title="Aucune ONG trouvée"
+      description="Essayez de modifier vos critères de recherche"
     >
-      <Icon name="i-heroicons-building-office-2" class="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-      <h3 class="text-lg font-semibold mb-2">Aucune ONG trouvée</h3>
-      <p class="text-muted-foreground mb-4">
-        Essayez de modifier vos critères de recherche
-      </p>
-      <UButton @click="resetFilters">
-        Réinitialiser les filtres
-      </UButton>
-    </div>
+      <template #action>
+        <UButton @click="resetFilters">
+          Réinitialiser les filtres
+        </UButton>
+      </template>
+    </EmptyState>
 
     <!-- Liste des ONGs -->
-    <div 
-      v-else
-      class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-    >
+    <div v-else class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       <Card
-        v-for="ong in paginatedOngs"
+        v-for="ong in visibleOngs"
         :key="ong.id"
         :ong="ong"
         @view-details="handleViewDetails"
@@ -61,8 +46,20 @@
       />
     </div>
 
-    <!-- Pagination -->
-    <div v-if="totalPages > 1" class="flex justify-center">
+    <!-- Bouton Voir plus (mode preview) → redirige vers la page dédiée -->
+    <div v-if="preview && filteredOngs.length > previewCount" class="flex flex-col items-center gap-3 pt-4">
+      <p class="text-sm text-muted-foreground">
+        {{ filteredOngs.length - previewCount }} autre{{ filteredOngs.length - previewCount > 1 ? 's' : '' }} ONG{{ filteredOngs.length - previewCount > 1 ? 's' : '' }} disponible{{ filteredOngs.length - previewCount > 1 ? 's' : '' }}
+      </p>
+      <NuxtLink to="/ongs">
+        <UButton variant="outline" trailing-icon="i-heroicons-arrow-right">
+          Voir toutes les ONGs
+        </UButton>
+      </NuxtLink>
+    </div>
+
+    <!-- Pagination (mode normal ou après "voir plus") -->
+    <div v-if="(!preview || showAll) && totalPages > 1" class="flex justify-center">
       <UPagination
         v-model="currentPage"
         :total="filteredOngs.length"
@@ -76,17 +73,21 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
-// navigateTo est auto-importé dans Nuxt
 import { getOngs, getOngStats } from '../services/ongService'
 import type { ONG } from '../type'
 import Card from './Card.vue'
 import OngListFilter from './OngListFilter.vue'
+
+const props = withDefaults(defineProps<{ preview?: boolean }>(), { preview: false })
+
+const previewCount = 3
 
 // État
 const isLoading = ref(true)
 const ongsData = ref<ONG[]>([])
 const currentPage = ref(1)
 const itemsPerPage = 9
+const showAll = ref(false)
 
 // Filtres - utiliser ref avec un objet simple au lieu de reactive
 const filters = ref({
@@ -163,6 +164,13 @@ const totalPages = computed(() => {
   return Math.ceil(filteredOngs.value.length / itemsPerPage)
 })
 
+const visibleOngs = computed(() => {
+  if (props.preview && !showAll.value) {
+    return filteredOngs.value.slice(0, previewCount)
+  }
+  return paginatedOngs.value
+})
+
 const stats = computed(() => {
   return getOngStats(ongsData.value)
 })
@@ -212,6 +220,7 @@ const handleJoin = (ong: ONG) => {
 // Watchers
 watch(filters, () => {
   currentPage.value = 1
+  showAll.value = false
 }, { deep: true })
 
 // Lifecycle - charger uniquement côté client pour éviter les problèmes SSR

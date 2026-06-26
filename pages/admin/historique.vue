@@ -1,9 +1,6 @@
 <template>
   <div class="max-w-5xl">
-      <div class="mb-6">
-        <h1 class="text-2xl font-bold">Historique des actions</h1>
-        <p class="text-sm text-muted-foreground">Journal complet des décisions back-office</p>
-      </div>
+      <PageHeader title="Historique des actions" subtitle="Journal complet des décisions back-office" class="mb-6" />
 
       <!-- Filtres -->
       <div class="flex flex-wrap gap-3 mb-6">
@@ -28,69 +25,38 @@
 
       <!-- Tableau -->
       <div class="bg-card border border-border rounded-xl overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm">
-            <thead class="bg-muted/50 text-muted-foreground text-xs uppercase tracking-wide">
-              <tr>
-                <th class="px-4 py-3 text-left">Date / Heure</th>
-                <th class="px-4 py-3 text-left">Action</th>
-                <th class="px-4 py-3 text-left">ONG</th>
-                <th class="px-4 py-3 text-left">Opérateur</th>
-                <th class="px-4 py-3 text-left">Détail</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Skeleton -->
-              <template v-if="loading">
-                <tr v-for="i in 8" :key="i" class="border-t border-border animate-pulse">
-                  <td v-for="j in 5" :key="j" class="px-4 py-3">
-                    <div class="h-4 bg-muted rounded w-3/4" />
-                  </td>
-                </tr>
-              </template>
-
-              <!-- Empty state -->
-              <tr v-else-if="!entries.length">
-                <td colspan="5" class="px-4 py-12 text-center text-muted-foreground">
-                  Aucune action enregistrée
-                </td>
-              </tr>
-
-              <!-- Lignes -->
-              <tr
-                v-for="entry in entries"
-                :key="entry.id"
-                class="border-t border-border hover:bg-muted/30 transition-colors"
-              >
-                <td class="px-4 py-3 whitespace-nowrap text-xs text-muted-foreground">
-                  {{ formatDate(entry.created_at) }}
-                </td>
-                <td class="px-4 py-3">
-                  <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', actionBadge(entry.action).class]">
-                    {{ actionBadge(entry.action).label }}
-                  </span>
-                </td>
-                <td class="px-4 py-3">
-                  <span class="font-medium">{{ entry.ongs?.name ?? '—' }}</span>
-                  <span class="text-xs text-muted-foreground block">{{ entry.ong_id?.slice(0,8) }}…</span>
-                </td>
-                <td class="px-4 py-3">
-                  <template v-if="entry.operator">
-                    <span class="text-sm font-medium block">
-                      {{ [entry.operator.first_name, entry.operator.last_name].filter(Boolean).join(' ') || '—' }}
-                    </span>
-                    <span class="text-xs text-muted-foreground block">{{ entry.operator.email }}</span>
-                    <span class="text-[10px] text-muted-foreground/60 font-mono">{{ entry.performed_by?.slice(0,8) }}…</span>
-                  </template>
-                  <span v-else class="text-xs text-muted-foreground italic">système</span>
-                </td>
-                <td class="px-4 py-3 text-xs text-muted-foreground max-w-xs truncate">
-                  {{ entry.details_json?.comment ?? entry.details_json?.message ?? '—' }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <UTable :rows="entries" :columns="columns" :loading="loading">
+          <template #empty-state>
+            <EmptyState icon="i-heroicons-clock" title="Aucune action enregistrée" />
+          </template>
+          <template #created_at-data="{ row }">
+            <span class="whitespace-nowrap text-xs text-muted-foreground">{{ formatDate(row.created_at) }}</span>
+          </template>
+          <template #action-data="{ row }">
+            <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', actionBadge(row.action).class]">
+              {{ actionBadge(row.action).label }}
+            </span>
+          </template>
+          <template #ong-data="{ row }">
+            <span class="font-medium">{{ row.ongs?.name ?? '—' }}</span>
+            <span class="text-xs text-muted-foreground block">{{ row.ong_id?.slice(0,8) }}…</span>
+          </template>
+          <template #operator-data="{ row }">
+            <template v-if="row.operator">
+              <span class="text-sm font-medium block">
+                {{ [row.operator.first_name, row.operator.last_name].filter(Boolean).join(' ') || '—' }}
+              </span>
+              <span class="text-xs text-muted-foreground block">{{ row.operator.email }}</span>
+              <span class="text-[10px] text-muted-foreground/60 font-mono">{{ row.performed_by?.slice(0,8) }}…</span>
+            </template>
+            <span v-else class="text-xs text-muted-foreground italic">système</span>
+          </template>
+          <template #detail-data="{ row }">
+            <span class="text-xs text-muted-foreground max-w-xs truncate block">
+              {{ row.details_json?.comment ?? row.details_json?.message ?? '—' }}
+            </span>
+          </template>
+        </UTable>
 
         <!-- Charger plus -->
         <div v-if="cursor" class="px-4 py-3 border-t border-border">

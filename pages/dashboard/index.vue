@@ -1,48 +1,37 @@
 <template>
-  <main class="container mx-auto px-4 py-8 max-w-4xl">
+  <div class="max-w-4xl space-y-6">
 
     <!-- En-tête -->
-    <div class="mb-8">
-      <h1 class="text-2xl font-bold tracking-tight">
-        Bonjour{{ firstName ? ', ' + firstName : '' }}
-      </h1>
-      <p class="text-sm text-muted-foreground mt-1">Suivez vos dons et découvrez des ONGs à soutenir.</p>
-    </div>
+    <PageHeader
+      class="mb-8"
+      :title="`Bonjour${firstName ? ', ' + firstName : ''}`"
+      subtitle="Suivez vos dons et découvrez des ONGs à soutenir."
+    />
 
     <!-- Bannière : partenaire non encore validé -->
-    <div
+    <UAlert
       v-if="user && user.accountType === 'user_partner' && !user.verified"
-      class="mb-6 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 rounded-xl px-5 py-4 flex items-start gap-3"
-    >
-      <Icon name="i-heroicons-clock" class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-      <div class="flex-1 min-w-0">
-        <p class="font-semibold text-amber-800 dark:text-amber-300 text-sm">Compte en attente de validation</p>
-        <p class="text-xs text-amber-700 dark:text-amber-400 mt-0.5 leading-relaxed">
-          Votre profil partenaire est en cours de vérification par notre équipe (sous 48 h ouvrées).
-          En attendant, vous naviguez comme visiteur public : les données financières des ONGs ne sont pas encore accessibles.
-        </p>
-      </div>
-    </div>
+      class="mb-6"
+      color="amber"
+      variant="soft"
+      icon="i-heroicons-clock"
+      title="Compte en attente de validation"
+      description="Votre profil partenaire est en cours de vérification par notre équipe (sous 48 h ouvrées). En attendant, vous naviguez comme visiteur public : les données financières des ONGs ne sont pas encore accessibles."
+    />
 
     <!-- Stats -->
     <div class="grid grid-cols-3 gap-4 mb-8">
-      <div
+      <StatCard
         v-for="card in statCards"
         :key="card.label"
-        class="bg-card border border-border rounded-xl p-5 flex flex-col gap-1.5"
-      >
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{{ card.label }}</span>
-          <div :class="['w-7 h-7 rounded-lg flex items-center justify-center', card.iconBg]">
-            <Icon :name="card.icon" class="w-3.5 h-3.5" :class="card.iconColor" />
-          </div>
-        </div>
-        <div class="text-2xl font-bold">
-          <span v-if="isLoading" class="inline-block h-7 w-16 bg-muted rounded animate-pulse" />
-          <span v-else>{{ card.value }}</span>
-        </div>
-        <div class="text-xs text-muted-foreground">{{ card.sub }}</div>
-      </div>
+        :label="card.label"
+        :value="card.value"
+        :sub="card.sub"
+        :icon="card.icon"
+        :icon-bg="card.iconBg"
+        :icon-color="card.iconColor"
+        :loading="isLoading"
+      />
     </div>
 
     <!-- Actions rapides -->
@@ -80,56 +69,52 @@
       </div>
 
       <!-- Vide -->
-      <div v-else-if="!donations.length" class="px-5 py-16 text-center text-muted-foreground">
-        <Icon name="i-heroicons-heart" class="w-10 h-10 mx-auto mb-3 opacity-30" />
-        <p class="font-medium mb-1">Aucun don pour le moment</p>
-        <p class="text-xs mb-5">Soutenez une ONG en faisant votre premier don</p>
-        <NuxtLink to="/">
-          <UButton size="sm" color="primary">Découvrir les ONGs</UButton>
-        </NuxtLink>
-      </div>
+      <EmptyState
+        v-else-if="!donations.length"
+        icon="i-heroicons-heart"
+        title="Aucun don pour le moment"
+        description="Soutenez une ONG en faisant votre premier don"
+      >
+        <template #action>
+          <NuxtLink to="/">
+            <UButton size="sm" color="primary">Découvrir les ONGs</UButton>
+          </NuxtLink>
+        </template>
+      </EmptyState>
 
       <!-- Table -->
-      <div v-else class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead class="bg-muted/50 text-muted-foreground text-xs uppercase tracking-wide">
-            <tr>
-              <th class="px-5 py-3 text-left">Date</th>
-              <th class="px-5 py-3 text-left">ONG</th>
-              <th class="px-5 py-3 text-right">Montant</th>
-              <th class="px-5 py-3 text-center">Statut</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-border">
-            <tr
-              v-for="d in donations"
-              :key="d.id"
-              class="hover:bg-muted/30 transition-colors"
-            >
-              <td class="px-5 py-3.5 whitespace-nowrap text-xs text-muted-foreground">
-                {{ formatDate(d.createdAt) }}
-              </td>
-              <td class="px-5 py-3.5 font-medium">{{ d.ongName }}</td>
-              <td class="px-5 py-3.5 text-right font-semibold">{{ d.amount }} €</td>
-              <td class="px-5 py-3.5 text-center">
-                <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', statusClass(d.status)]">
-                  {{ statusLabel(d.status) }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <UTable
+        v-else
+        :rows="donations"
+        :columns="donationColumns"
+      >
+        <template #createdAt-data="{ row }">
+          <span class="whitespace-nowrap text-xs text-muted-foreground">{{ formatDate(row.createdAt) }}</span>
+        </template>
+        <template #ongName-data="{ row }">
+          <span class="font-medium">{{ row.ongName }}</span>
+        </template>
+        <template #amount-data="{ row }">
+          <span class="font-semibold block text-right">{{ row.amount }} €</span>
+        </template>
+        <template #status-data="{ row }">
+          <div class="flex justify-center">
+            <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', statusClass(row.status)]">
+              {{ statusLabel(row.status) }}
+            </span>
+          </div>
+        </template>
+      </UTable>
     </div>
 
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '~/features/auth/stores/auth.client'
 import { useStats } from '~/features/user/composables/useStats'
 
-definePageMeta({ middleware: ['auth'] })
+definePageMeta({ layout: 'partner', middleware: ['auth'] })
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -138,6 +123,13 @@ const user = computed(() => authStore.currentUser)
 const firstName = computed(() => user.value?.firstName?.split(' ')[0] || user.value?.fullName?.split(' ')[0] || '')
 
 const { donations, stats, isLoading, load } = useStats()
+
+const donationColumns = [
+  { key: 'createdAt', label: 'Date' },
+  { key: 'ongName', label: 'ONG' },
+  { key: 'amount', label: 'Montant', class: 'text-right' },
+  { key: 'status', label: 'Statut', class: 'text-center' },
+]
 
 const QUICK_ACTIONS = [
   {
@@ -188,8 +180,8 @@ const statCards = computed(() => [
     value:     stats.value.totalDonated + ' €',
     sub:       'Dons complétés',
     icon:      'i-heroicons-banknotes',
-    iconBg:    'bg-emerald-100 dark:bg-emerald-900',
-    iconColor: 'text-emerald-600 dark:text-emerald-400',
+    iconBg:    'bg-primary/10',
+    iconColor: 'text-primary',
   },
   {
     label:     'ONGs soutenues',

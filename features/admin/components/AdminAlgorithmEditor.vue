@@ -5,23 +5,21 @@
       <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block mb-1.5">
         Numéro de version <span class="text-destructive">*</span>
       </label>
-      <input
-        v-model="form.version"
-        type="text"
-        placeholder="ex : 1.2.0"
-        class="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/40"
-      />
+      <UInput v-model="form.version" type="text" placeholder="ex : 1.2.0" />
       <p class="text-xs text-muted-foreground mt-1">Format semver obligatoire (MAJEUR.MINEUR.PATCH)</p>
     </div>
 
     <!-- Avertissement total ≠ 100 -->
-    <div
+    <UAlert
       v-if="weightsTotal !== 100"
-      class="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-lg text-sm text-amber-700 dark:text-amber-400"
+      color="amber"
+      variant="soft"
+      icon="i-heroicons-exclamation-triangle"
     >
-      <Icon name="i-heroicons-exclamation-triangle" class="w-4 h-4 shrink-0 mt-0.5" />
-      <span>La somme des poids est <strong>{{ weightsTotal }}</strong>/100. Ajustez les valeurs pour obtenir exactement 100 points.</span>
-    </div>
+      <template #description>
+        La somme des poids est <strong>{{ weightsTotal }}</strong>/100. Ajustez les valeurs pour obtenir exactement 100 points.
+      </template>
+    </UAlert>
 
     <!-- Poids des critères -->
     <div class="space-y-4">
@@ -39,12 +37,14 @@
             <span class="text-xs text-muted-foreground ml-2">{{ w.description }}</span>
           </div>
           <div class="flex items-center gap-2">
-            <input
+            <UInput
               v-model.number="form.weights[w.key]"
               type="number"
               min="0"
               max="100"
-              class="w-16 px-2 py-1 text-sm text-right rounded-md border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/40 font-mono"
+              size="sm"
+              class="w-16"
+              input-class="text-right font-mono"
             />
             <span class="text-xs text-muted-foreground w-6">pts</span>
           </div>
@@ -68,10 +68,11 @@
             Score minimum de soumission
           </label>
           <div class="flex items-center gap-2">
-            <input
+            <UInput
               v-model.number="form.thresholds.submission_minimum"
               type="number" min="0" max="100"
-              class="flex-1 px-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/40 font-mono"
+              class="flex-1"
+              input-class="font-mono"
             />
             <span class="text-xs text-muted-foreground">pts</span>
           </div>
@@ -82,10 +83,11 @@
             Score pour le badge "Vérifié"
           </label>
           <div class="flex items-center gap-2">
-            <input
+            <UInput
               v-model.number="form.thresholds.verified_badge"
               type="number" min="0" max="100"
-              class="flex-1 px-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/40 font-mono"
+              class="flex-1"
+              input-class="font-mono"
             />
             <span class="text-xs text-muted-foreground">pts</span>
           </div>

@@ -1,9 +1,6 @@
 <template>
   <div class="space-y-6">
-    <div>
-      <h1 class="text-2xl font-bold">Vue d'ensemble</h1>
-      <p class="text-sm text-muted-foreground mt-0.5">Tableau de bord global de la plateforme Paika</p>
-    </div>
+    <PageHeader title="Vue d'ensemble" subtitle="Tableau de bord global de la plateforme Paika" />
 
     <!-- Skeleton -->
     <div v-if="loading" class="space-y-4">
@@ -15,9 +12,7 @@
 
     <AdminOverviewStats v-else-if="overview" :overview="overview" />
 
-    <div v-if="error" class="bg-destructive/10 border border-destructive/30 rounded-xl p-4 text-sm text-destructive">
-      {{ error }}
-    </div>
+    <UAlert v-if="error" color="red" variant="soft" icon="i-heroicons-exclamation-circle" :title="error" />
 
     <!-- Accès rapides -->
     <div v-if="!loading" class="grid grid-cols-2 lg:grid-cols-4 gap-3">

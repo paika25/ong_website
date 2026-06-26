@@ -1,9 +1,6 @@
 <template>
   <div class="space-y-6">
-    <div>
-      <h1 class="text-2xl font-bold">Messagerie</h1>
-      <p class="text-sm text-muted-foreground mt-0.5">Supervision de toutes les conversations Bailleur ↔ ONG</p>
-    </div>
+    <PageHeader title="Messagerie" subtitle="Supervision de toutes les conversations Bailleur ↔ ONG" />
 
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4" style="height: 640px">
       <!-- Colonne 1 : Liste des ONGs -->

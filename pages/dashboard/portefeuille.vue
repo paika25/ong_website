@@ -1,159 +1,123 @@
 <template>
-  <main class="container mx-auto px-4 py-8 max-w-5xl">
-    <div class="mb-6">
-      <NuxtLink to="/dashboard">
-        <UButton variant="ghost" size="sm" class="text-muted-foreground gap-1.5 -ml-2">
-          <Icon name="i-heroicons-arrow-left" class="w-4 h-4" />
-          Tableau de bord
-        </UButton>
-      </NuxtLink>
-    </div>
-
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold tracking-tight">Mon portefeuille</h1>
-      <p class="text-sm text-muted-foreground mt-0.5">Historique de vos dons et demandes de remboursement</p>
-    </div>
+  <div class="max-w-5xl space-y-6">
+    <PageHeader title="Mon portefeuille" subtitle="Historique de vos dons et demandes de remboursement" />
 
     <!-- Cartes de synthèse -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-      <div class="bg-card border border-border rounded-xl p-5">
-        <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Total donné</p>
-        <p class="text-2xl font-bold text-primary">{{ loading ? '—' : formatEur(totalDonne) }}</p>
-        <p class="text-xs text-muted-foreground mt-1">{{ completedDons.length }} don{{ completedDons.length > 1 ? 's' : '' }}</p>
-      </div>
-      <div class="bg-card border border-border rounded-xl p-5">
-        <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">ONGs soutenues</p>
-        <p class="text-2xl font-bold">{{ loading ? '—' : ongsDistinctes }}</p>
-        <p class="text-xs text-muted-foreground mt-1">organisations financées</p>
-      </div>
-      <div class="bg-card border border-border rounded-xl p-5">
-        <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Remboursements</p>
-        <p class="text-2xl font-bold text-orange-500">{{ loading ? '—' : refundCount }}</p>
-        <p class="text-xs text-muted-foreground mt-1">demande{{ refundCount > 1 ? 's' : '' }} en cours</p>
-      </div>
+      <StatCard
+        label="Total donné"
+        :value="loading ? '—' : formatEur(totalDonne)"
+        :sub="`${completedDons.length} don${completedDons.length > 1 ? 's' : ''}`"
+        icon="i-heroicons-banknotes"
+        :loading="loading"
+      />
+      <StatCard
+        label="ONGs soutenues"
+        :value="loading ? '—' : ongsDistinctes"
+        sub="Organisations financées"
+        icon="i-heroicons-building-office-2"
+        :loading="loading"
+      />
+      <StatCard
+        label="Remboursements"
+        :value="loading ? '—' : refundCount"
+        :sub="`Demande${refundCount > 1 ? 's' : ''} en cours`"
+        icon="i-heroicons-arrow-uturn-left"
+        icon-bg="bg-orange-100 dark:bg-orange-900"
+        icon-color="text-orange-600 dark:text-orange-400"
+        :loading="loading"
+      />
     </div>
 
     <!-- Tableau des dons -->
     <div class="bg-card border border-border rounded-xl overflow-hidden">
-      <div class="px-5 py-4 border-b border-border flex items-center justify-between">
+      <div class="px-5 py-4 border-b border-border">
         <p class="text-sm font-semibold">Historique des dons</p>
       </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead class="bg-muted/50 text-muted-foreground text-xs uppercase tracking-wide">
-            <tr>
-              <th class="px-4 py-3 text-left">Date</th>
-              <th class="px-4 py-3 text-left">ONG</th>
-              <th class="px-4 py-3 text-right">Montant</th>
-              <th class="px-4 py-3 text-left">Statut</th>
-              <th class="px-4 py-3 text-left">Mode</th>
-              <th class="px-4 py-3 text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <template v-if="loading">
-              <tr v-for="i in 5" :key="i" class="border-t border-border animate-pulse">
-                <td v-for="j in 6" :key="j" class="px-4 py-3">
-                  <div class="h-4 bg-muted rounded w-3/4" />
-                </td>
-              </tr>
+      <UTable :rows="transactions" :columns="columns" :loading="loading">
+        <template #empty-state>
+          <EmptyState icon="i-heroicons-heart" title="Vous n'avez effectué aucun don pour l'instant">
+            <template #action>
+              <NuxtLink to="/">
+                <UButton size="sm" variant="outline">Découvrir les ONGs</UButton>
+              </NuxtLink>
             </template>
-            <tr v-else-if="!transactions.length">
-              <td colspan="6" class="px-4 py-16 text-center text-muted-foreground">
-                <Icon name="i-heroicons-heart" class="w-10 h-10 mx-auto mb-3 opacity-30" />
-                <p>Vous n'avez effectué aucun don pour l'instant</p>
-                <NuxtLink to="/" class="mt-4 inline-block">
-                  <UButton size="sm" variant="outline">Découvrir les ONGs</UButton>
-                </NuxtLink>
-              </td>
-            </tr>
-            <tr
-              v-for="tx in transactions"
-              :key="tx.id"
-              class="border-t border-border hover:bg-muted/30 transition-colors"
-            >
-              <td class="px-4 py-3 whitespace-nowrap text-xs text-muted-foreground">{{ formatDate(tx.created_at) }}</td>
-              <td class="px-4 py-3">
-                <NuxtLink v-if="tx.ong_id" :to="`/ongs/${tx.ong_id}`" class="flex items-center gap-2 group">
-                  <div class="w-7 h-7 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center shrink-0 text-xs font-bold text-emerald-700">
-                    {{ (tx.ong_name ?? '?')[0]?.toUpperCase() }}
-                  </div>
-                  <span class="text-sm font-medium group-hover:text-primary transition-colors">{{ tx.ong_name ?? '—' }}</span>
-                </NuxtLink>
-              </td>
-              <td class="px-4 py-3 text-right font-semibold">{{ formatEur(tx.amount) }}</td>
-              <td class="px-4 py-3">
-                <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', statusClass(tx.status)]">
-                  {{ statusLabel(tx.status) }}
-                </span>
-              </td>
-              <td class="px-4 py-3">
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300 capitalize">
-                  <Icon name="i-heroicons-credit-card" class="w-3 h-3" />
-                  {{ tx.provider }}
-                </span>
-              </td>
-              <td class="px-4 py-3 text-center">
-                <UButton
-                  v-if="tx.status === 'completed' && !tx.refund_requested"
-                  size="xs"
-                  variant="outline"
-                  color="orange"
-                  :loading="refundLoading === tx.id"
-                  @click="requestRefund(tx)"
-                >
-                  Remboursement
-                </UButton>
-                <span
-                  v-else-if="tx.refund_requested"
-                  class="text-xs text-orange-500 font-medium"
-                >
-                  Demande envoyée
-                </span>
-                <span v-else class="text-xs text-muted-foreground">—</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+          </EmptyState>
+        </template>
+        <template #created_at-data="{ row }">
+          <span class="whitespace-nowrap text-xs text-muted-foreground">{{ formatDate(row.created_at) }}</span>
+        </template>
+        <template #ong_name-data="{ row }">
+          <NuxtLink v-if="row.ong_id" :to="`/ongs/${row.ong_id}`" class="flex items-center gap-2 group">
+            <div class="w-7 h-7 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center shrink-0 text-xs font-bold text-emerald-700">
+              {{ (row.ong_name ?? '?')[0]?.toUpperCase() }}
+            </div>
+            <span class="text-sm font-medium group-hover:text-primary transition-colors">{{ row.ong_name ?? '—' }}</span>
+          </NuxtLink>
+        </template>
+        <template #amount-data="{ row }">
+          <span class="font-semibold">{{ formatEur(row.amount) }}</span>
+        </template>
+        <template #status-data="{ row }">
+          <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', statusClass(row.status)]">
+            {{ statusLabel(row.status) }}
+          </span>
+        </template>
+        <template #provider-data="{ row }">
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300 capitalize">
+            <Icon name="i-heroicons-credit-card" class="w-3 h-3" />
+            {{ row.provider }}
+          </span>
+        </template>
+        <template #action-data="{ row }">
+          <UButton
+            v-if="row.status === 'completed' && !row.refund_requested"
+            size="xs"
+            variant="outline"
+            color="orange"
+            :loading="refundLoading === row.id"
+            @click="requestRefund(row)"
+          >
+            Remboursement
+          </UButton>
+          <span v-else-if="row.refund_requested" class="text-xs text-orange-500 font-medium">
+            Demande envoyée
+          </span>
+          <span v-else class="text-xs text-muted-foreground">—</span>
+        </template>
+      </UTable>
     </div>
 
     <!-- Modal confirmation remboursement -->
-    <Teleport to="body">
-      <div
-        v-if="refundModal"
-        class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        @click.self="refundModal = null"
-      >
-        <div class="bg-card border border-border rounded-2xl w-full max-w-sm p-6 space-y-4 shadow-2xl">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
-              <Icon name="i-heroicons-arrow-uturn-left" class="w-5 h-5 text-orange-600" />
-            </div>
-            <div>
-              <p class="font-semibold">Demande de remboursement</p>
-              <p class="text-xs text-muted-foreground">{{ refundModal.ong_name }} · {{ formatEur(refundModal.amount) }}</p>
-            </div>
+    <UModal v-model="isRefundModalOpen">
+      <div v-if="refundModal" class="p-6 space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
+            <Icon name="i-heroicons-arrow-uturn-left" class="w-5 h-5 text-orange-600" />
           </div>
-          <p class="text-sm text-muted-foreground leading-relaxed">
-            Votre demande sera transmise à l'équipe Paika pour traitement manuel. Vous serez contacté sous 48 h ouvrées.
-          </p>
-          <div class="flex gap-3">
-            <UButton variant="outline" block @click="refundModal = null">Annuler</UButton>
-            <UButton color="orange" block :loading="refundLoading === refundModal.id" @click="confirmRefund">
-              Confirmer
-            </UButton>
+          <div>
+            <p class="font-semibold">Demande de remboursement</p>
+            <p class="text-xs text-muted-foreground">{{ refundModal.ong_name }} · {{ formatEur(refundModal.amount) }}</p>
           </div>
         </div>
+        <p class="text-sm text-muted-foreground leading-relaxed">
+          Votre demande sera transmise à l'équipe Paika pour traitement manuel. Vous serez contacté sous 48 h ouvrées.
+        </p>
+        <div class="flex gap-3">
+          <UButton variant="outline" block @click="refundModal = null">Annuler</UButton>
+          <UButton color="orange" block :loading="refundLoading === refundModal.id" @click="confirmRefund">
+            Confirmer
+          </UButton>
+        </div>
       </div>
-    </Teleport>
-  </main>
+    </UModal>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { getToken } from '~/features/auth/utils/getToken'
 
-definePageMeta({ middleware: ['auth'] })
+definePageMeta({ layout: 'partner', middleware: ['auth'] })
 
 interface Transaction {
   id: string
@@ -180,6 +144,20 @@ const completedDons   = computed(() => transactions.value.filter(t => t.status =
 const totalDonne      = computed(() => completedDons.value.reduce((s, t) => s + t.amount, 0))
 const ongsDistinctes  = computed(() => new Set(completedDons.value.map(t => t.ong_id)).size)
 const refundCount     = computed(() => transactions.value.filter(t => t.refund_requested).length)
+
+const columns = [
+  { key: 'created_at', label: 'Date' },
+  { key: 'ong_name', label: 'ONG' },
+  { key: 'amount', label: 'Montant' },
+  { key: 'status', label: 'Statut' },
+  { key: 'provider', label: 'Moyen' },
+  { key: 'action', label: '' },
+]
+
+const isRefundModalOpen = computed({
+  get: () => !!refundModal.value,
+  set: (v: boolean) => { if (!v) refundModal.value = null },
+})
 
 function formatEur(cents: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(cents / 100)

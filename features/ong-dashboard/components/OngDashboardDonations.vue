@@ -17,67 +17,39 @@
       </div>
     </div>
 
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead class="bg-muted/50 text-muted-foreground text-xs uppercase tracking-wide">
-          <tr>
-            <th class="px-4 py-3 text-left">Date</th>
-            <th class="px-4 py-3 text-left">Montant</th>
-            <th class="px-4 py-3 text-left">Statut</th>
-            <th class="px-4 py-3 text-left">Donateur</th>
-            <th class="px-4 py-3 text-left">Mode</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-if="loading">
-            <tr v-for="i in 5" :key="i" class="border-t border-border animate-pulse">
-              <td v-for="j in 5" :key="j" class="px-4 py-3">
-                <div class="h-4 bg-muted rounded w-3/4" />
-              </td>
-            </tr>
-          </template>
-
-          <tr v-else-if="!donations.length">
-            <td colspan="5" class="px-4 py-16 text-center text-muted-foreground">
-              <Icon name="i-heroicons-heart" class="w-10 h-10 mx-auto mb-3 opacity-30" />
-              <p>Aucun don reçu pour l'instant</p>
-              <p class="text-xs mt-1">Les dons apparaîtront ici une fois votre ONG certifiée</p>
-            </td>
-          </tr>
-
-          <tr
-            v-for="d in donations"
-            :key="d.id"
-            class="border-t border-border hover:bg-muted/30 transition-colors"
-          >
-            <td class="px-4 py-3 whitespace-nowrap text-xs text-muted-foreground">
-              {{ formatDate(d.created_at) }}
-            </td>
-            <td class="px-4 py-3 font-semibold">
-              {{ d.currency === 'eur' ? formatEur(d.amount) : `${d.amount} Ar` }}
-            </td>
-            <td class="px-4 py-3">
-              <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', donationStatusClass(d.status)]">
-                {{ donationStatusLabel(d.status) }}
-              </span>
-            </td>
-            <td class="px-4 py-3 text-muted-foreground text-xs">
-              {{ d.donor_email ?? '—' }}
-            </td>
-            <td class="px-4 py-3">
-              <span
-                v-if="d.provider"
-                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300 capitalize"
-              >
-                <Icon name="i-heroicons-credit-card" class="w-3 h-3" />
-                {{ d.provider }}
-              </span>
-              <span v-else class="text-xs text-muted-foreground">—</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <UTable :rows="donations" :columns="columns" :loading="loading">
+      <template #empty-state>
+        <EmptyState
+          icon="i-heroicons-heart"
+          title="Aucun don reçu pour l'instant"
+          description="Les dons apparaîtront ici une fois votre ONG certifiée"
+        />
+      </template>
+      <template #created_at-data="{ row }">
+        <span class="whitespace-nowrap text-xs text-muted-foreground">{{ formatDate(row.created_at) }}</span>
+      </template>
+      <template #amount-data="{ row }">
+        <span class="font-semibold">{{ row.currency === 'eur' ? formatEur(row.amount) : `${row.amount} Ar` }}</span>
+      </template>
+      <template #status-data="{ row }">
+        <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', donationStatusClass(row.status)]">
+          {{ donationStatusLabel(row.status) }}
+        </span>
+      </template>
+      <template #donor_email-data="{ row }">
+        <span class="text-muted-foreground text-xs">{{ row.donor_email ?? '—' }}</span>
+      </template>
+      <template #provider-data="{ row }">
+        <span
+          v-if="row.provider"
+          class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300 capitalize"
+        >
+          <Icon name="i-heroicons-credit-card" class="w-3 h-3" />
+          {{ row.provider }}
+        </span>
+        <span v-else class="text-xs text-muted-foreground">—</span>
+      </template>
+    </UTable>
   </div>
 </template>
 
@@ -89,6 +61,14 @@ const props = defineProps<{
   donations: OngDonation[]
   loading?: boolean
 }>()
+
+const columns = [
+  { key: 'created_at', label: 'Date' },
+  { key: 'amount', label: 'Montant' },
+  { key: 'status', label: 'Statut' },
+  { key: 'donor_email', label: 'Donateur' },
+  { key: 'provider', label: 'Mode' },
+]
 
 const completedCount = computed(() =>
   props.donations.filter(d => d.status === 'completed').length

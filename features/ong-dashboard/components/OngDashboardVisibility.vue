@@ -22,22 +22,11 @@
             <div class="text-xs text-muted-foreground">{{ section.description }}</div>
           </div>
         </div>
-        <button
-          type="button"
+        <UToggle
+          :model-value="local[section.key]"
           :disabled="saving"
-          :class="[
-            'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary',
-            local[section.key] ? 'bg-emerald-600' : 'bg-muted-foreground/30'
-          ]"
-          @click="toggle(section.key)"
-        >
-          <span
-            :class="[
-              'inline-block h-4 w-4 rounded-full bg-white shadow-sm transform transition-transform',
-              local[section.key] ? 'translate-x-6' : 'translate-x-1'
-            ]"
-          />
-        </button>
+          @update:model-value="toggle(section.key)"
+        />
       </div>
     </div>
 

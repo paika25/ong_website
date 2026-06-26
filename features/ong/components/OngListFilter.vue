@@ -1,69 +1,31 @@
 <template>
-  <div class="bg-card md:p-6 p-3 rounded-xl border border-border">
-      <div class="grid md:grid-rows-2 md:grid-cols-2 gap-4">
-        <!-- Recherche -->
-        <div class="md:col-span-2">
-          <UInput
-            v-model="filters.search"
-            placeholder="Rechercher une ONG..."
-            icon="i-heroicons-magnifying-glass"
-          />
-        </div>
-
-        <!-- Filtre par catégorie -->
-        <USelect
-          v-model="filters.category"
-          :options="categoryOptions"
-          placeholder="Toutes catégories"
-        />
-
-        <!-- Filtre par statut -->
-        <USelect
-          v-model="filters.status"
-          :options="statusOptions"
-          placeholder="Tous statuts"
-        />
-      </div>
-
-      <!-- Filtres avancés (collapsible) -->
-      <div class="mt-4">
-        <UButton
-          variant="ghost"
-          size="sm"
-          @click="showAdvancedFilters = !showAdvancedFilters"
-        >
-          Filtres avancés
-          <Icon 
-            :name="showAdvancedFilters ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'" 
-            class="w-4 h-4 ml-1" 
-          />
-        </UButton>
-
-        <div v-if="showAdvancedFilters" class="grid md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-border">
-          <!-- Filtre par localisation -->
-          <UInput
-            v-model="filters.location"
-            placeholder="Localisation..."
-            icon="i-heroicons-map-pin"
-          />
-
-          <!-- Tri -->
-          <USelect
-            v-model="filters.sortBy"
-            :options="sortOptions"
-            placeholder="Trier par..."
-          />
-
-          <!-- Nombre de bénévoles minimum -->
-          <UInput
-            v-model.number="filters.minVolunteers"
-            type="number"
-            placeholder="Min. bénévoles"
-            min="0"
-          />
-        </div>
-      </div>
+  <div class="bg-card rounded-xl border border-border p-4">
+    <div class="flex flex-wrap items-center gap-3">
+      <UInput
+        v-model="filters.search"
+        placeholder="Rechercher une ONG..."
+        icon="i-heroicons-magnifying-glass"
+        class="flex-1 min-w-[200px]"
+      />
+      <USelect v-model="filters.category" :options="categoryOptions" class="w-48" />
+      <USelect v-model="filters.status" :options="statusOptions" class="w-44" />
+      <UButton
+        variant="ghost"
+        size="sm"
+        :icon="showAdvancedFilters ? 'i-heroicons-funnel' : 'i-heroicons-funnel'"
+        @click="showAdvancedFilters = !showAdvancedFilters"
+      >
+        Filtres
+        <Icon :name="showAdvancedFilters ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'" class="w-4 h-4 ml-1" />
+      </UButton>
     </div>
+
+    <div v-if="showAdvancedFilters" class="flex flex-wrap gap-3 mt-4 pt-4 border-t border-border">
+      <UInput v-model="filters.location" placeholder="Localisation..." icon="i-heroicons-map-pin" class="w-48" />
+      <USelect v-model="filters.sortBy" :options="sortOptions" class="w-48" />
+      <UInput v-model.number="filters.minVolunteers" type="number" placeholder="Min. bénévoles" min="0" class="w-40" />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">

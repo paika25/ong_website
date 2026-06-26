@@ -2,18 +2,14 @@
   <div class="space-y-6 max-w-4xl">
 
     <!-- En-tête -->
-    <div class="flex items-start justify-between gap-4 flex-wrap">
-      <div>
-        <h1 class="text-2xl font-bold">Algorithme de score</h1>
-        <p class="text-sm text-muted-foreground mt-0.5">
-          Gérez les versions du score de transparence — poids, seuils et documents requis
-        </p>
-      </div>
-      <UButton color="primary" size="sm" @click="openCreate">
-        <Icon name="i-heroicons-plus" class="w-4 h-4 mr-1.5" />
-        Nouvelle version
-      </UButton>
-    </div>
+    <PageHeader title="Algorithme de score" subtitle="Gérez les versions du score de transparence — poids, seuils et documents requis">
+      <template #actions>
+        <UButton color="primary" size="sm" @click="openCreate">
+          <Icon name="i-heroicons-plus" class="w-4 h-4 mr-1.5" />
+          Nouvelle version
+        </UButton>
+      </template>
+    </PageHeader>
 
     <!-- Skeleton -->
     <div v-if="loading" class="space-y-4 animate-pulse">
@@ -24,10 +20,13 @@
     <template v-else>
       <!-- Version active -->
       <AdminAlgorithmActiveCard v-if="activeVersion" :version="activeVersion" />
-      <div v-else class="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl p-5 flex items-center gap-3 text-sm text-amber-700 dark:text-amber-400">
-        <Icon name="i-heroicons-exclamation-triangle" class="w-5 h-5 shrink-0" />
-        Aucune version active. Approuvez puis activez un brouillon pour calculer les scores.
-      </div>
+      <UAlert
+        v-else
+        color="amber"
+        variant="soft"
+        icon="i-heroicons-exclamation-triangle"
+        title="Aucune version active. Approuvez puis activez un brouillon pour calculer les scores."
+      />
 
       <!-- Formulaire création / édition inline -->
       <div v-if="editorMode" class="bg-card border border-border rounded-xl p-5 space-y-4">
@@ -102,9 +101,7 @@
       />
     </template>
 
-    <div v-if="error" class="bg-destructive/10 border border-destructive/30 rounded-xl p-4 text-sm text-destructive">
-      {{ error }}
-    </div>
+    <UAlert v-if="error" color="red" variant="soft" icon="i-heroicons-exclamation-circle" :title="error" />
   </div>
 </template>
 
