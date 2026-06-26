@@ -8,12 +8,13 @@
           :key="tab.id"
           @click="activeTab = tab.id"
           :class="[
-            'px-4 py-3 text-sm font-medium border-b-2 transition-colors',
+            'flex items-center gap-1.5 px-4 py-3 text-sm font-medium border-b-2 transition-colors',
             activeTab === tab.id
               ? 'border-primary text-primary'
               : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           ]"
         >
+          <Icon :name="tab.icon" class="w-4 h-4" />
           {{ tab.label }}
         </button>
       </nav>
@@ -28,23 +29,17 @@
           <!-- Nom -->
           <div>
             <label class="block text-sm font-medium mb-2">Nom de l'ONG <span class="text-destructive">*</span></label>
-            <input
-              v-model="form.name"
-              type="text"
-              placeholder="Nom de votre organisation"
-              class="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-            />
+            <UInput v-model="form.name" placeholder="Nom de votre organisation" size="md" />
           </div>
 
           <!-- Description -->
           <div>
             <label class="block text-sm font-medium mb-2">Description <span class="text-destructive">*</span></label>
-            <textarea
+            <UTextarea
               v-model="form.description"
-              rows="4"
+              :rows="4"
               placeholder="Décrivez la mission et les objectifs de votre ONG..."
-              class="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none"
-            ></textarea>
+            />
             <p
               class="text-xs mt-1"
               :class="(form.description?.length || 0) >= 10 ? 'text-muted-foreground' : 'text-yellow-600 dark:text-yellow-400'"
@@ -57,28 +52,13 @@
           <!-- Catégorie -->
           <div>
             <label class="block text-sm font-medium mb-2">Catégorie <span class="text-destructive">*</span></label>
-            <select
-              v-model="form.category"
-              class="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-            >
-              <option value="" disabled>Choisir une catégorie</option>
-              <option value="education">📚 Éducation</option>
-              <option value="health">🏥 Santé</option>
-              <option value="environment">🌍 Environnement</option>
-              <option value="social">🤝 Social</option>
-              <option value="culture">🎭 Culture</option>
-            </select>
+            <USelect v-model="form.category" :options="categoryOptions" placeholder="Choisir une catégorie" />
           </div>
 
           <!-- Localisation -->
           <div>
             <label class="block text-sm font-medium mb-2">Localisation</label>
-            <input
-              v-model="form.location"
-              type="text"
-              placeholder="Paris, France"
-              class="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-            />
+            <UInput v-model="form.location" placeholder="Paris, France" />
           </div>
 
           <!-- Image de couverture -->
@@ -95,25 +75,17 @@
                   @error="onImageError"
                 />
                 <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-3">
-                  <button
-                    type="button"
-                    @click="triggerFileInput"
-                    class="px-3 py-1.5 bg-white text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-100 transition"
-                  >
+                  <UButton size="sm" color="white" variant="solid" @click="triggerFileInput">
                     Changer
-                  </button>
-                  <button
-                    type="button"
-                    @click="removeImage"
-                    class="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition"
-                  >
+                  </UButton>
+                  <UButton size="sm" color="red" variant="solid" @click="removeImage">
                     Supprimer
-                  </button>
+                  </UButton>
                 </div>
               </div>
               <!-- Indicateur fichier sélectionné -->
               <p v-if="selectedImageFile" class="text-xs text-primary mt-1.5 flex items-center gap-1">
-                <span>📎</span>
+                <Icon name="i-heroicons-paper-clip" class="w-3.5 h-3.5" />
                 {{ selectedImageFile.name }} ({{ (selectedImageFile.size / 1024 / 1024).toFixed(1) }} Mo)
                 <span class="text-muted-foreground">— sera uploadé à la sauvegarde</span>
               </p>
@@ -133,9 +105,7 @@
                   : 'border-border hover:border-primary/50 hover:bg-muted/30'
               ]"
             >
-              <svg class="w-10 h-10 mx-auto mb-3 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+              <Icon name="i-heroicons-photo" class="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
               <p class="text-sm font-medium text-foreground">Cliquez ou glissez une image ici</p>
               <p class="text-xs text-muted-foreground mt-1">JPG, PNG ou WebP — 5 Mo max</p>
             </div>
@@ -163,34 +133,19 @@
           <!-- Email -->
           <div>
             <label class="block text-sm font-medium mb-2">Email de contact</label>
-            <input
-              v-model="form.email"
-              type="email"
-              placeholder="contact@mon-ong.org"
-              class="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-            />
+            <UInput v-model="form.email" type="email" placeholder="contact@mon-ong.org" />
           </div>
 
           <!-- Téléphone -->
           <div>
             <label class="block text-sm font-medium mb-2">Téléphone</label>
-            <input
-              v-model="form.phone"
-              type="tel"
-              placeholder="+33 1 23 45 67 89"
-              class="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-            />
+            <UInput v-model="form.phone" type="tel" placeholder="+33 1 23 45 67 89" />
           </div>
 
           <!-- Site web -->
           <div class="md:col-span-2">
             <label class="block text-sm font-medium mb-2">Site web</label>
-            <input
-              v-model="form.website"
-              type="url"
-              placeholder="https://www.mon-ong.org"
-              class="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-            />
+            <UInput v-model="form.website" type="url" placeholder="https://www.mon-ong.org" />
           </div>
         </div>
       </div>
@@ -202,9 +157,7 @@
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-lg font-semibold">Projets ({{ form.projects.length }})</h2>
           <UButton variant="outline" size="sm" @click="addProject">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
+            <Icon name="i-heroicons-plus" class="w-4 h-4 mr-1" />
             Ajouter un projet
           </UButton>
         </div>
@@ -221,69 +174,39 @@
               @click="removeProject(index)"
               class="absolute top-3 right-3 p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition opacity-0 group-hover:opacity-100"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
+              <Icon name="i-heroicons-trash" class="w-4 h-4" />
             </button>
 
             <div class="space-y-4 pr-8">
               <!-- Nom du projet -->
               <div>
                 <label class="block text-sm font-medium mb-1">Nom du projet</label>
-                <input
-                  v-model="project.name"
-                  type="text"
-                  placeholder="Nom du projet"
-                  class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition text-sm"
-                />
+                <UInput v-model="project.name" placeholder="Nom du projet" />
               </div>
 
               <!-- Description -->
               <div>
                 <label class="block text-sm font-medium mb-1">Description</label>
-                <textarea
-                  v-model="project.description"
-                  rows="2"
-                  placeholder="Décrivez ce projet..."
-                  class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition text-sm resize-none"
-                ></textarea>
+                <UTextarea v-model="project.description" :rows="2" placeholder="Décrivez ce projet..." />
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Statut -->
                 <div>
                   <label class="block text-sm font-medium mb-1">Statut</label>
-                  <select
-                    v-model="project.status"
-                    class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition text-sm"
-                  >
-                    <option value="planned">📋 Planifié</option>
-                    <option value="ongoing">🔄 En cours</option>
-                    <option value="completed">✅ Terminé</option>
-                    <option value="canceled">❌ Annulé</option>
-                  </select>
+                  <USelect v-model="project.status" :options="projectStatusOptions" />
                 </div>
 
                 <!-- Date début -->
                 <div>
                   <label class="block text-sm font-medium mb-1">Date début</label>
-                  <input
-                    v-model="project.startDate"
-                    type="date"
-                    class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition text-sm"
-                  />
+                  <UInput v-model="project.startDate" type="date" />
                 </div>
 
                 <!-- Budget -->
                 <div>
                   <label class="block text-sm font-medium mb-1">Budget (€)</label>
-                  <input
-                    v-model.number="project.budget"
-                    type="number"
-                    min="0"
-                    placeholder="0"
-                    class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition text-sm"
-                  />
+                  <UInput v-model.number="project.budget" type="number" min="0" placeholder="0" />
                 </div>
               </div>
             </div>
@@ -291,13 +214,12 @@
         </div>
 
         <!-- Vide -->
-        <div v-else class="text-center py-12 text-muted-foreground">
-          <svg class="w-12 h-12 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
-          <p class="font-medium">Aucun projet pour le moment</p>
-          <p class="text-sm mt-1">Ajoutez votre premier projet pour montrer l'activité de votre ONG</p>
-        </div>
+        <EmptyState
+          v-else
+          icon="i-heroicons-folder-open"
+          title="Aucun projet pour le moment"
+          description="Ajoutez votre premier projet pour montrer l'activité de votre ONG"
+        />
       </div>
     </div>
 
@@ -310,13 +232,7 @@
           <!-- Budget total -->
           <div>
             <label class="block text-sm font-medium mb-2">Budget total 2023 (€)</label>
-            <input
-              v-model.number="form.financials.totalBudget2023"
-              type="number"
-              min="0"
-              placeholder="0"
-              class="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-            />
+            <UInput v-model.number="form.financials.totalBudget2023" type="number" min="0" placeholder="0" />
           </div>
 
           <!-- Répartition -->
@@ -325,36 +241,15 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label class="block text-xs text-muted-foreground mb-1">Programmes</label>
-                <input
-                  v-model.number="form.financials.allocation.programs"
-                  type="number"
-                  min="0"
-                  max="100"
-                  placeholder="0"
-                  class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition text-sm"
-                />
+                <UInput v-model.number="form.financials.allocation.programs" type="number" min="0" max="100" placeholder="0" />
               </div>
               <div>
                 <label class="block text-xs text-muted-foreground mb-1">Administration</label>
-                <input
-                  v-model.number="form.financials.allocation.administration"
-                  type="number"
-                  min="0"
-                  max="100"
-                  placeholder="0"
-                  class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition text-sm"
-                />
+                <UInput v-model.number="form.financials.allocation.administration" type="number" min="0" max="100" placeholder="0" />
               </div>
               <div>
                 <label class="block text-xs text-muted-foreground mb-1">Collecte de fonds</label>
-                <input
-                  v-model.number="form.financials.allocation.fundraising"
-                  type="number"
-                  min="0"
-                  max="100"
-                  placeholder="0"
-                  class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition text-sm"
-                />
+                <UInput v-model.number="form.financials.allocation.fundraising" type="number" min="0" max="100" placeholder="0" />
               </div>
             </div>
             <!-- Barre de pourcentage -->
@@ -371,10 +266,11 @@
               </div>
               <p
                 v-if="allocationTotal !== 100"
-                class="text-xs mt-2"
+                class="text-xs mt-2 flex items-center gap-1"
                 :class="allocationTotal > 100 ? 'text-destructive' : 'text-yellow-600 dark:text-yellow-400'"
               >
-                ⚠️ Total actuel : {{ allocationTotal }}% (doit être 100%)
+                <Icon name="i-heroicons-exclamation-triangle" class="w-3.5 h-3.5" />
+                Total actuel : {{ allocationTotal }}% (doit être 100%)
               </p>
             </div>
           </div>
@@ -388,20 +284,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
             <label class="block text-sm font-medium mb-2">Numéro SIRET</label>
-            <input
-              v-model="form.legal.siret"
-              type="text"
-              placeholder="123 456 789 00010"
-              class="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-            />
+            <UInput v-model="form.legal.siret" placeholder="123 456 789 00010" />
           </div>
           <div>
             <label class="block text-sm font-medium mb-2">Date d'enregistrement</label>
-            <input
-              v-model="form.legal.registrationDate"
-              type="date"
-              class="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-            />
+            <UInput v-model="form.legal.registrationDate" type="date" />
           </div>
         </div>
       </div>
@@ -416,25 +303,17 @@
           <!-- Bénéficiaires -->
           <div>
             <label class="block text-sm font-medium mb-2">Nombre total de bénéficiaires</label>
-            <input
-              v-model.number="form.impact.totalBeneficiaries"
-              type="number"
-              min="0"
-              placeholder="0"
-              class="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-            />
+            <UInput v-model.number="form.impact.totalBeneficiaries" type="number" min="0" placeholder="0" />
           </div>
 
           <!-- KPIs -->
           <div>
             <div class="flex items-center justify-between mb-3">
               <label class="block text-sm font-medium">Indicateurs clés (KPIs)</label>
-              <button
-                @click="addKpi"
-                class="text-sm text-primary hover:text-primary/80 transition font-medium"
-              >
-                + Ajouter un KPI
-              </button>
+              <UButton variant="link" size="xs" :padded="false" @click="addKpi">
+                <Icon name="i-heroicons-plus" class="w-3.5 h-3.5 mr-1" />
+                Ajouter un KPI
+              </UButton>
             </div>
 
             <div v-if="form.impact.kpis.length > 0" class="space-y-3">
@@ -443,25 +322,13 @@
                 :key="index"
                 class="flex items-center gap-3"
               >
-                <input
-                  v-model="kpi.metric"
-                  type="text"
-                  placeholder="Métrique (ex: Écoles construites)"
-                  class="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition text-sm"
-                />
-                <input
-                  v-model="kpi.value"
-                  type="text"
-                  placeholder="Valeur"
-                  class="w-32 px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition text-sm"
-                />
+                <UInput v-model="kpi.metric" placeholder="Métrique (ex: Écoles construites)" class="flex-1" />
+                <UInput v-model="kpi.value" placeholder="Valeur" class="w-32" />
                 <button
                   @click="form.impact.kpis.splice(index, 1)"
                   class="p-2 text-muted-foreground hover:text-destructive transition"
                 >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <Icon name="i-heroicons-x-mark" class="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -472,13 +339,7 @@
           <!-- Bénévoles -->
           <div>
             <label class="block text-sm font-medium mb-2">Nombre de bénévoles</label>
-            <input
-              v-model.number="form.volunteers"
-              type="number"
-              min="0"
-              placeholder="0"
-              class="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-            />
+            <UInput v-model.number="form.volunteers" type="number" min="0" placeholder="0" />
           </div>
         </div>
       </div>
@@ -503,9 +364,7 @@
             <div v-if="legalDoc" class="flex items-center justify-between p-3 bg-muted/50 rounded-lg border border-border mb-2">
               <div class="flex items-center gap-3 min-w-0">
                 <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
+                  <Icon name="i-heroicons-document-text" class="w-5 h-5 text-primary" />
                 </div>
                 <div class="min-w-0">
                   <p class="text-sm font-medium truncate">{{ legalDoc.name }}</p>
@@ -514,14 +373,10 @@
               </div>
               <div class="flex items-center gap-2">
                 <a :href="legalDoc.fileUrl" target="_blank" class="p-1.5 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
+                  <Icon name="i-heroicons-arrow-down-tray" class="w-4 h-4" />
                 </a>
                 <button type="button" @click="handleDeleteDocument(legalDoc!)" class="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
+                  <Icon name="i-heroicons-trash" class="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -529,16 +384,14 @@
             <!-- Fichier en attente -->
             <div v-else-if="pendingLegalFile" class="flex items-center justify-between p-3 bg-primary/5 rounded-lg border border-primary/20 mb-2">
               <div class="flex items-center gap-3 min-w-0">
-                <span class="text-lg">📎</span>
+                <Icon name="i-heroicons-paper-clip" class="w-5 h-5 text-primary shrink-0" />
                 <div class="min-w-0">
                   <p class="text-sm font-medium truncate">{{ pendingLegalFile.file.name }}</p>
                   <p class="text-xs text-muted-foreground">{{ (pendingLegalFile.file.size / 1024).toFixed(0) }} Ko — <span class="text-primary">sera uploadé à la sauvegarde</span></p>
                 </div>
               </div>
               <button type="button" @click="removePendingDocument('legal')" class="p-1.5 rounded-md text-muted-foreground hover:text-destructive transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <Icon name="i-heroicons-x-mark" class="w-4 h-4" />
               </button>
             </div>
 
@@ -555,9 +408,7 @@
                     : 'border-border hover:border-primary/50 hover:bg-muted/30'
                 ]"
               >
-                <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
+                <Icon name="i-heroicons-arrow-up-tray" class="w-5 h-5 text-muted-foreground" />
                 <span class="text-muted-foreground">Ajouter les statuts</span>
                 <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="hidden" @change="onDocumentSelected($event, 'legal', 'Statuts de l\'association')" />
               </label>
@@ -573,9 +424,7 @@
             <div v-if="activityDoc" class="flex items-center justify-between p-3 bg-muted/50 rounded-lg border border-border mb-2">
               <div class="flex items-center gap-3 min-w-0">
                 <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
+                  <Icon name="i-heroicons-document-text" class="w-5 h-5 text-primary" />
                 </div>
                 <div class="min-w-0">
                   <p class="text-sm font-medium truncate">{{ activityDoc.name }}</p>
@@ -584,14 +433,10 @@
               </div>
               <div class="flex items-center gap-2">
                 <a :href="activityDoc.fileUrl" target="_blank" class="p-1.5 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
+                  <Icon name="i-heroicons-arrow-down-tray" class="w-4 h-4" />
                 </a>
                 <button type="button" @click="handleDeleteDocument(activityDoc!)" class="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
+                  <Icon name="i-heroicons-trash" class="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -599,16 +444,14 @@
             <!-- Fichier en attente -->
             <div v-else-if="pendingActivityFile" class="flex items-center justify-between p-3 bg-primary/5 rounded-lg border border-primary/20 mb-2">
               <div class="flex items-center gap-3 min-w-0">
-                <span class="text-lg">📎</span>
+                <Icon name="i-heroicons-paper-clip" class="w-5 h-5 text-primary shrink-0" />
                 <div class="min-w-0">
                   <p class="text-sm font-medium truncate">{{ pendingActivityFile.file.name }}</p>
                   <p class="text-xs text-muted-foreground">{{ (pendingActivityFile.file.size / 1024).toFixed(0) }} Ko — <span class="text-primary">sera uploadé à la sauvegarde</span></p>
                 </div>
               </div>
               <button type="button" @click="removePendingDocument('activity')" class="p-1.5 rounded-md text-muted-foreground hover:text-destructive transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <Icon name="i-heroicons-x-mark" class="w-4 h-4" />
               </button>
             </div>
 
@@ -625,9 +468,7 @@
                     : 'border-border hover:border-primary/50 hover:bg-muted/30'
                 ]"
               >
-                <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
+                <Icon name="i-heroicons-arrow-up-tray" class="w-5 h-5 text-muted-foreground" />
                 <span class="text-muted-foreground">Ajouter le rapport d'activité</span>
                 <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="hidden" @change="onDocumentSelected($event, 'activity', 'Rapport d\'activité')" />
               </label>
@@ -661,12 +502,8 @@
             </UButton>
           </NuxtLink>
           <UButton variant="default" @click="handleSubmit" :disabled="!canSubmit || saving">
-            <svg v-if="saving" class="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            <svg v-else class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
+            <Icon v-if="saving" name="i-heroicons-arrow-path" class="w-4 h-4 mr-2 animate-spin" />
+            <Icon v-else name="i-heroicons-check" class="w-4 h-4 mr-2" />
             {{ saving ? submitLoadingLabel : submitLabel }}
           </UButton>
         </div>
@@ -739,14 +576,29 @@ const emit = defineEmits<{
 // ============================================
 
 const tabs = [
-  { id: 'general' as const, label: 'Général' },
-  { id: 'projects' as const, label: 'Projets' },
-  { id: 'financials' as const, label: 'Finances' },
-  { id: 'impact' as const, label: 'Impact' },
-  { id: 'documents' as const, label: 'Documents' },
+  { id: 'general' as const, label: 'Général', icon: 'i-heroicons-identification' },
+  { id: 'projects' as const, label: 'Projets', icon: 'i-heroicons-folder-open' },
+  { id: 'financials' as const, label: 'Finances', icon: 'i-heroicons-banknotes' },
+  { id: 'impact' as const, label: 'Impact', icon: 'i-heroicons-chart-bar' },
+  { id: 'documents' as const, label: 'Documents', icon: 'i-heroicons-document-text' },
 ]
 
 const activeTab = ref<'general' | 'projects' | 'financials' | 'impact' | 'documents'>('general')
+
+const categoryOptions = [
+  { label: 'Éducation', value: 'education' },
+  { label: 'Santé', value: 'health' },
+  { label: 'Environnement', value: 'environment' },
+  { label: 'Social', value: 'social' },
+  { label: 'Culture', value: 'culture' },
+]
+
+const projectStatusOptions = [
+  { label: 'Planifié', value: 'planned' },
+  { label: 'En cours', value: 'ongoing' },
+  { label: 'Terminé', value: 'completed' },
+  { label: 'Annulé', value: 'canceled' },
+]
 
 // ============================================
 // Formulaire réactif
