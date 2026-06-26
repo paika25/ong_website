@@ -1,86 +1,100 @@
 <template>
-  <div class="min-h-screen flex-col">
+  <div class="min-h-screen flex flex-col bg-background">
     <Header />
-    <main class="flex-grow container mx-auto px-4 py-8">
-      <ClientOnly>
-        <div v-if="isLoading" class="flex justify-center items-center min-h-[400px]">
-          <div class="text-center">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p class="text-muted-foreground">Chargement de l'ONG...</p>
-          </div>
-        </div>
-        
-        <div v-else-if="error" class="text-center py-12">
-          <Icon name="i-heroicons-exclamation-triangle" class="w-16 h-16 text-destructive mx-auto mb-4" />
-          <h2 class="text-lg font-semibold mb-2">ONG introuvable</h2>
-          <p class="text-muted-foreground mb-6">{{ error }}</p>
-          <UButton @click="handleBack">
-            Retour à la liste
-          </UButton>
-        </div>
 
-        <div v-else-if="ong" class="py-12">
-          <button @click="handleBack" aria-label="Retour" class="inline-flex items-center text-primary hover:text-primary-700 mb-6 mx-auto">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" role="img" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-            <span>Retour à la liste</span>
-          </button>
-          <div class="text-center">
-            <OngDetail  :ong="ong" />
+    <main class="flex-1">
+      <ClientOnly>
+        <!-- Loading -->
+        <template v-if="isLoading">
+          <div class="h-56 md:h-72 bg-muted animate-pulse" />
+          <div class="container mx-auto px-4 max-w-6xl py-8">
+            <div class="lg:grid lg:grid-cols-3 lg:gap-8">
+              <div class="lg:col-span-2 space-y-4">
+                <div class="flex gap-3 mb-6">
+                  <USkeleton v-for="i in 4" :key="i" class="h-9 w-24 rounded-full" />
+                </div>
+                <USkeleton class="h-48 w-full rounded-2xl" />
+                <USkeleton class="h-32 w-full rounded-2xl" />
+              </div>
+              <div class="mt-8 lg:mt-0 space-y-4">
+                <USkeleton class="h-32 w-full rounded-2xl" />
+                <USkeleton class="h-36 w-full rounded-2xl" />
+                <USkeleton class="h-28 w-full rounded-2xl" />
+              </div>
+            </div>
           </div>
-        </div>
-        
+        </template>
+
+        <!-- Erreur -->
+        <template v-else-if="error || !ong">
+          <div class="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 gap-6">
+            <div class="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+              <Icon name="i-heroicons-building-office-2" class="w-8 h-8 text-muted-foreground" />
+            </div>
+            <div>
+              <h2 class="text-xl font-bold mb-2">ONG introuvable</h2>
+              <p class="text-muted-foreground text-sm max-w-xs">{{ error ?? 'Cette organisation n\'existe pas ou n\'est plus disponible.' }}</p>
+            </div>
+            <NuxtLink to="/ongs">
+              <UButton icon="i-heroicons-arrow-left">Retour aux ONGs</UButton>
+            </NuxtLink>
+          </div>
+        </template>
+
+        <!-- Contenu -->
+        <OngDetail v-else :ong="ong" :donation-status="donationStatus" />
+
+        <template #fallback>
+          <div class="h-56 md:h-72 bg-muted animate-pulse" />
+        </template>
       </ClientOnly>
     </main>
+
     <Footer />
   </div>
 </template>
 
 <script setup lang="ts">
 import OngDetail from '~/features/ong/components/OngDetail.client.vue'
-import Header from '@/components/Header.vue'
-import Footer from '@/components/Footer.client.vue'
-import { fromSupabaseRow } from '@/features/ong/services/ong.mapper'
+import Header from '~/components/Header.vue'
+import Footer from '~/components/Footer.client.vue'
+import { fromSupabaseRow } from '~/features/ong/services/ong.mapper'
+import type { ONG } from '~/features/ong/type'
 
 definePageMeta({ layout: false })
-import { onMounted, ref } from 'vue'
-import type { ONG } from '@/features/ong/type'
-import { useRoute } from '#app'
 
+const route = useRoute()
 const ong = ref<ONG | null>(null)
 const isLoading = ref(true)
 const error = ref<string | null>(null)
-const route = useRoute()
 
-const handleBack = () => {
-  navigateTo('/')
-}
+const donationStatus = computed(() => {
+  const val = route.query.donation
+  if (val === 'success') return 'success' as const
+  if (val === 'cancelled') return 'cancelled' as const
+  return null
+})
+
+useHead({
+  title: computed(() => ong.value ? `${ong.value.name} — Paika` : 'ONG — Paika'),
+})
 
 onMounted(async () => {
   try {
-    isLoading.value = true
-    error.value = null
-
     const id = route.params.id as string
-    if (!id) { error.value = 'ID de l\'ONG manquant'; return }
-
-    // Utiliser le token si disponible (pour accès aux données financières des partenaires validés)
     const supabase = useSupabase()
-    const { data: { session } } = supabase ? await supabase.auth.getSession() : { data: { session: null } }
+    const { data: { session } } = supabase
+      ? await supabase.auth.getSession()
+      : { data: { session: null } }
     const token = session?.access_token
 
     const raw = await $fetch<any>(`/api/ongs/${id}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     }).catch(() => null)
 
-    if (raw) {
-      ong.value = fromSupabaseRow(raw)
-    } else {
-      error.value = 'Cette ONG n\'existe pas'
-    }
-  } catch (e) {
-    console.error('Erreur lors du chargement de l\'ONG:', e)
+    ong.value = raw ? fromSupabaseRow(raw) : null
+    if (!ong.value) error.value = 'Cette ONG n\'existe pas'
+  } catch {
     error.value = 'Une erreur est survenue lors du chargement'
   } finally {
     isLoading.value = false

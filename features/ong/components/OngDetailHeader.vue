@@ -87,44 +87,44 @@
 
     <!-- Informations principales -->
     <div class="p-6 md:p-8">
-      <div class="flex flex-col items-center gap-4 mb-6">
-        <div class="text-center">
-          <h1 class="text-3xl md:text-4xl font-bold mb-3">{{ ong.name }}</h1>
-          <div
-            class="flex items-center justify-center text-muted-foreground mb-4"
-          >
-            <Icon name="i-heroicons-map-pin" class="w-5 h-5 mr-2" />
-            <span class="text-lg">{{ ong.location }}</span>
+      <div class="flex flex-col md:flex-row md:items-start gap-4 mb-6">
+        <div class="flex-1">
+          <h1 class="text-3xl md:text-4xl font-bold mb-2">{{ ong.name }}</h1>
+          <div class="flex items-center gap-1.5 text-muted-foreground">
+            <Icon name="i-heroicons-map-pin" class="w-4 h-4" />
+            <span>{{ ong.location }}</span>
           </div>
         </div>
       </div>
 
       <!-- Statistiques -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-muted/50 rounded-lg p-4 text-center">
-          <div class="text-3xl font-bold text-primary mb-1">
-            {{ ong.volunteers }}
-          </div>
-          <div class="text-sm text-muted-foreground">Bénévoles</div>
-        </div>
-        <div class="bg-muted/50 rounded-lg p-4 text-center">
-          <div class="text-3xl font-bold text-purple-600 mb-1">
-            {{ projectCount }}
-          </div>
-          <div class="text-sm text-muted-foreground">Projets</div>
-        </div>
-        <div class="bg-muted/50 rounded-lg p-4 text-center">
-          <div class="text-3xl font-bold text-green-600 mb-1">
-            {{ activeProjectsCount }}
-          </div>
-          <div class="text-sm text-muted-foreground">Projets actifs</div>
-        </div>
-        <div class="bg-muted/50 rounded-lg p-4 text-center">
-          <div class="text-3xl font-bold text-blue-600 mb-1">
-            {{ yearsSinceCreation }}
-          </div>
-          <div class="text-sm text-muted-foreground">Années d'activité</div>
-        </div>
+        <StatCard
+          label="Bénévoles"
+          :value="ong.volunteers"
+          icon="i-heroicons-users"
+        />
+        <StatCard
+          label="Projets"
+          :value="projectCount"
+          icon="i-heroicons-briefcase"
+          icon-bg="bg-violet-100 dark:bg-violet-900"
+          icon-color="text-violet-600 dark:text-violet-400"
+        />
+        <StatCard
+          label="Projets actifs"
+          :value="activeProjectsCount"
+          icon="i-heroicons-bolt"
+          icon-bg="bg-green-100 dark:bg-green-900"
+          icon-color="text-green-600 dark:text-green-400"
+        />
+        <StatCard
+          label="Années d'activité"
+          :value="yearsSinceCreation"
+          icon="i-heroicons-calendar"
+          icon-bg="bg-blue-100 dark:bg-blue-900"
+          icon-color="text-blue-600 dark:text-blue-400"
+        />
       </div>
     </div>
   </div>
