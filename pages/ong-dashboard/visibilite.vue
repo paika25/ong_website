@@ -1,19 +1,13 @@
 <template>
   <div class="space-y-6">
-    <div>
-      <h1 class="text-2xl font-bold">Visibilité</h1>
-      <p class="text-sm text-muted-foreground mt-0.5">
-        Contrôlez les sections affichées sur votre page publique
-      </p>
-    </div>
+    <PageHeader title="Visibilité" subtitle="Contrôlez les sections affichées sur votre page publique" />
 
     <div v-if="loading" class="bg-card border border-border rounded-xl p-12 animate-pulse text-center">
       <div class="h-6 bg-muted rounded w-48 mx-auto" />
     </div>
 
-    <div v-else-if="!ong" class="bg-card border border-border rounded-xl p-12 text-center text-muted-foreground">
-      <Icon name="i-heroicons-building-office-2" class="w-10 h-10 mx-auto mb-3 opacity-30" />
-      <p>Aucune ONG associée à votre compte</p>
+    <div v-else-if="!ong" class="bg-card border border-border rounded-xl">
+      <EmptyState icon="i-heroicons-building-office-2" title="Aucune ONG associée à votre compte" />
     </div>
 
     <template v-else>

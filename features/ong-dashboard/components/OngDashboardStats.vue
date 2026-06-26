@@ -1,19 +1,16 @@
 <template>
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-    <div
+    <StatCard
       v-for="card in cards"
       :key="card.label"
-      class="bg-card border border-border rounded-xl p-5 flex flex-col gap-2"
-    >
-      <div class="flex items-center justify-between">
-        <span class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{{ card.label }}</span>
-        <div :class="['w-8 h-8 rounded-lg flex items-center justify-center', card.iconBg]">
-          <Icon :name="card.icon" class="w-4 h-4" :class="card.iconColor" />
-        </div>
-      </div>
-      <div class="text-2xl font-bold">{{ card.value }}</div>
-      <div v-if="card.sub" class="text-xs text-muted-foreground">{{ card.sub }}</div>
-    </div>
+      :label="card.label"
+      :value="card.value"
+      :sub="card.sub"
+      :icon="card.icon"
+      :icon-bg="card.iconBg"
+      :icon-color="card.iconColor"
+      :loading="loading"
+    />
   </div>
 </template>
 
@@ -37,8 +34,8 @@ const cards = computed(() => [
     value:     formatEur(props.stats.totalAmountCents),
     sub:       'Dons complétés (EUR)',
     icon:      'i-heroicons-banknotes',
-    iconBg:    'bg-emerald-100 dark:bg-emerald-900',
-    iconColor: 'text-emerald-600 dark:text-emerald-400',
+    iconBg:    'bg-primary/10',
+    iconColor: 'text-primary',
   },
   {
     label:     'Projets',

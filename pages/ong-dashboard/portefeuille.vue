@@ -1,27 +1,34 @@
 <template>
   <div class="space-y-6">
-    <div>
-      <h1 class="text-2xl font-bold">Portefeuille</h1>
-      <p class="text-sm text-muted-foreground mt-0.5">Dons reçus, commissions Paika et montants nets reversés</p>
-    </div>
+    <PageHeader title="Portefeuille" subtitle="Dons reçus, commissions Paika et montants nets reversés" />
 
     <!-- Cartes de synthèse -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div class="bg-card border border-border rounded-xl p-5">
-        <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Total brut reçu</p>
-        <p class="text-2xl font-bold text-primary">{{ loading ? '—' : formatEur(totalBrut) }}</p>
-        <p class="text-xs text-muted-foreground mt-1">{{ completedDons.length }} don{{ completedDons.length > 1 ? 's' : '' }} complété{{ completedDons.length > 1 ? 's' : '' }}</p>
-      </div>
-      <div class="bg-card border border-border rounded-xl p-5">
-        <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Commission Paika (5 %)</p>
-        <p class="text-2xl font-bold text-orange-500">{{ loading ? '—' : formatEur(totalCommission) }}</p>
-        <p class="text-xs text-muted-foreground mt-1">Prélevée automatiquement</p>
-      </div>
-      <div class="bg-card border border-border rounded-xl p-5">
-        <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Montant net reversé</p>
-        <p class="text-2xl font-bold text-green-600">{{ loading ? '—' : formatEur(totalNet) }}</p>
-        <p class="text-xs text-muted-foreground mt-1">Après déduction commission</p>
-      </div>
+      <StatCard
+        label="Total brut reçu"
+        :value="loading ? '—' : formatEur(totalBrut)"
+        :sub="`${completedDons.length} don${completedDons.length > 1 ? 's' : ''} complété${completedDons.length > 1 ? 's' : ''}`"
+        icon="i-heroicons-banknotes"
+        :loading="loading"
+      />
+      <StatCard
+        label="Commission Paika (5 %)"
+        :value="loading ? '—' : formatEur(totalCommission)"
+        sub="Prélevée automatiquement"
+        icon="i-heroicons-receipt-percent"
+        icon-bg="bg-orange-100 dark:bg-orange-900"
+        icon-color="text-orange-600 dark:text-orange-400"
+        :loading="loading"
+      />
+      <StatCard
+        label="Montant net reversé"
+        :value="loading ? '—' : formatEur(totalNet)"
+        sub="Après déduction commission"
+        icon="i-heroicons-check-circle"
+        icon-bg="bg-green-100 dark:bg-green-900"
+        icon-color="text-green-600 dark:text-green-400"
+        :loading="loading"
+      />
     </div>
 
     <!-- Tableau des transactions -->
@@ -29,62 +36,37 @@
       <div class="px-5 py-4 border-b border-border">
         <p class="text-sm font-semibold">Historique des dons</p>
       </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead class="bg-muted/50 text-muted-foreground text-xs uppercase tracking-wide">
-            <tr>
-              <th class="px-4 py-3 text-left">Date</th>
-              <th class="px-4 py-3 text-left">Donateur</th>
-              <th class="px-4 py-3 text-right">Montant brut</th>
-              <th class="px-4 py-3 text-right">Commission (5 %)</th>
-              <th class="px-4 py-3 text-right">Montant net</th>
-              <th class="px-4 py-3 text-left">Statut</th>
-              <th class="px-4 py-3 text-left">Mode</th>
-            </tr>
-          </thead>
-          <tbody>
-            <template v-if="loading">
-              <tr v-for="i in 6" :key="i" class="border-t border-border animate-pulse">
-                <td v-for="j in 7" :key="j" class="px-4 py-3">
-                  <div class="h-4 bg-muted rounded w-3/4" />
-                </td>
-              </tr>
-            </template>
-            <tr v-else-if="!transactions.length">
-              <td colspan="7" class="px-4 py-16 text-center text-muted-foreground">
-                <Icon name="i-heroicons-inbox" class="w-10 h-10 mx-auto mb-3 opacity-30" />
-                <p>Aucun don reçu pour l'instant</p>
-              </td>
-            </tr>
-            <tr
-              v-for="tx in transactions"
-              :key="tx.id"
-              class="border-t border-border hover:bg-muted/30 transition-colors"
-            >
-              <td class="px-4 py-3 whitespace-nowrap text-xs text-muted-foreground">{{ formatDate(tx.created_at) }}</td>
-              <td class="px-4 py-3 text-xs text-muted-foreground">{{ tx.donor_email ?? '—' }}</td>
-              <td class="px-4 py-3 text-right font-semibold">{{ formatEur(tx.amount) }}</td>
-              <td class="px-4 py-3 text-right text-orange-500 text-xs">
-                {{ tx.commission_cents != null ? '- ' + formatEur(tx.commission_cents) : '—' }}
-              </td>
-              <td class="px-4 py-3 text-right font-semibold text-green-600">
-                {{ tx.net_amount_cents != null ? formatEur(tx.net_amount_cents) : '—' }}
-              </td>
-              <td class="px-4 py-3">
-                <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', statusClass(tx.status)]">
-                  {{ statusLabel(tx.status) }}
-                </span>
-              </td>
-              <td class="px-4 py-3">
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300 capitalize">
-                  <Icon name="i-heroicons-credit-card" class="w-3 h-3" />
-                  {{ tx.provider }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <UTable :rows="transactions" :columns="columns" :loading="loading">
+        <template #empty-state>
+          <EmptyState icon="i-heroicons-inbox" title="Aucun don reçu pour l'instant" />
+        </template>
+        <template #created_at-data="{ row }">
+          <span class="whitespace-nowrap text-xs text-muted-foreground">{{ formatDate(row.created_at) }}</span>
+        </template>
+        <template #donor_email-data="{ row }">
+          <span class="text-xs text-muted-foreground">{{ row.donor_email ?? '—' }}</span>
+        </template>
+        <template #amount-data="{ row }">
+          <span class="font-semibold">{{ formatEur(row.amount) }}</span>
+        </template>
+        <template #commission_cents-data="{ row }">
+          <span class="text-orange-500 text-xs">{{ row.commission_cents != null ? '- ' + formatEur(row.commission_cents) : '—' }}</span>
+        </template>
+        <template #net_amount_cents-data="{ row }">
+          <span class="font-semibold text-green-600">{{ row.net_amount_cents != null ? formatEur(row.net_amount_cents) : '—' }}</span>
+        </template>
+        <template #status-data="{ row }">
+          <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', statusClass(row.status)]">
+            {{ statusLabel(row.status) }}
+          </span>
+        </template>
+        <template #provider-data="{ row }">
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300 capitalize">
+            <Icon name="i-heroicons-credit-card" class="w-3 h-3" />
+            {{ row.provider }}
+          </span>
+        </template>
+      </UTable>
     </div>
   </div>
 </template>
@@ -110,6 +92,16 @@ interface Transaction {
 
 const loading      = ref(true)
 const transactions = ref<Transaction[]>([])
+
+const columns = [
+  { key: 'created_at', label: 'Date' },
+  { key: 'donor_email', label: 'Donateur' },
+  { key: 'amount', label: 'Montant brut', class: 'text-right' },
+  { key: 'commission_cents', label: 'Commission (5 %)', class: 'text-right' },
+  { key: 'net_amount_cents', label: 'Montant net', class: 'text-right' },
+  { key: 'status', label: 'Statut' },
+  { key: 'provider', label: 'Mode' },
+]
 
 const completedDons = computed(() => transactions.value.filter(t => t.status === 'completed'))
 const totalBrut     = computed(() => completedDons.value.reduce((s, t) => s + t.amount, 0))
