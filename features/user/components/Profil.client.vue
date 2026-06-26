@@ -1,23 +1,34 @@
 <template>
-  <div class="max-w-4xl mx-auto space-y-6">
-    <!-- Loading State -->
-    <div v-if="isLoading" class="flex flex-col items-center justify-center py-20">
-      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-      <p class="text-muted-foreground">Chargement du profil...</p>
+  <div class="space-y-6">
+
+    <!-- Loading -->
+    <div v-if="isLoading" class="space-y-4">
+      <USkeleton class="h-52 w-full rounded-2xl" />
+      <div class="grid grid-cols-4 gap-3">
+        <USkeleton v-for="i in 4" :key="i" class="h-16 rounded-xl" />
+      </div>
     </div>
 
-    <!-- Error State -->
-    <div v-else-if="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6 text-center">
-      <Icon name="i-heroicons-exclamation-circle" class="w-12 h-12 text-red-500 mx-auto mb-4" />
-      <h3 class="text-lg font-semibold text-red-700 dark:text-red-400 mb-2">Erreur</h3>
-      <p class="text-red-600 dark:text-red-300 mb-4">{{ error }}</p>
-      <UButton color="red" variant="outline" @click="loadProfile">
-        Réessayer
-      </UButton>
-    </div>
+    <!-- Erreur -->
+    <UAlert
+      v-else-if="error"
+      color="red"
+      variant="soft"
+      icon="i-heroicons-exclamation-circle"
+      title="Impossible de charger le profil"
+      :description="error"
+    >
+      <template #actions>
+        <UButton color="red" variant="outline" size="xs" icon="i-heroicons-arrow-path" @click="loadProfile">
+          Réessayer
+        </UButton>
+      </template>
+    </UAlert>
 
-    <!-- Profile Content -->
+    <!-- Contenu -->
     <template v-else-if="user">
+
+      <!-- Header -->
       <ProfilHeader
         :user="user"
         :isOwnProfile="isOwnProfile"
@@ -27,6 +38,7 @@
         @toggle-edit="editMode = !editMode"
       />
 
+      <!-- Formulaire d'édition -->
       <ProfilEditForm
         v-if="editMode && isOwnProfile"
         :initialData="formInitialData"
@@ -35,34 +47,64 @@
         @cancel="editMode = false"
       />
 
-      <UTabs :items="tabs" v-model="activeTab">
-        <template #ongs>
+      <!-- Tabs -->
+      <div class="bg-card rounded-2xl border border-border overflow-hidden">
+        <!-- Tab nav -->
+        <div class="flex border-b border-border px-2 pt-2 gap-1">
+          <button
+            v-for="(tab, i) in tabs"
+            :key="tab.key"
+            class="flex items-center gap-2 px-4 py-2.5 rounded-t-lg text-sm font-medium transition-colors relative"
+            :class="activeTab === i
+              ? 'text-primary bg-primary/5 border-b-2 border-primary -mb-px'
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'"
+            @click="activeTab = i"
+          >
+            <Icon :name="tab.icon" class="w-4 h-4" />
+            {{ tab.label }}
+            <span
+              v-if="tab.count !== undefined"
+              class="text-xs font-medium px-1.5 py-0.5 rounded-full"
+              :class="activeTab === i ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'"
+            >
+              {{ tab.count }}
+            </span>
+          </button>
+        </div>
+
+        <!-- Tab content -->
+        <div class="p-5">
           <ProfilTabOngs
+            v-if="activeTab === 0"
             :ongs="userOngs"
             :isOwnProfile="isOwnProfile"
             @ong-click="handleOngClick"
             @navigate="handleNavigate"
           />
-        </template>
-        <template #projets>
-          <ProfilTabProjets :projects="userProjects" :isOwnProfile="isOwnProfile" />
-        </template>
-        <template #activite>
-          <ProfilTabActivite :activities="userActivity" />
-        </template>
-      </UTabs>
+          <ProfilTabProjets
+            v-else-if="activeTab === 1"
+            :projects="userProjects"
+            :isOwnProfile="isOwnProfile"
+          />
+          <ProfilTabActivite
+            v-else-if="activeTab === 2"
+            :activities="userActivity"
+          />
+        </div>
+      </div>
+
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
 import { useProfile } from '../composables/useProfile'
-import ProfilHeader from './ProfilHeader.client.vue'
-import ProfilEditForm from './ProfilEditForm.client.vue'
-import ProfilTabOngs from './ProfilTabOngs.client.vue'
-import ProfilTabProjets from './ProfilTabProjets.client.vue'
+import ProfilHeader      from './ProfilHeader.client.vue'
+import ProfilEditForm    from './ProfilEditForm.client.vue'
+import ProfilTabOngs     from './ProfilTabOngs.client.vue'
+import ProfilTabProjets  from './ProfilTabProjets.client.vue'
 import ProfilTabActivite from './ProfilTabActivite.client.vue'
-import { ref, onMounted } from 'vue'
 
 const {
   profile: user,
@@ -76,25 +118,25 @@ const {
   load: loadProfile,
   save,
   changeAvatar,
-  changeCover
+  changeCover,
 } = useProfile()
 
-const editMode = ref(false)
+const editMode  = ref(false)
 const activeTab = ref(0)
-const isSaving = ref(false)
+const isSaving  = ref(false)
 
-const tabs = [
-  { label: 'ONGs', slot: 'ongs' },
-  { label: 'Projets', slot: 'projets' },
-  { label: 'Activité', slot: 'activite' }
-]
+const tabs = computed(() => [
+  { key: 'ongs',     label: 'ONGs',     icon: 'i-heroicons-building-office-2', count: userOngs.value.length },
+  { key: 'projets',  label: 'Projets',  icon: 'i-heroicons-briefcase',         count: userProjects.value.length },
+  { key: 'activite', label: 'Activité', icon: 'i-heroicons-clock',             count: undefined },
+])
 
 function uploadAvatar() {
   const input = document.createElement('input')
   input.type = 'file'
   input.accept = 'image/jpeg,image/png,image/webp'
   input.onchange = async () => {
-    const file = input.files && input.files[0]
+    const file = input.files?.[0]
     if (file) await changeAvatar(file)
   }
   input.click()
@@ -105,18 +147,18 @@ function uploadCover() {
   input.type = 'file'
   input.accept = 'image/jpeg,image/png,image/webp'
   input.onchange = async () => {
-    const file = input.files && input.files[0]
+    const file = input.files?.[0]
     if (file) await changeCover(file)
   }
   input.click()
 }
 
 function handleOngClick(ongId: string) {
-  if (typeof window !== 'undefined' && ongId) navigateTo(`/ongs/${ongId}`)
+  if (ongId) navigateTo(`/ongs/${ongId}`)
 }
 
 function handleNavigate(path: string) {
-  if (typeof window !== 'undefined') navigateTo(path)
+  navigateTo(path)
 }
 
 async function saveProfile(payload: { firstName: string; lastName: string; bio: string; location: string; website: string }) {
@@ -129,7 +171,5 @@ async function saveProfile(payload: { firstName: string; lastName: string; bio: 
   }
 }
 
-onMounted(() => {
-  loadProfile()
-})
+onMounted(() => loadProfile())
 </script>

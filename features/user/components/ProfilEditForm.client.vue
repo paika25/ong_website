@@ -1,81 +1,77 @@
 <template>
-  <div class="bg-card rounded-xl border border-border p-6">
-    <h2 class="text-lg font-semibold mb-6">Modifier le profil</h2>
+  <div class="bg-card rounded-2xl border border-border overflow-hidden">
+    <div class="flex items-center gap-2.5 px-6 py-4 border-b border-border bg-muted/30">
+      <div class="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+        <Icon name="i-heroicons-pencil" class="w-4 h-4 text-primary" />
+      </div>
+      <h2 class="font-semibold text-sm">Modifier le profil</h2>
+    </div>
 
-    <form @submit.prevent="handleSave" class="space-y-4">
+    <form @submit.prevent="handleSave" class="p-6 space-y-5">
+
+      <!-- Identité -->
       <div class="grid md:grid-cols-2 gap-4">
         <UFormGroup label="Prénom" required>
-          <UInput v-model="form.firstName" placeholder="John" />
+          <UInput v-model="form.firstName" placeholder="Jean" />
         </UFormGroup>
-
         <UFormGroup label="Nom" required>
-          <UInput v-model="form.lastName" placeholder="Doe" />
+          <UInput v-model="form.lastName" placeholder="Dupont" />
         </UFormGroup>
       </div>
 
-      <UFormGroup label="Bio">
+      <!-- Bio -->
+      <UFormGroup label="Biographie">
         <UTextarea
           v-model="form.bio"
-          placeholder="Parlez-nous de vous..."
+          placeholder="Décrivez votre rôle et vos motivations..."
           :rows="3"
         />
       </UFormGroup>
 
+      <!-- Localisation + Site web -->
       <div class="grid md:grid-cols-2 gap-4">
         <UFormGroup label="Localisation">
           <VilleAutoCompletion v-model="form.location" />
         </UFormGroup>
-
         <UFormGroup label="Site web">
-          <UInput
-            v-model="form.website"
-            placeholder="https://monsite.com"
-            icon="i-heroicons-globe-alt"
-          />
+          <UInput v-model="form.website" placeholder="https://monsite.com" icon="i-heroicons-globe-alt" />
         </UFormGroup>
       </div>
 
       <!-- Compétences -->
       <UFormGroup label="Compétences">
-        <div class="space-y-2">
-          <div class="flex flex-wrap gap-2">
-            <UBadge
-              v-for="(skill, index) in form.skills"
-              :key="index"
-              variant="soft"
-              color="primary"
-              class="cursor-pointer"
-              @click="removeSkill(index)"
-            >
-              {{ skill }}
-              <Icon name="i-heroicons-x-mark" class="w-3 h-3 ml-1" />
-            </UBadge>
-          </div>
-          <div class="flex gap-2">
-            <UInput
-              v-model="newSkill"
-              placeholder="Ajouter une compétence..."
-              @keyup.enter="addSkill"
-              class="flex-1"
-            />
-            <UButton
-              type="button"
-              variant="outline"
-              @click="addSkill"
-              :disabled="!newSkill.trim()"
-            >
-              Ajouter
-            </UButton>
-          </div>
+        <div class="flex flex-wrap gap-2 mb-2" v-if="form.skills.length">
+          <UBadge
+            v-for="(skill, i) in form.skills"
+            :key="i"
+            variant="soft"
+            color="primary"
+            class="cursor-pointer group"
+            @click="removeSkill(i)"
+          >
+            {{ skill }}
+            <Icon name="i-heroicons-x-mark" class="w-3 h-3 ml-1 opacity-60 group-hover:opacity-100" />
+          </UBadge>
+        </div>
+        <div class="flex gap-2">
+          <UInput
+            v-model="newSkill"
+            placeholder="Ajouter une compétence..."
+            class="flex-1"
+            @keyup.enter.prevent="addSkill"
+          />
+          <UButton type="button" variant="outline" size="sm" @click="addSkill" :disabled="!newSkill.trim()">
+            Ajouter
+          </UButton>
         </div>
       </UFormGroup>
 
       <!-- Actions -->
-      <div class="flex gap-3 pt-4">
-        <UButton type="submit" color="primary" :loading="isSaving">
+      <div class="flex gap-3 pt-2 border-t border-border">
+        <UButton type="submit" :loading="isSaving" icon="i-heroicons-check">
           Sauvegarder
         </UButton>
-        <UButton type="button" variant="outline" @click="emit('cancel')">
+        <UButton type="button" variant="ghost" @click="emit('cancel')">
           Annuler
         </UButton>
       </div>
@@ -106,33 +102,33 @@ const emit = defineEmits<{
 
 const form = reactive({
   firstName: props.initialData.firstName,
-  lastName: props.initialData.lastName,
-  bio: props.initialData.bio,
-  location: props.initialData.location,
-  website: props.initialData.website,
-  skills: [...props.initialData.skills]
+  lastName:  props.initialData.lastName,
+  bio:       props.initialData.bio,
+  location:  props.initialData.location,
+  website:   props.initialData.website,
+  skills:    [...props.initialData.skills],
 })
 
 const newSkill = ref('')
 
 function addSkill() {
   const s = newSkill.value?.trim()
-  if (!s) return
-  if (!form.skills.includes(s)) form.skills.push(s)
+  if (!s || form.skills.includes(s)) return
+  form.skills.push(s)
   newSkill.value = ''
 }
 
-function removeSkill(index: number) {
-  form.skills.splice(index, 1)
+function removeSkill(i: number) {
+  form.skills.splice(i, 1)
 }
 
 function handleSave() {
   emit('save', {
     firstName: form.firstName,
-    lastName: form.lastName,
-    bio: form.bio,
-    location: form.location,
-    website: form.website
+    lastName:  form.lastName,
+    bio:       form.bio,
+    location:  form.location,
+    website:   form.website,
   })
 }
 </script>
