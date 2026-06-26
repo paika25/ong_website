@@ -9,10 +9,7 @@
       </NuxtLink>
     </div>
 
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold tracking-tight">Messages</h1>
-      <p class="text-sm text-muted-foreground mt-0.5">Vos échanges avec les ONGs et l'administration Paika</p>
-    </div>
+    <PageHeader title="Messages" subtitle="Vos échanges avec les ONGs et l'administration Paika" class="mb-6" />
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4" style="height: 600px">
       <!-- Liste des conversations -->
@@ -91,7 +88,7 @@ import RechercheInput from '~/features/messaging/components/RechercheInput.vue'
 import type { ConversationListItem } from '~/features/messaging/components/ConversationList.vue'
 import { getToken } from '~/features/auth/utils/getToken'
 
-definePageMeta({ middleware: ['auth'] })
+definePageMeta({ layout: 'partner', middleware: ['auth'] })
 
 interface ConvSummary {
   ongId: string

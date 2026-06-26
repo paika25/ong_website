@@ -4,25 +4,28 @@
         :to="ong ? `/ongs/${ong.id}/edit` : '/dashboard'"
         class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6 group"
       >
-        <svg class="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
+        <Icon name="i-heroicons-arrow-left" class="w-4 h-4 transition-transform group-hover:-translate-x-1" />
         Retour
       </NuxtLink>
 
-      <div class="mb-8">
-        <h1 class="text-2xl font-bold tracking-tight mb-1">Visibilité publique</h1>
-        <p class="text-sm text-muted-foreground">
-          Choisissez les sections visibles par les bailleurs sur votre profil public.
-        </p>
-      </div>
+      <PageHeader
+        title="Visibilité publique"
+        subtitle="Choisissez les sections visibles par les bailleurs sur votre profil public."
+        class="mb-8"
+      />
 
       <div v-if="loading" class="space-y-4 animate-pulse">
         <div v-for="i in 5" :key="i" class="h-16 bg-muted rounded-xl" />
       </div>
 
-      <div v-else-if="!ong" class="text-center py-12 text-muted-foreground">
-        <p>Aucune ONG trouvée. <NuxtLink to="/ongs/new" class="underline">Créez d'abord votre ONG.</NuxtLink></p>
+      <div v-else-if="!ong" class="bg-card border border-border rounded-xl">
+        <EmptyState icon="i-heroicons-building-office-2" title="Aucune ONG trouvée">
+          <template #action>
+            <NuxtLink to="/ongs/new">
+              <UButton size="sm" color="primary">Créer mon ONG</UButton>
+            </NuxtLink>
+          </template>
+        </EmptyState>
       </div>
 
       <div v-else class="space-y-3">
