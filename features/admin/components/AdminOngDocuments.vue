@@ -1,9 +1,6 @@
 <template>
   <div>
-    <div v-if="!documents.length" class="py-10 text-center text-muted-foreground">
-      <Icon name="i-heroicons-document-text" class="w-10 h-10 mx-auto mb-3 opacity-30" />
-      <p>Aucun document uploadé par cette ONG</p>
-    </div>
+    <EmptyState v-if="!documents.length" icon="i-heroicons-document-text" title="Aucun document uploadé par cette ONG" />
 
     <div v-else class="space-y-2">
       <a

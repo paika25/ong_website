@@ -75,10 +75,7 @@
         </div>
       </div>
 
-      <div v-if="!versions.length" class="px-5 py-12 text-center text-muted-foreground">
-        <Icon name="i-heroicons-cpu-chip" class="w-10 h-10 mx-auto mb-3 opacity-30" />
-        <p>Aucune version enregistrée</p>
-      </div>
+      <EmptyState v-if="!versions.length" icon="i-heroicons-cpu-chip" title="Aucune version enregistrée" />
     </div>
   </div>
 </template>

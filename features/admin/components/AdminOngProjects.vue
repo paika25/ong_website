@@ -1,9 +1,6 @@
 <template>
   <div>
-    <div v-if="!projects.length" class="py-10 text-center text-muted-foreground">
-      <Icon name="i-heroicons-folder-open" class="w-10 h-10 mx-auto mb-3 opacity-30" />
-      <p>Aucun projet déclaré par cette ONG</p>
-    </div>
+    <EmptyState v-if="!projects.length" icon="i-heroicons-folder-open" title="Aucun projet déclaré par cette ONG" />
 
     <div v-else class="space-y-3">
       <div

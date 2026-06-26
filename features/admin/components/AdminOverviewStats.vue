@@ -2,20 +2,16 @@
   <div class="space-y-6">
     <!-- KPI cards -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      <div
+      <StatCard
         v-for="card in kpiCards"
         :key="card.label"
-        class="bg-card border border-border rounded-xl p-5 flex flex-col gap-1.5"
-      >
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{{ card.label }}</span>
-          <div :class="['w-8 h-8 rounded-lg flex items-center justify-center', card.iconBg]">
-            <Icon :name="card.icon" class="w-4 h-4" :class="card.iconColor" />
-          </div>
-        </div>
-        <div class="text-2xl font-bold">{{ card.value }}</div>
-        <div class="text-xs text-muted-foreground">{{ card.sub }}</div>
-      </div>
+        :label="card.label"
+        :value="card.value"
+        :sub="card.sub"
+        :icon="card.icon"
+        :icon-bg="card.iconBg"
+        :icon-color="card.iconColor"
+      />
     </div>
 
     <!-- Répartition ONGs par statut -->

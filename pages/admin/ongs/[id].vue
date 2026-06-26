@@ -24,9 +24,7 @@
     </div>
 
     <!-- Erreur -->
-    <div v-if="error" class="bg-destructive/10 border border-destructive/30 rounded-xl p-4 text-sm text-destructive">
-      {{ error }}
-    </div>
+    <UAlert v-if="error" color="red" variant="soft" icon="i-heroicons-exclamation-circle" :title="error" />
 
     <!-- Skeleton tabs -->
     <div v-if="loading" class="space-y-4">
@@ -92,10 +90,7 @@
 
           <!-- Financials -->
           <div v-else-if="item.key === 'financials'" class="bg-card border border-border rounded-xl p-5">
-            <div v-if="!detail.ong.financials" class="py-10 text-center text-muted-foreground">
-              <Icon name="i-heroicons-banknotes" class="w-10 h-10 mx-auto mb-3 opacity-30" />
-              <p>Aucune donnée financière déclarée</p>
-            </div>
+            <EmptyState v-if="!detail.ong.financials" icon="i-heroicons-banknotes" title="Aucune donnée financière déclarée" />
             <div v-else class="space-y-5 text-sm">
               <div>
                 <div class="text-xs text-muted-foreground mb-1">Budget total 2023</div>
@@ -149,7 +144,7 @@ const ongId     = route.params.id as string
 const detail    = ref<AdminOngDetail | null>(null)
 const loading   = ref(true)
 const error     = ref<string | null>(null)
-const activeTab = ref('profil')
+const activeTab = ref(0)
 
 const TABS = [
   { label: 'Profil',      key: 'profil',     icon: 'i-heroicons-identification' },

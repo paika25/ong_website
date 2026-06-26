@@ -1,9 +1,6 @@
 <template>
   <div class="space-y-6">
-    <div>
-      <h1 class="text-2xl font-bold">Utilisateurs</h1>
-      <p class="text-sm text-muted-foreground mt-0.5">Comptes agents ONG et partenaires donateurs</p>
-    </div>
+    <PageHeader title="Utilisateurs" subtitle="Comptes agents ONG et partenaires donateurs" />
 
     <AdminUsersTable
       :users="users"
