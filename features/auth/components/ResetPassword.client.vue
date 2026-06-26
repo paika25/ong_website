@@ -10,9 +10,7 @@
     <!-- Token invalide ou expiré -->
     <div v-else-if="tokenState === 'invalid'" class="text-center space-y-4">
       <div class="w-16 h-16 mx-auto rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center">
-        <svg class="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
-        </svg>
+        <Icon name="i-heroicons-exclamation-triangle" class="w-8 h-8 text-red-600 dark:text-red-400" />
       </div>
       <h2 class="text-xl font-bold">Lien invalide ou expiré</h2>
       <p class="text-sm text-muted-foreground">
@@ -31,9 +29,7 @@
     <!-- Succès -->
     <div v-else-if="tokenState === 'success'" class="text-center space-y-4">
       <div class="w-16 h-16 mx-auto rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
-        <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-        </svg>
+        <Icon name="i-heroicons-check" class="w-8 h-8 text-green-600 dark:text-green-400" />
       </div>
       <h2 class="text-xl font-bold">Mot de passe modifié</h2>
       <p class="text-sm text-muted-foreground">Votre mot de passe a été réinitialisé avec succès.</p>
@@ -88,9 +84,13 @@
         />
       </UFormGroup>
 
-      <div v-if="globalError" class="p-3 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm">
-        {{ globalError }}
-      </div>
+      <UAlert
+        v-if="globalError"
+        color="red"
+        variant="soft"
+        icon="i-heroicons-exclamation-circle"
+        :description="globalError"
+      />
 
       <UButton type="submit" block :loading="isLoading" :disabled="isLoading">
         Réinitialiser le mot de passe

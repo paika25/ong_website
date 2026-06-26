@@ -20,9 +20,13 @@
           />
         </UFormGroup>
 
-        <div v-if="emailStatus.message" :class="['p-3 rounded-lg text-sm', emailStatus.success ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400']">
-          {{ emailStatus.message }}
-        </div>
+        <UAlert
+          v-if="emailStatus.message"
+          :color="emailStatus.success ? 'green' : 'red'"
+          variant="soft"
+          :icon="emailStatus.success ? 'i-heroicons-check-circle' : 'i-heroicons-exclamation-circle'"
+          :description="emailStatus.message"
+        />
 
         <UButton type="submit" :loading="emailStatus.loading" :disabled="emailStatus.loading">
           Changer l'email
@@ -65,9 +69,13 @@
           />
         </UFormGroup>
 
-        <div v-if="pwStatus.message" :class="['p-3 rounded-lg text-sm', pwStatus.success ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400']">
-          {{ pwStatus.message }}
-        </div>
+        <UAlert
+          v-if="pwStatus.message"
+          :color="pwStatus.success ? 'green' : 'red'"
+          variant="soft"
+          :icon="pwStatus.success ? 'i-heroicons-check-circle' : 'i-heroicons-exclamation-circle'"
+          :description="pwStatus.message"
+        />
 
         <UButton type="submit" :loading="pwStatus.loading" :disabled="pwStatus.loading">
           Changer le mot de passe
@@ -82,9 +90,13 @@
         Déconnectez tous les appareils sur lesquels votre compte est actuellement connecté.
       </p>
 
-      <div v-if="signOutError" class="p-3 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm">
-        {{ signOutError }}
-      </div>
+      <UAlert
+        v-if="signOutError"
+        color="red"
+        variant="soft"
+        icon="i-heroicons-exclamation-circle"
+        :description="signOutError"
+      />
 
       <UButton
         color="red"

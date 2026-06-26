@@ -1,91 +1,79 @@
 <template>
-  <div class="max-w-md mx-auto p-6 bg-card rounded-xl border border-border">
-    <h2 class="text-2xl font-bold text-center mb-6">Connexion</h2>
-    
-    <form @submit.prevent="handleLogin" class="space-y-4">
-      <div>
-        <UFormGroup 
-          label="Email" 
-          :error="errors.email"
-          required
-        >
-          <UInput
-            v-model="form.email"
-            type="email"
-            placeholder="votre@email.com"
-            :color="errors.email ? 'red' : 'primary'"
-          />
-        </UFormGroup>
-      </div>
+  <div class="w-full">
+    <div class="mb-8">
+      <h2 class="text-2xl font-bold mb-1.5">Bon retour</h2>
+      <p class="text-muted-foreground text-sm">Connectez-vous à votre espace Paika.</p>
+    </div>
 
-      <div>
-        <UFormGroup 
-          label="Mot de passe" 
-          :error="errors.password"
-          required
-        >
-          <UInput
-            v-model="form.password"
-            :type="showPassword ? 'text' : 'password'"
-            placeholder="••••••••"
-            :color="errors.password ? 'red' : 'primary'"
-          >
-            <template #trailing>
-              <UButton
-                variant="ghost"
-                size="2xs"
-                class="pointer-events-auto"
-                @click="showPassword = !showPassword"
-                :icon="showPassword ? 'i-heroicons-eye-slash' : 'i-heroicons-eye'"
-                color="gray"
-              />
-            </template>
-          </UInput>
-        </UFormGroup>
+    <form @submit.prevent="handleLogin" class="space-y-4">
+
+      <!-- Champs dans une section encadrée -->
+      <div class="rounded-xl border border-border overflow-hidden">
+        <div class="px-4 py-3.5 border-b border-border">
+          <UFormGroup label="Adresse email" :error="errors.email" required>
+            <UInput
+              v-model="form.email"
+              type="email"
+              placeholder="votre@email.com"
+              :color="errors.email ? 'red' : 'primary'"
+            />
+          </UFormGroup>
+        </div>
+        <div class="px-4 py-3.5">
+          <UFormGroup label="Mot de passe" :error="errors.password" required>
+            <UInput
+              v-model="form.password"
+              :type="showPassword ? 'text' : 'password'"
+              placeholder="••••••••"
+              :color="errors.password ? 'red' : 'primary'"
+            >
+              <template #trailing>
+                <UButton
+                  variant="ghost"
+                  size="2xs"
+                  class="pointer-events-auto"
+                  @click="showPassword = !showPassword"
+                  :icon="showPassword ? 'i-heroicons-eye-slash' : 'i-heroicons-eye'"
+                  color="gray"
+                />
+              </template>
+            </UInput>
+          </UFormGroup>
+        </div>
       </div>
 
       <div class="flex items-center justify-between">
-        <UCheckbox
-          v-model="form.rememberMe"
-          label="Se souvenir de moi"
-        />
-        <UButton
-          variant="link"
-          size="xs"
-          color="primary"
-          @click="$emit('forgot-password')"
-        >
+        <UCheckbox v-model="form.rememberMe" label="Se souvenir de moi" />
+        <UButton variant="link" size="xs" color="primary" @click="$emit('forgot-password')">
           Mot de passe oublié ?
         </UButton>
       </div>
 
-      <!-- Erreur globale -->
-      <div v-if="globalError" class="p-3 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm">
-        {{ globalError }}
-      </div>
+      <UAlert
+        v-if="globalError"
+        color="red"
+        variant="soft"
+        icon="i-heroicons-exclamation-circle"
+        :description="globalError"
+      />
 
       <UButton
         type="submit"
         block
+        size="lg"
         :loading="isLoading"
         :disabled="!isFormValid"
+        icon="i-heroicons-arrow-right-on-rectangle"
       >
         Se connecter
       </UButton>
 
-      <div class="text-center">
-        <span class="text-sm text-muted-foreground">
-          Pas encore de compte ?
-        </span>
-        <UButton
-          variant="link"
-          size="xs"
-          color="primary"
-          @click="$emit('switch-to-signup')"
-        >
-          S'inscrire
+      <p class="text-center text-sm text-muted-foreground">
+        Pas encore de compte ?
+        <UButton variant="link" size="sm" color="primary" class="font-medium" @click="$emit('switch-to-signup')">
+          Créer un compte
         </UButton>
-      </div>
+      </p>
     </form>
   </div>
 </template>

@@ -10,9 +10,7 @@
       <!-- Error -->
       <div v-else-if="status === 'error'" class="space-y-4">
         <div class="w-16 h-16 mx-auto rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center">
-          <svg class="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
+          <Icon name="i-heroicons-x-mark" class="w-8 h-8 text-red-600 dark:text-red-400" />
         </div>
         <h2 class="text-xl font-bold text-red-600">Erreur</h2>
         <p class="text-muted-foreground">{{ message }}</p>
@@ -24,9 +22,7 @@
       <!-- Success -->
       <div v-else class="space-y-4">
         <div class="w-16 h-16 mx-auto rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
-          <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
+          <Icon name="i-heroicons-check" class="w-8 h-8 text-green-600 dark:text-green-400" />
         </div>
         <h2 class="text-xl font-bold text-green-600">{{ message }}</h2>
         <p class="text-muted-foreground">Redirection en cours...</p>

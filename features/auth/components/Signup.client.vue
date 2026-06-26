@@ -1,171 +1,182 @@
 <template>
-  <div class="max-w-lg mx-auto p-6 bg-card rounded-xl border border-border">
-    <h2 class="text-2xl font-bold text-center mb-2">Créer un compte</h2>
-    <p class="text-sm text-muted-foreground text-center mb-6">
-      Rejoignez notre communauté et commencez à contribuer
-    </p>
+  <div class="w-full">
 
     <!-- Succès modal -->
-    <div v-if="showSuccessModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div class="bg-card p-8 rounded-xl max-w-md mx-4 text-center border border-border">
+    <UModal v-model="showSuccessModal" prevent-close>
+      <div class="p-8 text-center">
         <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
-          <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
+          <Icon name="i-heroicons-check" class="w-8 h-8 text-green-600 dark:text-green-400" />
         </div>
         <h3 class="text-xl font-bold mb-2">Inscription réussie !</h3>
         <p class="text-muted-foreground mb-4">
           Un email de confirmation a été envoyé à <strong>{{ form.email }}</strong>.
-          Veuillez vérifier votre boîte mail pour activer votre compte.
+          Vérifiez votre boîte mail pour activer votre compte.
         </p>
         <UButton color="primary" @click="goToLogin">Aller à la connexion</UButton>
       </div>
-    </div>
+    </UModal>
 
-    <form @submit.prevent="handleSignup" class="space-y-5">
+    <form @submit.prevent="handleSignup" class="space-y-6">
 
-      <!-- Sélection du type de compte -->
+      <!-- Type de compte -->
       <div>
-        <label class="block text-sm font-medium mb-3">Type de compte</label>
-        <div class="grid grid-cols-2 gap-4">
-          <div
+        <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Je suis…</p>
+        <div class="grid grid-cols-2 gap-3">
+          <button
+            type="button"
             @click="form.accountType = 'user_partner'"
             :class="[
-              'p-4 border rounded-lg cursor-pointer transition-all',
+              'relative p-4 rounded-xl border-2 text-left transition-all',
               form.accountType === 'user_partner'
-                ? 'border-primary bg-primary/5 ring-2 ring-primary'
-                : 'border-border hover:border-primary/50',
+                ? 'border-primary bg-primary/5'
+                : 'border-border bg-card hover:border-primary/40 hover:bg-muted/40',
             ]"
           >
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center shrink-0">
-                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-              </div>
-              <div>
-                <p class="font-medium">Bailleur / Partenaire</p>
-                <p class="text-xs text-muted-foreground">Institution, fonds, donateur</p>
+            <div v-if="form.accountType === 'user_partner'" class="absolute top-2.5 right-2.5">
+              <div class="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                <Icon name="i-heroicons-check" class="w-3 h-3 text-white" />
               </div>
             </div>
-          </div>
+            <div class="w-9 h-9 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mb-3">
+              <Icon name="i-heroicons-building-office-2" class="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <p class="font-semibold text-sm mb-0.5">Bailleur / Partenaire</p>
+            <p class="text-xs text-muted-foreground">Financer et soutenir des ONGs</p>
+          </button>
 
-          <div
+          <button
+            type="button"
             @click="form.accountType = 'user_agent'"
             :class="[
-              'p-4 border rounded-lg cursor-pointer transition-all',
+              'relative p-4 rounded-xl border-2 text-left transition-all',
               form.accountType === 'user_agent'
-                ? 'border-primary bg-primary/5 ring-2 ring-primary'
-                : 'border-border hover:border-primary/50',
+                ? 'border-primary bg-primary/5'
+                : 'border-border bg-card hover:border-primary/40 hover:bg-muted/40',
             ]"
           >
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center shrink-0">
-                <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                </svg>
-              </div>
-              <div>
-                <p class="font-medium">Agent ONG</p>
-                <p class="text-xs text-muted-foreground">Gestionnaire d'organisation</p>
+            <div v-if="form.accountType === 'user_agent'" class="absolute top-2.5 right-2.5">
+              <div class="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                <Icon name="i-heroicons-check" class="w-3 h-3 text-white" />
               </div>
             </div>
+            <div class="w-9 h-9 rounded-lg bg-violet-100 dark:bg-violet-900/50 flex items-center justify-center mb-3">
+              <Icon name="i-heroicons-users" class="w-5 h-5 text-violet-600 dark:text-violet-400" />
+            </div>
+            <p class="font-semibold text-sm mb-0.5">Agent ONG</p>
+            <p class="text-xs text-muted-foreground">Gérer et certifier mon ONG</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- Section : Vos informations -->
+      <div class="rounded-xl border border-border overflow-hidden">
+        <div class="flex items-center gap-2.5 px-4 py-3 bg-muted/40 border-b border-border">
+          <div class="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+            <Icon name="i-heroicons-user" class="w-3.5 h-3.5 text-primary" />
+          </div>
+          <p class="text-sm font-semibold">Vos informations</p>
+        </div>
+        <div class="p-4 space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <UFormGroup label="Prénom" :error="errors.firstName">
+              <UInput v-model="form.firstName" placeholder="Jean" :color="errors.firstName ? 'red' : 'primary'" />
+            </UFormGroup>
+            <UFormGroup label="Nom" :error="errors.lastName">
+              <UInput v-model="form.lastName" placeholder="Dupont" :color="errors.lastName ? 'red' : 'primary'" />
+            </UFormGroup>
+          </div>
+
+          <UFormGroup
+            :label="form.accountType === 'user_partner' ? 'Email professionnel' : 'Email'"
+            :error="errors.email"
+            required
+          >
+            <UInput
+              v-model="form.email"
+              type="email"
+              :placeholder="form.accountType === 'user_partner' ? 'vous@organisation.org' : 'votre@email.com'"
+              :color="errors.email ? 'red' : 'primary'"
+            />
+            <div
+              v-if="showGenericDomainWarning && !form.emailDerogation"
+              class="mt-2 p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-300"
+            >
+              Les comptes bailleurs requièrent un email professionnel (domaine de votre organisation).
+            </div>
+            <div v-if="form.accountType === 'user_partner' && (showGenericDomainWarning || form.emailDerogation)" class="mt-2 flex items-start gap-2">
+              <UCheckbox v-model="form.emailDerogation" class="mt-0.5" />
+              <span class="text-xs text-muted-foreground cursor-pointer select-none" @click="form.emailDerogation = !form.emailDerogation">
+                Mon organisation n'a pas de domaine email dédié (justification demandée lors de la validation)
+              </span>
+            </div>
+          </UFormGroup>
+        </div>
+      </div>
+
+      <!-- Section : Sécurité -->
+      <div class="rounded-xl border border-border overflow-hidden">
+        <div class="flex items-center gap-2.5 px-4 py-3 bg-muted/40 border-b border-border">
+          <div class="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+            <Icon name="i-heroicons-lock-closed" class="w-3.5 h-3.5 text-primary" />
+          </div>
+          <p class="text-sm font-semibold">Sécurité</p>
+        </div>
+        <div class="p-4 space-y-3">
+          <div class="grid grid-cols-2 gap-3">
+            <UFormGroup label="Mot de passe" :error="errors.password" required>
+              <UInput
+                v-model="form.password"
+                :type="showPassword ? 'text' : 'password'"
+                placeholder="••••••••"
+                :color="errors.password ? 'red' : 'primary'"
+              >
+                <template #trailing>
+                  <UButton
+                    variant="ghost"
+                    size="2xs"
+                    class="pointer-events-auto"
+                    :icon="showPassword ? 'i-heroicons-eye-slash' : 'i-heroicons-eye'"
+                    color="gray"
+                    @click="showPassword = !showPassword"
+                  />
+                </template>
+              </UInput>
+            </UFormGroup>
+            <UFormGroup label="Confirmation" :error="errors.confirmPassword" required>
+              <UInput
+                v-model="form.confirmPassword"
+                :type="showPassword ? 'text' : 'password'"
+                placeholder="••••••••"
+                :color="errors.confirmPassword ? 'red' : 'primary'"
+              />
+            </UFormGroup>
+          </div>
+
+          <div v-if="form.password">
+            <div class="flex gap-1.5 mb-1.5">
+              <div
+                v-for="i in 4"
+                :key="i"
+                class="h-1.5 flex-1 rounded-full transition-all duration-300"
+                :class="i <= passwordStrengthLevel ? passwordStrengthColors[passwordStrengthLevel - 1] : 'bg-muted'"
+              />
+            </div>
+            <p class="text-xs text-muted-foreground">
+              Force : <span class="font-medium">{{ passwordStrengthLabels[passwordStrengthLevel - 1] || 'Très faible' }}</span>
+            </p>
           </div>
         </div>
-      </div>
-
-      <!-- Prénom / Nom -->
-      <div class="grid grid-cols-2 gap-4">
-        <UFormGroup label="Prénom" :error="errors.firstName">
-          <UInput v-model="form.firstName" placeholder="Jean" :color="errors.firstName ? 'red' : 'primary'" />
-        </UFormGroup>
-        <UFormGroup label="Nom" :error="errors.lastName">
-          <UInput v-model="form.lastName" placeholder="Dupont" :color="errors.lastName ? 'red' : 'primary'" />
-        </UFormGroup>
-      </div>
-
-      <!-- Email -->
-      <UFormGroup
-        :label="form.accountType === 'user_partner' ? 'Email professionnel' : 'Email'"
-        :error="errors.email"
-        required
-      >
-        <UInput
-          v-model="form.email"
-          type="email"
-          :placeholder="form.accountType === 'user_partner' ? 'vous@organisation.org' : 'votre@email.com'"
-          :color="errors.email ? 'red' : 'primary'"
-        />
-        <!-- Avertissement domaine générique -->
-        <div
-          v-if="showGenericDomainWarning && !form.emailDerogation"
-          class="mt-2 p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-300"
-        >
-          Les comptes bailleurs requièrent un email professionnel (domaine de votre organisation).
-        </div>
-        <!-- Case dérogation -->
-        <div v-if="form.accountType === 'user_partner' && (showGenericDomainWarning || form.emailDerogation)" class="mt-2 flex items-start gap-2">
-          <UCheckbox v-model="form.emailDerogation" class="mt-0.5" />
-          <span class="text-xs text-muted-foreground cursor-pointer select-none" @click="form.emailDerogation = !form.emailDerogation">
-            Mon organisation n'a pas de domaine email dédié (une justification sera demandée lors de la validation)
-          </span>
-        </div>
-      </UFormGroup>
-
-      <!-- Mots de passe -->
-      <div class="grid grid-cols-2 gap-4">
-        <UFormGroup label="Mot de passe" :error="errors.password" required>
-          <UInput
-            v-model="form.password"
-            :type="showPassword ? 'text' : 'password'"
-            placeholder="••••••••"
-            :color="errors.password ? 'red' : 'primary'"
-          >
-            <template #trailing>
-              <UButton
-                variant="ghost"
-                size="2xs"
-                class="pointer-events-auto"
-                :icon="showPassword ? 'i-heroicons-eye-slash' : 'i-heroicons-eye'"
-                color="gray"
-                @click="showPassword = !showPassword"
-              />
-            </template>
-          </UInput>
-        </UFormGroup>
-        <UFormGroup label="Confirmer" :error="errors.confirmPassword" required>
-          <UInput
-            v-model="form.confirmPassword"
-            :type="showPassword ? 'text' : 'password'"
-            placeholder="••••••••"
-            :color="errors.confirmPassword ? 'red' : 'primary'"
-          />
-        </UFormGroup>
-      </div>
-
-      <!-- Indicateur force mot de passe -->
-      <div v-if="form.password" class="space-y-2">
-        <div class="flex gap-1">
-          <div
-            v-for="i in 4"
-            :key="i"
-            :class="['h-1 flex-1 rounded-full transition-colors', i <= passwordStrengthLevel ? passwordStrengthColors[passwordStrengthLevel - 1] : 'bg-muted']"
-          />
-        </div>
-        <p class="text-xs text-muted-foreground">
-          Mot de passe {{ passwordStrengthLabels[passwordStrengthLevel - 1] || 'Très faible' }}
-        </p>
       </div>
 
       <!-- Section bailleur institutionnel -->
       <template v-if="form.accountType === 'user_partner'">
-        <div class="p-4 border border-blue-200 dark:border-blue-800 rounded-lg space-y-4 bg-blue-50/50 dark:bg-blue-950/20">
-          <p class="text-sm font-semibold text-blue-800 dark:text-blue-300 flex items-center gap-1.5">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-            Informations institutionnelles
-          </p>
+        <div class="rounded-xl border border-border bg-muted/30 p-5 space-y-4">
+          <div class="flex items-center gap-2.5 pb-3 border-b border-border">
+            <div class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center shrink-0">
+              <Icon name="i-heroicons-building-office-2" class="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            </div>
+            <p class="text-sm font-semibold">Informations institutionnelles</p>
+          </div>
 
           <UFormGroup label="Nom de l'organisation" :error="errors.organizationName" required>
             <UInput
@@ -208,16 +219,12 @@
                 @change="onMandateFileChange"
               />
               <div v-if="mandateDocFile" class="flex items-center justify-center gap-2 text-green-700 dark:text-green-400">
-                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
+                <Icon name="i-heroicons-check" class="w-4 h-4 shrink-0" />
                 <span class="text-sm font-medium truncate max-w-xs">{{ mandateDocFile.name }}</span>
                 <button type="button" class="ml-1 text-muted-foreground hover:text-destructive text-xs leading-none" @click.stop="mandateDocFile = null">✕</button>
               </div>
               <div v-else class="text-muted-foreground">
-                <svg class="w-6 h-6 mx-auto mb-1.5 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
+                <Icon name="i-heroicons-arrow-up-tray" class="w-6 h-6 mx-auto mb-1.5 opacity-40" />
                 <p class="text-xs">Glissez un fichier ou cliquez pour choisir</p>
                 <p class="text-xs opacity-60 mt-0.5">PDF, DOC, JPG — Max 5 Mo</p>
               </div>
@@ -228,18 +235,16 @@
       </template>
 
       <!-- Informations optionnelles -->
-      <div class="border rounded-lg border-border">
+      <div class="rounded-xl border border-border overflow-hidden">
         <button
           type="button"
-          class="flex items-center justify-between w-full p-4 text-left"
+          class="flex items-center justify-between w-full px-5 py-3.5 text-left hover:bg-muted/40 transition-colors"
           @click="showOptional = !showOptional"
         >
-          <span class="font-medium">Informations supplémentaires (optionnel)</span>
-          <svg :class="['w-5 h-5 transition-transform', showOptional ? 'rotate-180' : '']" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
+          <span class="text-sm font-medium">Informations supplémentaires <span class="text-muted-foreground font-normal">(optionnel)</span></span>
+          <Icon name="i-heroicons-chevron-down" :class="['w-4 h-4 text-muted-foreground transition-transform', showOptional ? 'rotate-180' : '']" />
         </button>
-        <div v-if="showOptional" class="px-4 pb-4 space-y-4 border-t border-border">
+        <div v-if="showOptional" class="px-5 pb-5 pt-1 space-y-4 border-t border-border bg-muted/20">
           <UFormGroup v-if="form.accountType === 'user_agent'" label="Nom de l'ONG">
             <UInput v-model="form.companyName" placeholder="Nom de votre ONG" />
           </UFormGroup>
@@ -256,30 +261,34 @@
       </div>
 
       <!-- CGU -->
-      <div class="flex items-start gap-2">
-        <UCheckbox v-model="form.acceptTerms" class="mt-1" />
-        <label class="text-sm text-muted-foreground">
+      <div class="flex items-start gap-2.5">
+        <UCheckbox v-model="form.acceptTerms" class="mt-0.5" />
+        <label class="text-sm text-muted-foreground leading-relaxed cursor-pointer" @click="form.acceptTerms = !form.acceptTerms">
           J'accepte les
-          <NuxtLink to="/terms" class="text-primary hover:underline">conditions d'utilisation</NuxtLink>
+          <NuxtLink to="/terms" class="text-primary hover:underline" @click.stop>conditions d'utilisation</NuxtLink>
           et la
-          <NuxtLink to="/privacy" class="text-primary hover:underline">politique de confidentialité</NuxtLink>
+          <NuxtLink to="/privacy" class="text-primary hover:underline" @click.stop>politique de confidentialité</NuxtLink>
         </label>
       </div>
-      <p v-if="errors.acceptTerms" class="text-sm text-red-500">{{ errors.acceptTerms }}</p>
+      <p v-if="errors.acceptTerms" class="text-xs text-destructive">{{ errors.acceptTerms }}</p>
 
       <!-- Erreur globale -->
-      <div v-if="globalError" class="p-3 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm">
-        {{ globalError }}
-      </div>
+      <UAlert
+        v-if="globalError"
+        color="red"
+        variant="soft"
+        icon="i-heroicons-exclamation-circle"
+        :description="globalError"
+      />
 
-      <UButton type="submit" block size="lg" :loading="isLoading" :disabled="!isFormValid">
+      <UButton type="submit" block size="lg" :loading="isLoading" :disabled="!isFormValid" icon="i-heroicons-user-plus">
         Créer mon compte
       </UButton>
 
-      <div class="text-center">
-        <span class="text-sm text-muted-foreground">Vous avez déjà un compte ?</span>
-        <UButton variant="link" size="xs" color="primary" @click="$emit('switch-to-login')">Se connecter</UButton>
-      </div>
+      <p class="text-center text-sm text-muted-foreground">
+        Déjà un compte ?
+        <UButton variant="link" size="sm" color="primary" class="font-medium" @click="$emit('switch-to-login')">Se connecter</UButton>
+      </p>
     </form>
   </div>
 </template>
